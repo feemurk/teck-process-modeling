@@ -1,0 +1,22 @@
+# teck-process-models .gitignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Scratch / temp
+*.tmp
+*.bak
+scratch/
+
+# Never ignore workshop outputs — they are the primary deliverables
+# workshops/ is tracked in full
+
+# Never ignore standards — they are programme-authoritative
+# standards/ is tracked in full

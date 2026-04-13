@@ -1,0 +1,208 @@
+# beam-overlay-schema.yaml
+# Teck Process Models — BEAM Workshop Output Schema
+#
+# This schema defines every field that a valid beam-overlay.yaml must contain.
+# It is the interface contract between teck-process-models (Stage 1) and
+# teck-data-modeling (Stage 2).
+#
+# FIELD STATUS CODES:
+#   confirmed    — answer obtained, validated, owner has authority to confirm it
+#   provisional  — answer obtained but not yet verified with named authority
+#   needs-workshop — section not yet completed; Stage 2 cannot use this entity until resolved
+#   not-applicable — explicitly determined to not apply; must include rationale
+#
+# REQUIRED vs OPTIONAL:
+#   Fields marked [REQUIRED] block Stage 2 if status is not 'confirmed' or 'not-applicable'.
+#   Fields marked [RECOMMENDED] produce WARN status in validate-overlay.
+#   Fields marked [OPTIONAL] produce no flag if absent.
+#
+# Claude Code: validate every beam-overlay.yaml against this schema before
+# declaring a workshop complete. A field with status: needs-workshop on a
+# REQUIRED field is a BLOCK — Stage 2 cannot proceed.
+
+---
+
+## SECTION 1: PRODUCT SCOPE
+# Identifies which pillar models and process areas were used as the foundation.
+
+product_name: ""                        # [REQUIRED] Must match teck-data-modeling product folder name
+ddvc_layer: ""                          # [REQUIRED] curated | contextualized
+product_purpose: ""                     # [REQUIRED] One sentence — what decision does this product enable?
+
+pillar_references:                      # [REQUIRED] At least one entry
+  - pillar: ""                          # e.g. "02-mining-operations-extraction"
+    process_areas: []                   # e.g. ["2.2 Load & Haul", "2.3 Mine Services"]
+    entity_catalog_sections: []         # Which entity catalog sections were used
+
+sites_in_scope: []                      # [REQUIRED] List of site codes: HVC | QB | ANTAMINA | CDA | RED_DOG
+primary_site: ""                        # [REQUIRED] The site driving the canonical model; variants documented below
+
+workshop_date: ""                       # [REQUIRED] YYYY-MM-DD of last completed workshop section
+workshop_participants: []               # [RECOMMENDED] Names and roles of workshop participants
+overlay_status: ""                      # [REQUIRED] in-progress | complete | validated
+
+---
+
+## SECTION 2: ENTITY REGISTER
+# One entry per entity in process-model-ref.md.
+# Captures the Teck-specific decisions the process model cannot answer.
+
+entities:
+  - entity_name: ""                     # [REQUIRED] Must match entity name in process-model-ref.md
+    entity_type: ""                     # [REQUIRED] Master | Reference | Transactional | Time-Series
+    ddvc_layer: ""                      # [REQUIRED] curated | contextualized | both
+    status: ""                          # [REQUIRED] confirmed | provisional | needs-workshop
+
+    # --- IDENTITY AND KEY ---
+    natural_key:
+      description: ""                   # [REQUIRED] Plain-language description of what uniquely identifies this entity
+      source_system: ""                 # [REQUIRED] Which system is the key authority
+      key_field_name: ""               # [REQUIRED] The actual field name in the source system
+      key_stability: ""                # [REQUIRED] stable | at-risk | unknown
+      key_stability_notes: ""          # [RECOMMENDED] Required if at-risk or unknown
+      multi_source_key_conflict: false  # [REQUIRED] true if entity appears in multiple source systems with different keys
+      xref_required: false             # [REQUIRED] true if multi-source MDM xref table needed
+      status: ""                        # [REQUIRED] confirmed | needs-workshop
+
+    # --- SOURCE SYSTEM ---
+    source_systems:                     # [REQUIRED] At least one entry
+      - system_name: ""                 # [REQUIRED] Canonical system name per teck-vocabulary-master.md
+        schema_or_table: ""            # [RECOMMENDED] Source schema.table if known
+        in_raw_layer: ""               # [REQUIRED] yes | no | partial
+        raw_schema_path: ""            # [RECOMMENDED] If in_raw_layer = yes: Unity Catalog path to raw table
+        cdc_available: ""              # [RECOMMENDED] yes | no | unknown — relevant for DLT pipeline planning
+        known_quality_issues: []       # [OPTIONAL] List of known DQ issues
+
+    # --- SCD STRATEGY ---
+    scd_policy: ""                      # [REQUIRED] Type1 | Type2 | Type6 | append-only | snapshot
+    scd_rationale: ""                   # [REQUIRED] Why — what changes, what history is needed
+    history_requirement: ""            # [RECOMMENDED] How far back — rolling-N-months | full-history | regulatory-7yr
+    scd_status: ""                      # [REQUIRED] confirmed | needs-workshop
+
+    # --- DOMAIN OWNERSHIP ---
+    domain_owner:
+      name: ""                          # [REQUIRED] Full name
+      role: ""                          # [REQUIRED] Job title / role
+      contact: ""                       # [RECOMMENDED] Email
+      authority_scope: ""              # [RECOMMENDED] What this person has authority to confirm
+      status: ""                        # [REQUIRED] confirmed | needs-workshop
+
+    # --- SITE VARIANTS ---
+    # Required if sites_in_scope has more than one entry.
+    site_overrides: []                  # [CONDITIONAL] See site_override schema below
+    # site_override schema:
+    # - site: ""                        # Site code
+    #   field: ""                       # Which field differs
+    #   standard_value: ""             # What the canonical model says
+    #   site_value: ""                 # What this site actually does
+    #   rationale: ""                  # Why it differs
+    #   data_product_impact: ""        # What this means for the data model
+
+    # --- PROCESS MODEL DEVIATIONS ---
+    # Captures where Teck's actual practice deviates from the industry-standard model.
+    process_model_overrides: []         # [OPTIONAL] See override schema below
+    # override schema:
+    # - field: ""                       # Which process model field is overridden
+    #   standard_statement: ""         # What the process model says
+    #   teck_actual: ""                # What Teck actually does
+    #   impact: ""                     # Data modeling consequence
+    #   confirmed_by: ""               # Who confirmed this
+
+---
+
+## SECTION 3: EVENT CANVAS OUTPUTS
+# One entry per Transactional or Time-Series entity.
+# This section captures the HOW MANY and WHY columns that the process model cannot answer.
+
+event_canvas:
+  - entity_name: ""                     # [REQUIRED] Must match an entity in Section 2 with type Transactional or Time-Series
+    primary_business_event: ""          # [REQUIRED] The verb-noun event name in Teck language (e.g. "Truck Load Completed")
+    event_timestamp_source: ""          # [REQUIRED] Which system/field is the authoritative timestamp
+    event_timestamp_field: ""           # [RECOMMENDED] Actual field name in source system
+
+    # --- HOW MANY (Measures) ---
+    measures:                           # [REQUIRED] At least one measure per transactional entity
+      - measure_name: ""                # [REQUIRED] Business name (not column name)
+        teck_term: ""                   # [RECOMMENDED] How Teck staff refer to this measure colloquially
+        business_definition: ""        # [REQUIRED] One sentence, no ambiguity
+        unit_of_measure: ""            # [REQUIRED] tonnes | minutes | seconds | litres | percent | count | etc.
+        uom_suffix: ""                 # [REQUIRED] DEP5.4.1 suffix: _wmt | _dmt | _sec | _min | _hr | _pct | _cnt | etc.
+        additivity: ""                 # [REQUIRED] additive | semi-additive | non-additive
+        additivity_notes: ""           # [REQUIRED if non-additive] Why non-additive; recalculation approach
+        source_system: ""              # [REQUIRED] Which system is the authoritative source
+        source_field: ""               # [RECOMMENDED] Actual field name if known
+        raw_or_computed: ""            # [REQUIRED] raw | computed
+        computation_rule: ""          # [REQUIRED if computed] Plain-language formula
+        business_rule_notes: ""       # [OPTIONAL] Any transformation, correction, or exclusion rules
+        open_items: []                 # [OPTIONAL] Unresolved questions about this measure
+        status: ""                     # [REQUIRED] confirmed | provisional | needs-workshop
+
+    # --- WHY (Reason Codes and Classification Vocabulary) ---
+    reason_code_vocabulary: []          # [CONDITIONAL] Required for delay_event and any entity with classification codes
+    # reason_code schema:
+    # - code: ""                        # The actual code value in the source system
+    #   teck_label: ""                  # What Teck calls it
+    #   standard_mapping: ""           # Mapping to industry standard (e.g. GMG TUM category)
+    #   standard_reference: ""         # e.g. "GMG TUM — Operating Delay (OD)"
+    #   sites_applicable: []           # Which sites use this code
+    #   notes: ""
+
+    # --- TUM MAPPING (for equipment time entities) ---
+    # Required for any entity that carries GMG TUM time classifications.
+    tum_classification_rules: []        # [CONDITIONAL] Required if entity is delay_event or haul_cycle
+    # tum_rule schema:
+    # - observable_condition: ""        # What the mine controller sees
+    # - correct_tum_category: ""        # The TUM category to assign (CT/ST/AT/OT/WT/PT/NP/OD/SBO/DT/UT/SBE)
+    # - decision_authority: ""          # Who has authority to classify (mine controller | FMS auto | shift supervisor)
+    # - common_misclassification: ""    # The wrong answer people typically give and why it's wrong
+    # - escalation_path: ""             # What to do when it's ambiguous
+
+    # --- GRAIN CONFIRMATION ---
+    grain_statement: ""                 # [REQUIRED] "Each row represents one [X] per [Y]"
+    grain_confirmed_by: ""             # [REQUIRED] Name and role of person who confirmed the grain
+    grain_status: ""                   # [REQUIRED] confirmed | needs-workshop
+
+---
+
+## SECTION 4: DIMENSION CANDIDATES
+# Entities identified as likely dimension sources for downstream Contextualized products.
+# Does not design the dimension — that is Stage 2's job.
+# Identifies which Master and Reference entities are conformed candidates.
+
+dimension_candidates:
+  - entity_name: ""                     # [REQUIRED] Must match a Master or Reference entity in Section 2
+    conformed_candidate: ""            # [REQUIRED] yes | no | candidate
+    conformed_rationale: ""            # [REQUIRED if yes or candidate] Why this should be a conformed dimension
+    cross_product_usage: []            # [RECOMMENDED] Other products likely to use this dimension
+    governance_notes: ""               # [OPTIONAL] Any governance considerations (e.g., HR data sensitivity)
+
+---
+
+## SECTION 5: OPEN ITEMS
+# Items not resolved during the workshop. Must be resolved before validate-overlay
+# can return PASS status on REQUIRED fields.
+
+open_items:
+  - id: ""                              # Sequential: OI-001, OI-002, etc.
+    entity_name: ""                     # Which entity this applies to
+    field_path: ""                      # Dot-notation path to the field in question
+    description: ""                     # What is unresolved
+    gate_impact: ""                     # block-stage2 | warn-stage2 | no-impact
+    owner: ""                           # Name and role of person who can resolve this
+    target_date: ""                     # YYYY-MM-DD
+    status: ""                          # open | in-progress | resolved
+
+---
+
+## SECTION 6: VOCABULARY ADDITIONS
+# New Teck-specific terms surfaced during this workshop that should be added
+# to standards/teck-vocabulary-master.md.
+
+vocabulary_additions:
+  - teck_term: ""                       # The term as Teck staff use it
+    canonical_mapping: ""              # What it maps to in the process model or industry standard
+    definition: ""                     # Plain-language definition
+    context: ""                        # When this term is used vs. related terms
+    sites_applicable: []               # Which sites use this term
+    proposed_by: ""                    # Who surfaced it (workshop participant name)
+    status: ""                          # proposed | confirmed | rejected
