@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="P2_L3_DET_def"
+                  targetNamespace="http://teck.com/bpmn">
+
+  <bpmn:collaboration id="P2_L3_DET_collab">
+    <bpmn:participant id="P2_L3_DET_PL" name="Detonation &amp; Assessment" processRef="P2_L3_DET_proc"/>
+  </bpmn:collaboration>
+
+  <bpmn:process id="P2_L3_DET_proc" isExecutable="false">
+
+    <bpmn:laneSet id="P2_L3_DET_laneSet">
+      <bpmn:lane id="P2_L3_DET_LN_SUP" name="Drill &amp; Blast Supervisor / Mine Controller">
+        <bpmn:flowNodeRef>P2_L3_DET_SE</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_DET_T01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_DET_T05</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_DET_T06</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_DET_EE01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_DET_EE02</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L3_DET_LN_SHT" name="Shot-firer">
+        <bpmn:flowNodeRef>P2_L3_DET_T03</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_DET_ICE01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_DET_T04</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_DET_XGW01</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L3_DET_LN_ENG" name="Drill &amp; Blast Engineer">
+        <bpmn:flowNodeRef>P2_L3_DET_T07</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_DET_XGW02</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_DET_T08</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L3_DET_LN_SYS" name="FMS">
+        <bpmn:flowNodeRef>P2_L3_DET_T02</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="P2_L3_DET_SE" name="Initiation network complete; supervisor approval">
+      <bpmn:outgoing>P2_L3_DET_F01</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:task id="P2_L3_DET_T01" name="Establish &amp; Clear Exclusion Zone (2.1.4.1)">
+      <bpmn:incoming>P2_L3_DET_F01</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DET_F02</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:serviceTask id="P2_L3_DET_T02" name="Record TUM Delay Event for Equipment in Zone">
+      <bpmn:incoming>P2_L3_DET_F02</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DET_F03</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:task id="P2_L3_DET_T03" name="Initiate Blast (2.1.4.2)">
+      <bpmn:incoming>P2_L3_DET_F03</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DET_F04</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:intermediateCatchEvent id="P2_L3_DET_ICE01" name="Re-entry waiting period (smoke clearance)">
+      <bpmn:incoming>P2_L3_DET_F04</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DET_F05</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="P2_L3_DET_ICE01_timer"/>
+    </bpmn:intermediateCatchEvent>
+
+    <bpmn:task id="P2_L3_DET_T04" name="Conduct Post-Blast Safety Inspection (2.1.4.3)">
+      <bpmn:incoming>P2_L3_DET_F05</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DET_F06</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="P2_L3_DET_XGW01" name="Misfire detected?" default="P2_L3_DET_F08">
+      <bpmn:incoming>P2_L3_DET_F06</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DET_F07</bpmn:outgoing>
+      <bpmn:outgoing>P2_L3_DET_F08</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:task id="P2_L3_DET_T05" name="Activate Misfire Protocol (safety — out of scope detail)">
+      <bpmn:incoming>P2_L3_DET_F07</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DET_F09</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="P2_L3_DET_T06" name="Issue Safety Clearance for Equipment Re-entry">
+      <bpmn:incoming>P2_L3_DET_F08</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DET_F10</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="P2_L3_DET_T07" name="Assess Fragmentation Quality — P80 vs. target (2.1.4.4)">
+      <bpmn:incoming>P2_L3_DET_F10</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DET_F11</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="P2_L3_DET_XGW02" name="P80 within specification?" default="P2_L3_DET_F12">
+      <bpmn:incoming>P2_L3_DET_F11</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DET_F12</bpmn:outgoing>
+      <bpmn:outgoing>P2_L3_DET_F13</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:task id="P2_L3_DET_T08" name="Issue Re-blast Assessment for Oversize">
+      <bpmn:incoming>P2_L3_DET_F13</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DET_F14</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:endEvent id="P2_L3_DET_EE01" name="Blast assessed; safety clearance issued; muck pile ready">
+      <bpmn:incoming>P2_L3_DET_F12</bpmn:incoming>
+      <bpmn:incoming>P2_L3_DET_F14</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="P2_L3_DET_EE02" name="Misfire protocol active — escalated">
+      <bpmn:incoming>P2_L3_DET_F09</bpmn:incoming>
+      <bpmn:errorEventDefinition id="P2_L3_DET_EE02_err"/>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="P2_L3_DET_F01" sourceRef="P2_L3_DET_SE" targetRef="P2_L3_DET_T01"/>
+    <bpmn:sequenceFlow id="P2_L3_DET_F02" sourceRef="P2_L3_DET_T01" targetRef="P2_L3_DET_T02"/>
+    <bpmn:sequenceFlow id="P2_L3_DET_F03" sourceRef="P2_L3_DET_T02" targetRef="P2_L3_DET_T03"/>
+    <bpmn:sequenceFlow id="P2_L3_DET_F04" sourceRef="P2_L3_DET_T03" targetRef="P2_L3_DET_ICE01"/>
+    <bpmn:sequenceFlow id="P2_L3_DET_F05" name="Timer elapsed" sourceRef="P2_L3_DET_ICE01" targetRef="P2_L3_DET_T04"/>
+    <bpmn:sequenceFlow id="P2_L3_DET_F06" sourceRef="P2_L3_DET_T04" targetRef="P2_L3_DET_XGW01"/>
+    <bpmn:sequenceFlow id="P2_L3_DET_F07" name="Yes — misfire" sourceRef="P2_L3_DET_XGW01" targetRef="P2_L3_DET_T05"/>
+    <bpmn:sequenceFlow id="P2_L3_DET_F08" name="No — clear" sourceRef="P2_L3_DET_XGW01" targetRef="P2_L3_DET_T06"/>
+    <bpmn:sequenceFlow id="P2_L3_DET_F09" sourceRef="P2_L3_DET_T05" targetRef="P2_L3_DET_EE02"/>
+    <bpmn:sequenceFlow id="P2_L3_DET_F10" sourceRef="P2_L3_DET_T06" targetRef="P2_L3_DET_T07"/>
+    <bpmn:sequenceFlow id="P2_L3_DET_F11" sourceRef="P2_L3_DET_T07" targetRef="P2_L3_DET_XGW02"/>
+    <bpmn:sequenceFlow id="P2_L3_DET_F12" name="Yes — within spec" sourceRef="P2_L3_DET_XGW02" targetRef="P2_L3_DET_EE01"/>
+    <bpmn:sequenceFlow id="P2_L3_DET_F13" name="No — oversize" sourceRef="P2_L3_DET_XGW02" targetRef="P2_L3_DET_T08"/>
+    <bpmn:sequenceFlow id="P2_L3_DET_F14" name="Re-blast planned separately" sourceRef="P2_L3_DET_T08" targetRef="P2_L3_DET_EE01"/>
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="P2_L3_DET_diagram">
+    <bpmndi:BPMNPlane id="P2_L3_DET_plane" bpmnElement="P2_L3_DET_collab">
+      <bpmndi:BPMNShape id="P2_L3_DET_PL_di" bpmnElement="P2_L3_DET_PL" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="2170" height="850"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DET_LN_SUP_di" bpmnElement="P2_L3_DET_LN_SUP" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="2140" height="310"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DET_LN_SHT_di" bpmnElement="P2_L3_DET_LN_SHT" isHorizontal="true">
+        <dc:Bounds x="190" y="390" width="2140" height="180"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DET_LN_ENG_di" bpmnElement="P2_L3_DET_LN_ENG" isHorizontal="true">
+        <dc:Bounds x="190" y="570" width="2140" height="180"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DET_LN_SYS_di" bpmnElement="P2_L3_DET_LN_SYS" isHorizontal="true">
+        <dc:Bounds x="190" y="750" width="2140" height="180"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="P2_L3_DET_SE_di" bpmnElement="P2_L3_DET_SE">
+        <dc:Bounds x="277" y="152" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DET_T01_di" bpmnElement="P2_L3_DET_T01">
+        <dc:Bounds x="390" y="130" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DET_T02_di" bpmnElement="P2_L3_DET_T02">
+        <dc:Bounds x="600" y="800" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DET_T03_di" bpmnElement="P2_L3_DET_T03">
+        <dc:Bounds x="810" y="440" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DET_ICE01_di" bpmnElement="P2_L3_DET_ICE01">
+        <dc:Bounds x="1027" y="462" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DET_T04_di" bpmnElement="P2_L3_DET_T04">
+        <dc:Bounds x="1140" y="440" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DET_XGW01_di" bpmnElement="P2_L3_DET_XGW01">
+        <dc:Bounds x="1350" y="455" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DET_T05_di" bpmnElement="P2_L3_DET_T05">
+        <dc:Bounds x="1470" y="130" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DET_T06_di" bpmnElement="P2_L3_DET_T06">
+        <dc:Bounds x="1470" y="260" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DET_T07_di" bpmnElement="P2_L3_DET_T07">
+        <dc:Bounds x="1680" y="620" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DET_XGW02_di" bpmnElement="P2_L3_DET_XGW02">
+        <dc:Bounds x="1890" y="635" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DET_T08_di" bpmnElement="P2_L3_DET_T08">
+        <dc:Bounds x="2010" y="620" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DET_EE01_di" bpmnElement="P2_L3_DET_EE01">
+        <dc:Bounds x="2227" y="152" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DET_EE02_di" bpmnElement="P2_L3_DET_EE02">
+        <dc:Bounds x="1732" y="152" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="P2_L3_DET_F01_di" bpmnElement="P2_L3_DET_F01">
+        <di:waypoint x="313" y="170"/>
+        <di:waypoint x="390" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DET_F02_di" bpmnElement="P2_L3_DET_F02">
+        <di:waypoint x="530" y="170"/>
+        <di:waypoint x="565" y="170"/>
+        <di:waypoint x="565" y="840"/>
+        <di:waypoint x="600" y="840"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DET_F03_di" bpmnElement="P2_L3_DET_F03">
+        <di:waypoint x="740" y="840"/>
+        <di:waypoint x="775" y="840"/>
+        <di:waypoint x="775" y="480"/>
+        <di:waypoint x="810" y="480"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DET_F04_di" bpmnElement="P2_L3_DET_F04">
+        <di:waypoint x="950" y="480"/>
+        <di:waypoint x="1027" y="480"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DET_F05_di" bpmnElement="P2_L3_DET_F05">
+        <di:waypoint x="1063" y="480"/>
+        <di:waypoint x="1140" y="480"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DET_F06_di" bpmnElement="P2_L3_DET_F06">
+        <di:waypoint x="1280" y="480"/>
+        <di:waypoint x="1350" y="480"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DET_F07_di" bpmnElement="P2_L3_DET_F07">
+        <di:waypoint x="1400" y="480"/>
+        <di:waypoint x="1435" y="480"/>
+        <di:waypoint x="1435" y="170"/>
+        <di:waypoint x="1470" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DET_F08_di" bpmnElement="P2_L3_DET_F08">
+        <di:waypoint x="1400" y="480"/>
+        <di:waypoint x="1435" y="480"/>
+        <di:waypoint x="1435" y="300"/>
+        <di:waypoint x="1470" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DET_F09_di" bpmnElement="P2_L3_DET_F09">
+        <di:waypoint x="1610" y="170"/>
+        <di:waypoint x="1732" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DET_F10_di" bpmnElement="P2_L3_DET_F10">
+        <di:waypoint x="1610" y="300"/>
+        <di:waypoint x="1645" y="300"/>
+        <di:waypoint x="1645" y="660"/>
+        <di:waypoint x="1680" y="660"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DET_F11_di" bpmnElement="P2_L3_DET_F11">
+        <di:waypoint x="1820" y="660"/>
+        <di:waypoint x="1890" y="660"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DET_F12_di" bpmnElement="P2_L3_DET_F12">
+        <di:waypoint x="1940" y="660"/>
+        <di:waypoint x="2084" y="660"/>
+        <di:waypoint x="2084" y="170"/>
+        <di:waypoint x="2227" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DET_F13_di" bpmnElement="P2_L3_DET_F13">
+        <di:waypoint x="1940" y="660"/>
+        <di:waypoint x="2010" y="660"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DET_F14_di" bpmnElement="P2_L3_DET_F14">
+        <di:waypoint x="2150" y="660"/>
+        <di:waypoint x="2188" y="660"/>
+        <di:waypoint x="2188" y="170"/>
+        <di:waypoint x="2227" y="170"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

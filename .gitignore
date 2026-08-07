@@ -15,6 +15,10 @@ Thumbs.db
 *.bak
 scratch/
 
+# Python bytecode (BPMN-generator/tools/)
+__pycache__/
+*.pyc
+
 # Never ignore workshop outputs — they are the primary deliverables
 # workshops/ is tracked in full
 

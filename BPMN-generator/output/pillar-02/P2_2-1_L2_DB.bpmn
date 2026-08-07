@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="P2_L2_DB_def"
+                  targetNamespace="http://teck.com/bpmn">
+
+  <bpmn:collaboration id="P2_L2_DB_collab">
+    <bpmn:participant id="P2_L2_DB_PL" name="Drill &amp; Blast" processRef="P2_L2_DB_proc"/>
+  </bpmn:collaboration>
+
+  <bpmn:process id="P2_L2_DB_proc" isExecutable="false">
+
+    <bpmn:laneSet id="P2_L2_DB_laneSet">
+      <bpmn:lane id="P2_L2_DB_LN_PLN" name="Mine Planning (external trigger)">
+        <bpmn:flowNodeRef>P2_L2_DB_SE</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L2_DB_LN_ENG" name="Drill &amp; Blast Engineer">
+        <bpmn:flowNodeRef>P2_L2_DB_SP01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L2_DB_XGW01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L2_DB_XGW02</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L2_DB_LN_OPR" name="Drill Rig Operator">
+        <bpmn:flowNodeRef>P2_L2_DB_SP02</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L2_DB_LN_SHT" name="Shot-firer">
+        <bpmn:flowNodeRef>P2_L2_DB_SP03</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L2_DB_SP04</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L2_DB_LN_GCG" name="Grade Control Geologist">
+        <bpmn:flowNodeRef>P2_L2_DB_SP05</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L2_DB_LN_SYS" name="FMS / LIMS / Systems">
+        <bpmn:flowNodeRef>P2_L2_DB_EE01</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="P2_L2_DB_SE" name="Short-term plan released; dig polygon available">
+      <bpmn:outgoing>P2_L2_DB_F01</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="P2_L2_DB_SE_msg"/>
+    </bpmn:startEvent>
+
+    <bpmn:subProcess id="P2_L2_DB_SP01" name="Blast Design &amp; Pattern Layout (2.1.1)" triggeredByEvent="false">
+      <bpmn:incoming>P2_L2_DB_F01</bpmn:incoming>
+      <bpmn:outgoing>P2_L2_DB_F02</bpmn:outgoing>
+    </bpmn:subProcess>
+
+    <!-- Loop marker per spec: drilling repeats per hole in the pattern. Detail in P2_L3_DRL. -->
+    <bpmn:subProcess id="P2_L2_DB_SP02" name="Drilling Execution (2.1.2)" triggeredByEvent="false">
+      <bpmn:incoming>P2_L2_DB_F02</bpmn:incoming>
+      <bpmn:incoming>P2_L2_DB_F05</bpmn:incoming>
+      <bpmn:outgoing>P2_L2_DB_F03</bpmn:outgoing>
+      <bpmn:standardLoopCharacteristics/>
+    </bpmn:subProcess>
+
+    <bpmn:exclusiveGateway id="P2_L2_DB_XGW01" name="All holes QC accepted?" default="P2_L2_DB_F04">
+      <bpmn:incoming>P2_L2_DB_F03</bpmn:incoming>
+      <bpmn:outgoing>P2_L2_DB_F04</bpmn:outgoing>
+      <bpmn:outgoing>P2_L2_DB_F05</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:subProcess id="P2_L2_DB_SP03" name="Charging &amp; Stemming (2.1.3)" triggeredByEvent="false">
+      <bpmn:incoming>P2_L2_DB_F04</bpmn:incoming>
+      <bpmn:outgoing>P2_L2_DB_F06</bpmn:outgoing>
+    </bpmn:subProcess>
+
+    <bpmn:subProcess id="P2_L2_DB_SP04" name="Detonation &amp; Assessment (2.1.4)" triggeredByEvent="false">
+      <bpmn:incoming>P2_L2_DB_F06</bpmn:incoming>
+      <bpmn:incoming>P2_L2_DB_F09</bpmn:incoming>
+      <bpmn:outgoing>P2_L2_DB_F07</bpmn:outgoing>
+    </bpmn:subProcess>
+
+    <bpmn:exclusiveGateway id="P2_L2_DB_XGW02" name="P80 within specification?" default="P2_L2_DB_F08">
+      <bpmn:incoming>P2_L2_DB_F07</bpmn:incoming>
+      <bpmn:outgoing>P2_L2_DB_F08</bpmn:outgoing>
+      <bpmn:outgoing>P2_L2_DB_F09</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:subProcess id="P2_L2_DB_SP05" name="Muck Pile Preparation (2.1.5)" triggeredByEvent="false">
+      <bpmn:incoming>P2_L2_DB_F08</bpmn:incoming>
+      <bpmn:outgoing>P2_L2_DB_F10</bpmn:outgoing>
+    </bpmn:subProcess>
+
+    <bpmn:endEvent id="P2_L2_DB_EE01" name="Muck pile classified; destinations in FMS">
+      <bpmn:incoming>P2_L2_DB_F10</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="P2_L2_DB_F01" sourceRef="P2_L2_DB_SE" targetRef="P2_L2_DB_SP01"/>
+    <bpmn:sequenceFlow id="P2_L2_DB_F02" sourceRef="P2_L2_DB_SP01" targetRef="P2_L2_DB_SP02"/>
+    <bpmn:sequenceFlow id="P2_L2_DB_F03" sourceRef="P2_L2_DB_SP02" targetRef="P2_L2_DB_XGW01"/>
+    <bpmn:sequenceFlow id="P2_L2_DB_F04" name="Yes — all holes pass QC" sourceRef="P2_L2_DB_XGW01" targetRef="P2_L2_DB_SP03"/>
+    <bpmn:sequenceFlow id="P2_L2_DB_F05" name="No — remediate and re-drill; loop back" sourceRef="P2_L2_DB_XGW01" targetRef="P2_L2_DB_SP02"/>
+    <bpmn:sequenceFlow id="P2_L2_DB_F06" sourceRef="P2_L2_DB_SP03" targetRef="P2_L2_DB_SP04"/>
+    <bpmn:sequenceFlow id="P2_L2_DB_F07" sourceRef="P2_L2_DB_SP04" targetRef="P2_L2_DB_XGW02"/>
+    <bpmn:sequenceFlow id="P2_L2_DB_F08" name="Yes — P80 within spec" sourceRef="P2_L2_DB_XGW02" targetRef="P2_L2_DB_SP05"/>
+    <bpmn:sequenceFlow id="P2_L2_DB_F09" name="No — re-blast assessment; loop back" sourceRef="P2_L2_DB_XGW02" targetRef="P2_L2_DB_SP04"/>
+    <bpmn:sequenceFlow id="P2_L2_DB_F10" sourceRef="P2_L2_DB_SP05" targetRef="P2_L2_DB_EE01"/>
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="P2_L2_DB_diagram">
+    <bpmndi:BPMNPlane id="P2_L2_DB_plane" bpmnElement="P2_L2_DB_collab">
+      <bpmndi:BPMNShape id="P2_L2_DB_PL_di" bpmnElement="P2_L2_DB_PL" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1730" height="1140"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L2_DB_LN_PLN_di" bpmnElement="P2_L2_DB_LN_PLN" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1700" height="190"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L2_DB_LN_ENG_di" bpmnElement="P2_L2_DB_LN_ENG" isHorizontal="true">
+        <dc:Bounds x="190" y="270" width="1700" height="190"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L2_DB_LN_OPR_di" bpmnElement="P2_L2_DB_LN_OPR" isHorizontal="true">
+        <dc:Bounds x="190" y="460" width="1700" height="190"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L2_DB_LN_SHT_di" bpmnElement="P2_L2_DB_LN_SHT" isHorizontal="true">
+        <dc:Bounds x="190" y="650" width="1700" height="190"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L2_DB_LN_GCG_di" bpmnElement="P2_L2_DB_LN_GCG" isHorizontal="true">
+        <dc:Bounds x="190" y="840" width="1700" height="190"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L2_DB_LN_SYS_di" bpmnElement="P2_L2_DB_LN_SYS" isHorizontal="true">
+        <dc:Bounds x="190" y="1030" width="1700" height="190"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="P2_L2_DB_SE_di" bpmnElement="P2_L2_DB_SE">
+        <dc:Bounds x="277" y="157" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L2_DB_SP01_di" bpmnElement="P2_L2_DB_SP01" isExpanded="false">
+        <dc:Bounds x="390" y="315" width="160" height="100"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L2_DB_SP02_di" bpmnElement="P2_L2_DB_SP02" isExpanded="false">
+        <dc:Bounds x="620" y="505" width="160" height="100"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L2_DB_XGW01_di" bpmnElement="P2_L2_DB_XGW01">
+        <dc:Bounds x="850" y="340" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L2_DB_SP03_di" bpmnElement="P2_L2_DB_SP03" isExpanded="false">
+        <dc:Bounds x="970" y="695" width="160" height="100"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L2_DB_SP04_di" bpmnElement="P2_L2_DB_SP04" isExpanded="false">
+        <dc:Bounds x="1200" y="695" width="160" height="100"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L2_DB_XGW02_di" bpmnElement="P2_L2_DB_XGW02">
+        <dc:Bounds x="1430" y="340" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L2_DB_SP05_di" bpmnElement="P2_L2_DB_SP05" isExpanded="false">
+        <dc:Bounds x="1550" y="885" width="160" height="100"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L2_DB_EE01_di" bpmnElement="P2_L2_DB_EE01">
+        <dc:Bounds x="1787" y="1107" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="P2_L2_DB_F01_di" bpmnElement="P2_L2_DB_F01">
+        <di:waypoint x="313" y="175"/>
+        <di:waypoint x="352" y="175"/>
+        <di:waypoint x="352" y="365"/>
+        <di:waypoint x="390" y="365"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L2_DB_F02_di" bpmnElement="P2_L2_DB_F02">
+        <di:waypoint x="550" y="365"/>
+        <di:waypoint x="585" y="365"/>
+        <di:waypoint x="585" y="555"/>
+        <di:waypoint x="620" y="555"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L2_DB_F03_di" bpmnElement="P2_L2_DB_F03">
+        <di:waypoint x="780" y="555"/>
+        <di:waypoint x="815" y="555"/>
+        <di:waypoint x="815" y="365"/>
+        <di:waypoint x="850" y="365"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L2_DB_F04_di" bpmnElement="P2_L2_DB_F04">
+        <di:waypoint x="900" y="365"/>
+        <di:waypoint x="935" y="365"/>
+        <di:waypoint x="935" y="745"/>
+        <di:waypoint x="970" y="745"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L2_DB_F05_di" bpmnElement="P2_L2_DB_F05">
+        <di:waypoint x="875" y="390"/>
+        <di:waypoint x="875" y="640"/>
+        <di:waypoint x="700" y="640"/>
+        <di:waypoint x="700" y="605"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L2_DB_F06_di" bpmnElement="P2_L2_DB_F06">
+        <di:waypoint x="1130" y="745"/>
+        <di:waypoint x="1200" y="745"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L2_DB_F07_di" bpmnElement="P2_L2_DB_F07">
+        <di:waypoint x="1360" y="745"/>
+        <di:waypoint x="1395" y="745"/>
+        <di:waypoint x="1395" y="365"/>
+        <di:waypoint x="1430" y="365"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L2_DB_F08_di" bpmnElement="P2_L2_DB_F08">
+        <di:waypoint x="1480" y="365"/>
+        <di:waypoint x="1515" y="365"/>
+        <di:waypoint x="1515" y="935"/>
+        <di:waypoint x="1550" y="935"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L2_DB_F09_di" bpmnElement="P2_L2_DB_F09">
+        <di:waypoint x="1455" y="390"/>
+        <di:waypoint x="1455" y="852"/>
+        <di:waypoint x="1280" y="852"/>
+        <di:waypoint x="1280" y="795"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L2_DB_F10_di" bpmnElement="P2_L2_DB_F10">
+        <di:waypoint x="1710" y="935"/>
+        <di:waypoint x="1748" y="935"/>
+        <di:waypoint x="1748" y="1125"/>
+        <di:waypoint x="1787" y="1125"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

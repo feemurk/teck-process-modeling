@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="P2_L3_STK_def"
+                  targetNamespace="http://teck.com/bpmn">
+
+  <bpmn:collaboration id="P2_L3_STK_collab">
+    <bpmn:participant id="P2_L3_STK_PL" name="Stockpile Management" processRef="P2_L3_STK_proc"/>
+  </bpmn:collaboration>
+
+  <bpmn:process id="P2_L3_STK_proc" isExecutable="false">
+
+    <bpmn:laneSet id="P2_L3_STK_laneSet">
+      <bpmn:lane id="P2_L3_STK_LN_MCT" name="Mine Controller">
+        <bpmn:flowNodeRef>P2_L3_STK_SE</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_STK_T01</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L3_STK_LN_GEO" name="Mine Geologist">
+        <bpmn:flowNodeRef>P2_L3_STK_T02</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L3_STK_LN_OPR" name="Stockpile Controller / FEL Operator">
+        <bpmn:flowNodeRef>P2_L3_STK_ICE01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_STK_T03</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_STK_EE01</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="P2_L3_STK_SE" name="Trucks dumping to stockpile zone">
+      <bpmn:outgoing>P2_L3_STK_F01</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:task id="P2_L3_STK_T01" name="Build ROM Stockpile — track zone increments (2.2.4.1)">
+      <bpmn:incoming>P2_L3_STK_F01</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_STK_F02</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="P2_L3_STK_T02" name="Track Stockpile Grade per Zone (2.2.4.2)">
+      <bpmn:incoming>P2_L3_STK_F02</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_STK_F03</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:intermediateCatchEvent id="P2_L3_STK_ICE01" name="Blend plan / reclaim instruction received">
+      <bpmn:incoming>P2_L3_STK_F03</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_STK_F04</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="P2_L3_STK_ICE01_msg"/>
+    </bpmn:intermediateCatchEvent>
+
+    <bpmn:task id="P2_L3_STK_T03" name="Reclaim Material and Blend to Mill Feed (2.2.4.3)">
+      <bpmn:incoming>P2_L3_STK_F04</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_STK_F05</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:endEvent id="P2_L3_STK_EE01" name="ROM material delivered to primary crusher">
+      <bpmn:incoming>P2_L3_STK_F05</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="P2_L3_STK_F01" sourceRef="P2_L3_STK_SE" targetRef="P2_L3_STK_T01"/>
+    <bpmn:sequenceFlow id="P2_L3_STK_F02" sourceRef="P2_L3_STK_T01" targetRef="P2_L3_STK_T02"/>
+    <bpmn:sequenceFlow id="P2_L3_STK_F03" name="Awaiting reclaim instruction" sourceRef="P2_L3_STK_T02" targetRef="P2_L3_STK_ICE01"/>
+    <bpmn:sequenceFlow id="P2_L3_STK_F04" name="Reclaim instruction received" sourceRef="P2_L3_STK_ICE01" targetRef="P2_L3_STK_T03"/>
+    <bpmn:sequenceFlow id="P2_L3_STK_F05" sourceRef="P2_L3_STK_T03" targetRef="P2_L3_STK_EE01"/>
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="P2_L3_STK_diagram">
+    <bpmndi:BPMNPlane id="P2_L3_STK_plane" bpmnElement="P2_L3_STK_collab">
+      <bpmndi:BPMNShape id="P2_L3_STK_PL_di" bpmnElement="P2_L3_STK_PL" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1090" height="540"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_STK_LN_MCT_di" bpmnElement="P2_L3_STK_LN_MCT" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1060" height="180"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_STK_LN_GEO_di" bpmnElement="P2_L3_STK_LN_GEO" isHorizontal="true">
+        <dc:Bounds x="190" y="260" width="1060" height="180"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_STK_LN_OPR_di" bpmnElement="P2_L3_STK_LN_OPR" isHorizontal="true">
+        <dc:Bounds x="190" y="440" width="1060" height="180"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="P2_L3_STK_SE_di" bpmnElement="P2_L3_STK_SE">
+        <dc:Bounds x="277" y="152" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_STK_T01_di" bpmnElement="P2_L3_STK_T01">
+        <dc:Bounds x="390" y="130" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_STK_T02_di" bpmnElement="P2_L3_STK_T02">
+        <dc:Bounds x="600" y="310" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_STK_ICE01_di" bpmnElement="P2_L3_STK_ICE01">
+        <dc:Bounds x="817" y="512" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_STK_T03_di" bpmnElement="P2_L3_STK_T03">
+        <dc:Bounds x="930" y="490" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_STK_EE01_di" bpmnElement="P2_L3_STK_EE01">
+        <dc:Bounds x="1147" y="512" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="P2_L3_STK_F01_di" bpmnElement="P2_L3_STK_F01">
+        <di:waypoint x="313" y="170"/>
+        <di:waypoint x="390" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_STK_F02_di" bpmnElement="P2_L3_STK_F02">
+        <di:waypoint x="530" y="170"/>
+        <di:waypoint x="565" y="170"/>
+        <di:waypoint x="565" y="350"/>
+        <di:waypoint x="600" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_STK_F03_di" bpmnElement="P2_L3_STK_F03">
+        <di:waypoint x="740" y="350"/>
+        <di:waypoint x="778" y="350"/>
+        <di:waypoint x="778" y="530"/>
+        <di:waypoint x="817" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_STK_F04_di" bpmnElement="P2_L3_STK_F04">
+        <di:waypoint x="853" y="530"/>
+        <di:waypoint x="930" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_STK_F05_di" bpmnElement="P2_L3_STK_F05">
+        <di:waypoint x="1070" y="530"/>
+        <di:waypoint x="1147" y="530"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

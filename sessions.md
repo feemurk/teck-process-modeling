@@ -4,25 +4,88 @@ Chronological record of significant work sessions in this repository.
 
 ---
 
-## Session 3 — 2026-08-06 · Pillar 2 BPMN Generation
+## Session 3 — 2026-08-06 · Pillar 2 BPMN Generation, Naming Standard, Lucidchart Rendering Fix
 
 **Author:** Fahim Kanji (`feemurk@gmail.com`)
 **Branch:** main
-**Status:** In progress
+**Status:** Complete
 
 ### Summary
 
-Executing the generation workflow documented in Session 2's Design Decisions (line 56):
-upload `02-mining-operations-extraction.md` + `02-mining-operations-bpmn-spec.md` into a
-fresh Claude chat and run the prompt from `00-bpmn-prompt-template.md` to produce
-Lucidchart-importable BPMN 2.0 XML for Pillar 2 (11 diagrams: 3 L2, 8 L3) — the first
-pillar generated, per Session 2's recommended next steps (smallest pillar, MFD anchor).
+Executed the generation workflow documented in Session 2's Design Decisions: produced
+Lucidchart-importable BPMN 2.0 XML for all of Pillar 2 — 15 diagrams (3 L2, 12 L3), not the
+11 originally documented; the spec file's own Diagram Inventory lists 12 L3 sub-diagrams,
+not 8 (see Corrections below). Output lives in `BPMN-generator/output/pillar-02/`.
+
+Along the way, discovered and fixed a real defect: Session 2's assumption that "Lucidchart
+auto-layout handles coordinates; placeholder x=0, y=0 values are sufficient" is false.
+Lucidchart honours BPMN DI coordinates literally — it does not rearrange anything on
+import. Every diagram generated under that assumption would have imported as a stack of
+overlapping shapes at the origin, outside their lanes. Confirmed by the user's screenshots
+of `P2_L2_2-1_DB` and `P2_L3_2-1-1_BDL` imports.
+
+Also applied a naming standard (twice — see Corrections) so generated filenames carry the
+process decomposition number from the pillar model, and built a two-part verification gate
+so this class of defect can't reach Lucidchart silently again.
+
+### Files Added
+
+| File | Description |
+|------|-------------|
+| `BPMN-generator/tools/bpmn_layout.py` | Computes real BPMN DI geometry from the sequence-flow graph (longest-path column ranking, lane-based rows, label-driven adaptive shape sizing); rewrites only the `<bpmndi:BPMNDiagram>` block, leaving model XML and comments byte-identical |
+| `BPMN-generator/tools/bpmn_verify.py` | 15-check integrity gate (8 model checks, 7 render checks) — exit 0 only when every generated file is safe to import |
+| `BPMN-generator/output/pillar-02/*.bpmn` | 15 generated, geometry-computed, verified Pillar 2 diagrams |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `BPMN-generator/00-bpmn-prompt-template.md` | Removed the false "Lucidchart auto-layout" instruction; added real DI geometry rules, the File Naming Standard (twice-revised, see Corrections), a mandatory Verification Gate section, and corrected the Pillar 2 row of the Diagram Count by Pillar table (3/8/11 → 3/12/15; Total 24/62/86 → 24/66/90) |
+| `BPMN-generator/0{1,2,3,4,5,6}-bpmn-spec.md` | Added the same DI-geometry warning and verification-gate pointer to all six pillar spec files (only Pillar 2's had any Lucidchart note before; the other five would have inherited the bug by reference) |
+
+### Corrections Made This Session
+
+1. **Auto-layout assumption (Session 2, Design Decisions, "Lucidchart auto-layout handles
+   coordinates; placeholder `x=0, y=0` values are sufficient")** — false. See Summary above.
+2. **File naming — first pass.** Added `P{pillar}_L{level}_{sequence}_{abbrev}.bpmn` so
+   filenames trace to the process model section number. Applied and renamed all 15 files.
+3. **File naming — second pass.** Reordered to `P{pillar}_{sequence}_L{level}_{abbrev}.bpmn`
+   per explicit request. Renamed all 15 files again; internal Diagram IDs (`P2_L3_HUL_def`,
+   etc.) never changed — only the filename. I initially documented this as guaranteeing an
+   L2 file "always sorts immediately before its own L3 children" — checked against bash
+   `ls`, Python's `sorted()`, and git, and that direction is wrong for ordinal/byte
+   comparison (children sort first there; only PowerShell's culture-aware `Sort-Object`
+   sorts parent-first). Corrected to the accurate, tool-independent claim: sequence-prefix
+   grouping keeps a parent and its children clustered together always; which side of the
+   cluster the parent lands on depends on the tool's sort algorithm.
+4. **Text overflow.** Task/sub-process boxes were a fixed 140×80 regardless of label
+   length. `bpmn_layout.py` now derives box size from a word-wrap estimate of the actual
+   label, widening (cap 220px) and growing height (cap 160px) only when the label would
+   otherwise be clipped; lane vertical pitch is now dynamic so a grown box can't overlap
+   its neighbour. Verified against the dataset's longest real label (64 chars, fits
+   baseline) and a synthetic longer one (correctly triggers the widen path).
+5. **Diagram Count by Pillar table.** Pillar 2 was documented as 11 diagrams (3 L2, 8 L3);
+   the spec file's own Diagram Inventory lists 12 L3 sub-diagrams, giving 15. Corrected the
+   Pillar 2 row and the Total row. The other five pillars' rows were spot-checked against
+   their own spec files in this session and at least three (1, 3, 5, 6) also appear to be
+   off by one or more — **not corrected**, since no diagrams for those pillars have been
+   generated yet. Re-verify each pillar's row against its own spec file's Diagram Inventory
+   table before that pillar's generation session.
+
+### Verification
+
+- `bpmn_verify.py` reports PASS on all 15 files (8 model checks + 7 render checks each) —
+  re-run after every geometry or content change in this directory.
+- User visually confirmed `P2_2-1_L2_DB.bpmn` and `P2_2-1-1_L3_BDL.bpmn` render correctly on
+  Lucidchart import (lanes populated, shapes distinct, no stacking) after the geometry fix.
 
 ### Next Steps
 
-- [ ] Generate BPMN XML for Pillar 2 in a fresh chat
-- [ ] Import to Lucidchart and validate diagram structure
+- [x] Generate BPMN XML for Pillar 2
+- [x] Import to Lucidchart and validate diagram structure
 - [ ] Apply Teck brand colour scheme post-import
+- [ ] Generate Pillar 1 (or next priority pillar) — re-verify its Diagram Count row against
+      its own spec file first (see Corrections #5)
 
 ---
 
@@ -77,7 +140,10 @@ a visual/diagrammatic layer without modifying the authoritative pillar model con
   prompt in a fresh Claude chat has all required context in a single upload pair.
 - Generation workflow: upload `{NN}-{pillar-name}.md` + `{NN}-{pillar-name}-bpmn-spec.md`
   into a fresh Claude chat, then execute the prompt from `00-bpmn-prompt-template.md`.
-- Lucidchart auto-layout handles coordinates; placeholder `x=0, y=0` values are sufficient.
+- ~~Lucidchart auto-layout handles coordinates; placeholder `x=0, y=0` values are
+  sufficient.~~ **Corrected in Session 3: this is false.** Lucidchart honours DI
+  coordinates literally and does not rearrange anything on import; placeholder coordinates
+  import as every shape stacked at the origin. See Session 3's Corrections #1.
 
 ### Recommended Next Steps
 

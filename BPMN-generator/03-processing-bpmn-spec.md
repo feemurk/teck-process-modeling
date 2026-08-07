@@ -4,6 +4,28 @@
 Use alongside `03-processing-and-beneficiation.md` to generate Lucidchart BPMN 2.0 XML.
 Same ID convention — prefix P3. AMIRA P754 measurement points are annotated on relevant tasks.
 
+## Lucidchart BPMN 2.0 XML Notes
+- Use `isExecutable="false"` on all processes (documentation model, not executable)
+- Lane `flowNodeRef` elements must list every task/gateway/event ID that sits in that lane
+- All `sequenceFlow` elements must reference valid `sourceRef` and `targetRef` IDs
+
+### DI geometry — Lucidchart does NOT auto-layout
+**Lucidchart honours the `<bpmndi:BPMNDiagram>` coordinates literally.** It does not
+re-arrange anything on import. Placeholder coordinates (`x="0" y="0"` on every shape)
+produce an import in which every shape is stacked on a single point in the corner and the
+lanes render empty. Real computed coordinates are mandatory.
+
+Do not hand-compute the geometry. Emit the model XML first, then run the repo tooling:
+
+```
+python tools/bpmn_layout.py output/pillar-03     # computes DI geometry in place
+python tools/bpmn_verify.py output/pillar-03     # must PASS before any import
+```
+
+`bpmn_layout.py` derives the layout from the sequence-flow graph and rewrites only the
+DI block — all model XML and inline comments stay byte-identical, so it is safe to re-run.
+See the Verification Gate section of `00-bpmn-prompt-template.md` for the full protocol.
+
 ## Diagram Inventory
 | Diagram ID | Level | Title | L3 Sub-diagrams |
 |------------|-------|-------|-----------------|
