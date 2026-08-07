@@ -4,11 +4,33 @@ Chronological record of significant work sessions in this repository.
 
 ---
 
+## Session 3 — 2026-08-06 · Pillar 2 BPMN Generation
+
+**Author:** Fahim Kanji (`feemurk@gmail.com`)
+**Branch:** main
+**Status:** In progress
+
+### Summary
+
+Executing the generation workflow documented in Session 2's Design Decisions (line 56):
+upload `02-mining-operations-extraction.md` + `02-mining-operations-bpmn-spec.md` into a
+fresh Claude chat and run the prompt from `00-bpmn-prompt-template.md` to produce
+Lucidchart-importable BPMN 2.0 XML for Pillar 2 (11 diagrams: 3 L2, 8 L3) — the first
+pillar generated, per Session 2's recommended next steps (smallest pillar, MFD anchor).
+
+### Next Steps
+
+- [ ] Generate BPMN XML for Pillar 2 in a fresh chat
+- [ ] Import to Lucidchart and validate diagram structure
+- [ ] Apply Teck brand colour scheme post-import
+
+---
+
 ## Session 2 — 2026-05-12 · BPMN Generator Addition
 
 **Author:** Fahim Kanji (`feemurk@gmail.com`)
 **Branch:** main
-**Status:** In progress (uncommitted)
+**Status:** Complete (uncommitted)
 
 ### Summary
 
@@ -59,10 +81,16 @@ a visual/diagrammatic layer without modifying the authoritative pillar model con
 
 ### Recommended Next Steps
 
-- [ ] Generate BPMN XML for Pillar 2 first (smallest, highest priority — MFD anchor)
+- [x] Generate BPMN XML for Pillar 2 first (smallest, highest priority — MFD anchor) — carried into Session 3
 - [ ] Import to Lucidchart and validate diagram structure
 - [ ] Apply Teck brand colour scheme post-import
 - [ ] Generate remaining pillars in session pairs (L2 first, then L3 groups)
+
+### Closeout Note (2026-08-06)
+
+Stray shell-check text (`Get-Command pandoc...` / `where.exe pandoc`) had been accidentally
+pasted into the top of `02-mining-operations-bpmn-spec.md`; removed before closing this
+session. No other content changes.
 
 ---
 
