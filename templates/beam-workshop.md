@@ -120,6 +120,35 @@ Ask: "Does this accurately capture what we discussed? Shall I proceed to Section
 > What requires human input: SCD policy decision, natural key source verification,
 > source system confirmation (in Raw or not), and domain owner name.
 
+### B.0 — Entity type reference
+
+Used throughout this section and in `process-model-ref.md` / `beam-overlay.yaml`. The
+first four types are defined in the industry-standard pillar models; the last two are
+Teck-specific extensions a workshop may need to introduce as Custom Entities when a site
+has no enterprise MDM engine reconciling its source systems (see
+`standards/teck-vocabulary-master.md` §3 for the Business Concept Registry entry
+documenting this gap).
+
+| Type | Definition |
+|------|------------|
+| **Master** | The single, deduplicated representation of a business entity (e.g., one row per physical haul truck) — the canonical reference for that entity across all downstream products. It is conceptually distinct from any one source system's record of that entity: a Master row represents the real-world thing, not any system's account of it. |
+| **Reference** | A bounded, low-cardinality lookup or classification list that other entities reference by code (e.g., equipment class, delay reason code, shift definition). Centrally governed, rarely changes. |
+| **Transactional** | A record of a discrete business event with its own natural key and point-in-time attributes (e.g., a haul cycle, a delay event, a shift). This is what Section A's business stories are built from. |
+| **Time-Series** | A stream of timestamped measurements or state values captured at regular or event-driven intervals from sensors or telemetry (e.g., payload readings, GPS pings). High-volume, append-only; a Capture-layer concern that only enters a Curated product in aggregated form. |
+| **Source** *(Teck-specific)* | A raw, per-source-system representation of an entity, preserving exactly what that system contains — including duplicate rows, conflicting status flags, and source-specific attributes — with no cross-system deduplication applied. Distinct from Master: a Source row is one system's account of the entity, not the entity itself. Needed when operators require source-system attributes for operational reporting that the Master entity, by design, does not carry. |
+| **Map** *(Teck-specific, a.k.a. crosswalk)* | The entity that relates Master to Source: it associates a Master entity's ID with one or more Source entity IDs across one or more source systems, including the validity window of that association. Master and Source are different entities describing the same real-world thing from different vantage points — the Map is what makes that relationship explicit rather than assumed, including which Source row is "the" active one, which can change over time. |
+
+**When Source and Map entities apply:** a site running duplicate or overlapping source
+systems (e.g., both Wenco and Minestar populating the same equipment concept, with no MDM
+engine to reconcile them and duplicate "active" rows in each system) cannot rely on
+Master and Reference entities alone — operators still need the Source entity's raw
+attributes for operational reporting, and the Map entity is what lets the product join
+Source rows to the correct Master row for the period in question. Flag this per
+`templates/entity-extraction.md` Step 4 as a Custom Entity, with `entity_type: Source` or
+`entity_type: Map` and `source: teck-specific` in `beam-overlay.yaml`.
+
+---
+
 ### B.1 — Present the pre-populated entity register
 
 For each entity in `process-model-ref.md`, present:

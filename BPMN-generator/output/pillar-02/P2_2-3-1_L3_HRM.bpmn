@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="P2_L3_HRM_def"
+                  targetNamespace="http://teck.com/bpmn">
+
+  <bpmn:collaboration id="P2_L3_HRM_collab">
+    <bpmn:participant id="P2_L3_HRM_PL" name="Haul Road Maintenance" processRef="P2_L3_HRM_proc"/>
+  </bpmn:collaboration>
+
+  <bpmn:process id="P2_L3_HRM_proc" isExecutable="false">
+
+    <bpmn:laneSet id="P2_L3_HRM_laneSet">
+      <bpmn:lane id="P2_L3_HRM_LN_SUP" name="Services Supervisor">
+        <bpmn:flowNodeRef>P2_L3_HRM_SE</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_HRM_T01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_HRM_T02</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_HRM_XGW01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_HRM_EE01</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L3_HRM_LN_OPR" name="Road Maintenance Operator">
+        <bpmn:flowNodeRef>P2_L3_HRM_T03</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_HRM_T04</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="P2_L3_HRM_SE" name="Shift start or condition call">
+      <bpmn:outgoing>P2_L3_HRM_F01</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:task id="P2_L3_HRM_T01" name="Assess Road Condition; Prioritise Segments">
+      <bpmn:incoming>P2_L3_HRM_F01</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_HRM_F02</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="P2_L3_HRM_T02" name="Assign Grader and Water Truck">
+      <bpmn:incoming>P2_L3_HRM_F02</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_HRM_F03</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="P2_L3_HRM_T03" name="Grade Road Segment (2.3.1.1) — TUM: WT (grader)">
+      <bpmn:incoming>P2_L3_HRM_F03</bpmn:incoming>
+      <bpmn:incoming>P2_L3_HRM_F06</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_HRM_F04</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="P2_L3_HRM_T04" name="Apply Dust Suppression (2.3.1.2) — TUM: WT (water truck)">
+      <bpmn:incoming>P2_L3_HRM_F04</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_HRM_F05</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="P2_L3_HRM_XGW01" name="More segments assigned?" default="P2_L3_HRM_F06">
+      <bpmn:incoming>P2_L3_HRM_F05</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_HRM_F06</bpmn:outgoing>
+      <bpmn:outgoing>P2_L3_HRM_F07</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:endEvent id="P2_L3_HRM_EE01" name="Shift complete; road maintenance records submitted">
+      <bpmn:incoming>P2_L3_HRM_F07</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="P2_L3_HRM_F01" sourceRef="P2_L3_HRM_SE" targetRef="P2_L3_HRM_T01"/>
+    <bpmn:sequenceFlow id="P2_L3_HRM_F02" sourceRef="P2_L3_HRM_T01" targetRef="P2_L3_HRM_T02"/>
+    <bpmn:sequenceFlow id="P2_L3_HRM_F03" sourceRef="P2_L3_HRM_T02" targetRef="P2_L3_HRM_T03"/>
+    <bpmn:sequenceFlow id="P2_L3_HRM_F04" sourceRef="P2_L3_HRM_T03" targetRef="P2_L3_HRM_T04"/>
+    <bpmn:sequenceFlow id="P2_L3_HRM_F05" sourceRef="P2_L3_HRM_T04" targetRef="P2_L3_HRM_XGW01"/>
+    <bpmn:sequenceFlow id="P2_L3_HRM_F06" name="Yes — next segment (loop)" sourceRef="P2_L3_HRM_XGW01" targetRef="P2_L3_HRM_T03"/>
+    <bpmn:sequenceFlow id="P2_L3_HRM_F07" name="No — all segments complete" sourceRef="P2_L3_HRM_XGW01" targetRef="P2_L3_HRM_EE01"/>
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="P2_L3_HRM_diagram">
+    <bpmndi:BPMNPlane id="P2_L3_HRM_plane" bpmnElement="P2_L3_HRM_collab">
+      <bpmndi:BPMNShape id="P2_L3_HRM_PL_di" bpmnElement="P2_L3_HRM_PL" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1300" height="360"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_HRM_LN_SUP_di" bpmnElement="P2_L3_HRM_LN_SUP" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1270" height="180"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_HRM_LN_OPR_di" bpmnElement="P2_L3_HRM_LN_OPR" isHorizontal="true">
+        <dc:Bounds x="190" y="260" width="1270" height="180"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="P2_L3_HRM_SE_di" bpmnElement="P2_L3_HRM_SE">
+        <dc:Bounds x="277" y="152" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_HRM_T01_di" bpmnElement="P2_L3_HRM_T01">
+        <dc:Bounds x="390" y="130" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_HRM_T02_di" bpmnElement="P2_L3_HRM_T02">
+        <dc:Bounds x="600" y="130" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_HRM_T03_di" bpmnElement="P2_L3_HRM_T03">
+        <dc:Bounds x="810" y="310" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_HRM_T04_di" bpmnElement="P2_L3_HRM_T04">
+        <dc:Bounds x="1020" y="310" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_HRM_XGW01_di" bpmnElement="P2_L3_HRM_XGW01">
+        <dc:Bounds x="1230" y="145" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_HRM_EE01_di" bpmnElement="P2_L3_HRM_EE01">
+        <dc:Bounds x="1357" y="152" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="P2_L3_HRM_F01_di" bpmnElement="P2_L3_HRM_F01">
+        <di:waypoint x="313" y="170"/>
+        <di:waypoint x="390" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_HRM_F02_di" bpmnElement="P2_L3_HRM_F02">
+        <di:waypoint x="530" y="170"/>
+        <di:waypoint x="600" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_HRM_F03_di" bpmnElement="P2_L3_HRM_F03">
+        <di:waypoint x="740" y="170"/>
+        <di:waypoint x="775" y="170"/>
+        <di:waypoint x="775" y="350"/>
+        <di:waypoint x="810" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_HRM_F04_di" bpmnElement="P2_L3_HRM_F04">
+        <di:waypoint x="950" y="350"/>
+        <di:waypoint x="1020" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_HRM_F05_di" bpmnElement="P2_L3_HRM_F05">
+        <di:waypoint x="1160" y="350"/>
+        <di:waypoint x="1195" y="350"/>
+        <di:waypoint x="1195" y="170"/>
+        <di:waypoint x="1230" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_HRM_F06_di" bpmnElement="P2_L3_HRM_F06">
+        <di:waypoint x="1255" y="195"/>
+        <di:waypoint x="1255" y="425"/>
+        <di:waypoint x="880" y="425"/>
+        <di:waypoint x="880" y="390"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_HRM_F07_di" bpmnElement="P2_L3_HRM_F07">
+        <di:waypoint x="1280" y="170"/>
+        <di:waypoint x="1357" y="170"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

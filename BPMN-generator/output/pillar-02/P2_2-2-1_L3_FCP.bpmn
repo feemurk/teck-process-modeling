@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="P2_L3_FCP_def"
+                  targetNamespace="http://teck.com/bpmn">
+
+  <bpmn:collaboration id="P2_L3_FCP_collab">
+    <bpmn:participant id="P2_L3_FCP_PL" name="Face Preparation" processRef="P2_L3_FCP_proc"/>
+  </bpmn:collaboration>
+
+  <bpmn:process id="P2_L3_FCP_proc" isExecutable="false">
+
+    <bpmn:laneSet id="P2_L3_FCP_laneSet">
+      <bpmn:lane id="P2_L3_FCP_LN_MCT" name="Mine Controller / FMS">
+        <bpmn:flowNodeRef>P2_L3_FCP_SE</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_FCP_PGW01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_FCP_PGW02</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L3_FCP_LN_SHV" name="Shovel Operator">
+        <bpmn:flowNodeRef>P2_L3_FCP_T01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_FCP_EE01</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L3_FCP_LN_DZR" name="Dozer Operator">
+        <bpmn:flowNodeRef>P2_L3_FCP_T02</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="P2_L3_FCP_SE" name="Face assignment issued from FMS">
+      <bpmn:outgoing>P2_L3_FCP_F01</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:task id="P2_L3_FCP_T01" name="Tram Shovel to Dig Face (2.2.1.1) — TUM: NP">
+      <bpmn:incoming>P2_L3_FCP_F01</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_FCP_F02</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:parallelGateway id="P2_L3_FCP_PGW01" name="[FORK] Shovel arrives; dozer dispatched concurrently">
+      <bpmn:incoming>P2_L3_FCP_F02</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_FCP_F03</bpmn:outgoing>
+      <bpmn:outgoing>P2_L3_FCP_F05</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:task id="P2_L3_FCP_T02" name="Clean and Dress Dig Face — dozer (2.2.1.2) — TUM: WT">
+      <bpmn:incoming>P2_L3_FCP_F03</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_FCP_F04</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:parallelGateway id="P2_L3_FCP_PGW02" name="[JOIN] Face ready; shovel in position">
+      <bpmn:incoming>P2_L3_FCP_F04</bpmn:incoming>
+      <bpmn:incoming>P2_L3_FCP_F05</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_FCP_F06</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:endEvent id="P2_L3_FCP_EE01" name="Face prepared; shovel in position; loading can commence">
+      <bpmn:incoming>P2_L3_FCP_F06</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="P2_L3_FCP_F01" sourceRef="P2_L3_FCP_SE" targetRef="P2_L3_FCP_T01"/>
+    <bpmn:sequenceFlow id="P2_L3_FCP_F02" sourceRef="P2_L3_FCP_T01" targetRef="P2_L3_FCP_PGW01"/>
+    <bpmn:sequenceFlow id="P2_L3_FCP_F03" name="Parallel — dozer" sourceRef="P2_L3_FCP_PGW01" targetRef="P2_L3_FCP_T02"/>
+    <bpmn:sequenceFlow id="P2_L3_FCP_F04" sourceRef="P2_L3_FCP_T02" targetRef="P2_L3_FCP_PGW02"/>
+    <bpmn:sequenceFlow id="P2_L3_FCP_F05" name="Shovel in position (arrives same time)" sourceRef="P2_L3_FCP_PGW01" targetRef="P2_L3_FCP_PGW02"/>
+    <bpmn:sequenceFlow id="P2_L3_FCP_F06" sourceRef="P2_L3_FCP_PGW02" targetRef="P2_L3_FCP_EE01"/>
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="P2_L3_FCP_diagram">
+    <bpmndi:BPMNPlane id="P2_L3_FCP_plane" bpmnElement="P2_L3_FCP_collab">
+      <bpmndi:BPMNShape id="P2_L3_FCP_PL_di" bpmnElement="P2_L3_FCP_PL" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1000" height="540"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_FCP_LN_MCT_di" bpmnElement="P2_L3_FCP_LN_MCT" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="970" height="180"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_FCP_LN_SHV_di" bpmnElement="P2_L3_FCP_LN_SHV" isHorizontal="true">
+        <dc:Bounds x="190" y="260" width="970" height="180"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_FCP_LN_DZR_di" bpmnElement="P2_L3_FCP_LN_DZR" isHorizontal="true">
+        <dc:Bounds x="190" y="440" width="970" height="180"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="P2_L3_FCP_SE_di" bpmnElement="P2_L3_FCP_SE">
+        <dc:Bounds x="277" y="152" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_FCP_T01_di" bpmnElement="P2_L3_FCP_T01">
+        <dc:Bounds x="390" y="310" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_FCP_PGW01_di" bpmnElement="P2_L3_FCP_PGW01">
+        <dc:Bounds x="600" y="145" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_FCP_T02_di" bpmnElement="P2_L3_FCP_T02">
+        <dc:Bounds x="720" y="490" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_FCP_PGW02_di" bpmnElement="P2_L3_FCP_PGW02">
+        <dc:Bounds x="930" y="145" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_FCP_EE01_di" bpmnElement="P2_L3_FCP_EE01">
+        <dc:Bounds x="1057" y="332" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="P2_L3_FCP_F01_di" bpmnElement="P2_L3_FCP_F01">
+        <di:waypoint x="313" y="170"/>
+        <di:waypoint x="352" y="170"/>
+        <di:waypoint x="352" y="350"/>
+        <di:waypoint x="390" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_FCP_F02_di" bpmnElement="P2_L3_FCP_F02">
+        <di:waypoint x="530" y="350"/>
+        <di:waypoint x="565" y="350"/>
+        <di:waypoint x="565" y="170"/>
+        <di:waypoint x="600" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_FCP_F03_di" bpmnElement="P2_L3_FCP_F03">
+        <di:waypoint x="650" y="170"/>
+        <di:waypoint x="685" y="170"/>
+        <di:waypoint x="685" y="530"/>
+        <di:waypoint x="720" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_FCP_F04_di" bpmnElement="P2_L3_FCP_F04">
+        <di:waypoint x="860" y="530"/>
+        <di:waypoint x="895" y="530"/>
+        <di:waypoint x="895" y="170"/>
+        <di:waypoint x="930" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_FCP_F05_di" bpmnElement="P2_L3_FCP_F05">
+        <di:waypoint x="650" y="170"/>
+        <di:waypoint x="930" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_FCP_F06_di" bpmnElement="P2_L3_FCP_F06">
+        <di:waypoint x="980" y="170"/>
+        <di:waypoint x="1018" y="170"/>
+        <di:waypoint x="1018" y="350"/>
+        <di:waypoint x="1057" y="350"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

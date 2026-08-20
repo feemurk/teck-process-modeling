@@ -15,21 +15,29 @@
    - Sites in scope (HVC | QB | ANTAMINA | CDA | RED_DOG)
    - Primary site (the canonical reference site for the model)
 
-3. Read the Entity Catalog sections of the specified pillar model(s) from
+3. If the DDVC layer collected in step 2 is `contextualized`, confirm the upstream
+   Curated product exists before proceeding: check for
+   `workshops/[curated-product-name]/process-model-ref.md` and
+   `beam-overlay.yaml`. If either is missing, stop and redirect the user:
+   "Scope the upstream Curated product first — run 'extract entities for
+   [curated-product-name]' and complete its workshop before scoping a Contextualized
+   product." Do not continue to step 4 until the upstream product is confirmed.
+
+4. Read the Entity Catalog sections of the specified pillar model(s) from
    `pillar-models/`. Apply the inclusion and exclusion rules in the extraction template.
 
-4. Propose the scoped entity list with rationale. Do not write any files yet.
+5. Propose the scoped entity list with rationale. Do not write any files yet.
    Present the proposal and ask for explicit confirmation.
 
-5. On confirmation: write `workshops/[product-name]/process-model-ref.md`
+6. On confirmation: write `workshops/[product-name]/process-model-ref.md`
    using the output format defined in `templates/entity-extraction.md`.
    Create the `workshops/[product-name]/` directory if it does not exist.
 
-6. Confirm to the user:
+7. Confirm to the user:
    "Entity scope confirmed for [product-name]. [N] entities extracted from
    [pillar(s)]. process-model-ref.md written to workshops/[product-name]/.
    
    Run 'run beam workshop for [product-name]' to begin the BEAM workshop."
 
-7. Do not proceed to the workshop in the same command invocation.
+8. Do not proceed to the workshop in the same command invocation.
    The workshop is a separate session that may involve different participants.

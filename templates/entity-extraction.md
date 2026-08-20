@@ -44,6 +44,16 @@ If the stakeholder is uncertain about process areas, help them:
 > "Based on your product purpose statement, the most likely process areas are [X, Y, Z].
 > Does that match what you have in mind?"
 
+**If DDVC layer is `contextualized`:** before proceeding, confirm the upstream Curated
+product exists. Check for `workshops/[curated-product-name]/process-model-ref.md` and
+`beam-overlay.yaml`. A Contextualized product adapts entities/events that already exist
+in a Curated product — it does not invent new canonical entities (see PRODUCT TYPES in
+`CLAUDE.md`). If either upstream file is missing, stop and redirect:
+> "Scope the upstream Curated product first — run 'extract entities for
+> [curated-product-name]' and complete its workshop before scoping a Contextualized
+> product."
+Do not proceed to Step 2 until the upstream Curated product is confirmed.
+
 ---
 
 ### Step 2 — Read the pillar models
@@ -119,6 +129,17 @@ Any entities to add or remove before I write the file?
 > Teck-specific entity that needs to be documented as an extension."
 Log it as a `vocabulary_addition` candidate and include it as a custom entity with
 `source: teck-specific` in the output file.
+
+**If the site runs duplicate/overlapping source systems for the same entity with no MDM
+engine reconciling them** (e.g., both Wenco and Minestar populating the same equipment
+concept, each with its own duplicate "active" rows, and no cross-system mastering
+practice in place): this is not a gap in the entity list — it means Master and Source are
+different entities here and the relationship between them must be made explicit. The
+entity needs a `Source` custom entity per source system (raw, per-system attributes,
+duplicates intact) and a `Map` custom entity relating each Master ID to its Source IDs.
+See `templates/beam-workshop.md` §B.0 for the full definitions. Include both as custom
+entities with `source: teck-specific` and `entity_type: Source` / `entity_type: Map`
+respectively.
 
 **If the stakeholder wants to include a Contextualized entity in a Curated product:**
 Flag it directly:
@@ -224,7 +245,7 @@ Entities referenced but not owned by this product:
 
 *Entities not in the industry-standard process model, identified as Teck-specific.*
 
-| Entity Name | Description | Reason Not in Standard Model |
-|-------------|-------------|------------------------------|
-| [name] | [description] | [rationale] |
+| Entity Name | Entity Type | Description | Reason Not in Standard Model |
+|-------------|-------------|--------------|------------------------------|
+| [name] | [Source / Map / other] | [description] | [rationale] |
 ```

@@ -49,7 +49,9 @@ overlay_status: ""                      # [REQUIRED] in-progress | complete | va
 
 entities:
   - entity_name: ""                     # [REQUIRED] Must match entity name in process-model-ref.md
-    entity_type: ""                     # [REQUIRED] Master | Reference | Transactional | Time-Series
+    entity_type: ""                     # [REQUIRED] Master | Reference | Transactional | Time-Series | Source | Map
+                                         # Source and Map are Teck-specific (see teck-vocabulary-master.md §3):
+                                         # Source = raw per-source-system record; Map = Master-to-Source crosswalk
     ddvc_layer: ""                      # [REQUIRED] curated | contextualized | both
     status: ""                          # [REQUIRED] confirmed | provisional | needs-workshop
 
@@ -62,6 +64,9 @@ entities:
       key_stability_notes: ""          # [RECOMMENDED] Required if at-risk or unknown
       multi_source_key_conflict: false  # [REQUIRED] true if entity appears in multiple source systems with different keys
       xref_required: false             # [REQUIRED] true if multi-source MDM xref table needed
+                                         # If true: register the crosswalk itself as its own entry in
+                                         # `entities` below, with entity_type: Map — this flag alone does
+                                         # not satisfy the requirement to define its key, sources, and owner
       status: ""                        # [REQUIRED] confirmed | needs-workshop
 
     # --- SOURCE SYSTEM ---

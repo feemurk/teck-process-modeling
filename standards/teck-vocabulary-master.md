@@ -124,6 +124,18 @@ in the process models. These differences drive `process_model_overrides` in over
 | Payload unit for concentrate | Wet metric tonnes (WMT) / Dry metric tonnes (DMT) | TBC — moisture correction at which layer? | |
 | P80 | Standard particle size distribution metric | TBC — does Teck use different fragmentation targets by site? | |
 
+### 3.5 Source System Mastering Gap (Multi-FMS Sites)
+
+| Concept | Industry Standard | Teck Usage | Sites | Impact |
+|---------|-------------------|------------|-------|--------|
+| Master entity provenance | Assumes an MDM engine (or a single system of record) resolves one governed row per real-world entity | No enterprise MDM engine exists. Some sites run more than one FMS concurrently (e.g., HVC has run both Minestar and Wenco) against the same equipment concept, each maintaining its own rows and both showing `active` status with no automated reconciliation, producing duplicate/conflicting records | HVC confirmed (Minestar + Wenco); other multi-FMS sites TBC | Master and Source are different entities describing the same real-world thing — see `entity_type: Master` vs. `entity_type: Source` in `templates/beam-workshop.md` §B.0. Do not conflate a source system's record with the entity itself |
+| Cross-system record duplication | Not addressed — standard model assumes clean master data | Duplicate/conflicting rows across source systems for the same real-world entity; event data attributes to only one row at a time despite multiple rows showing active | HVC confirmed; other sites TBC | Requires `entity_type: Source` (raw per-system record, duplicates intact — operators need these attributes for operational reporting) and `entity_type: Map` (the entity relating Master IDs to Source IDs, with validity window) as Custom Entities. See `templates/entity-extraction.md` Step 4 |
+
+> Claude Code: when a workshop reveals more than one source system populating the same
+> entity concept with no MDM engine reconciling them, do not treat this as a natural-key
+> ambiguity to resolve and move past — flag it explicitly using the language above, and
+> propose the Source + Map custom entity pair per `templates/beam-workshop.md` §B.0.
+
 ---
 
 ## 4. ABBREVIATIONS AND ACRONYMS
@@ -159,3 +171,4 @@ Append-only. One row per confirmed addition or modification.
 | Date | Entry | Changed By | Session | Notes |
 |------|-------|------------|---------|-------|
 | 2026-04-12 | Initial vocabulary master created | Programme setup | — | Seed entries from cross-reference summary and programme memory |
+| 2026-08-06 | Added §3.5 Source System Mastering Gap (Multi-FMS Sites) | User | CLAUDE.md revisit session | Documents HVC Wenco/Minestar duplicate-record scenario; introduced `Source` and `Map` custom entity types, defined in `templates/beam-workshop.md` §B.0 |
