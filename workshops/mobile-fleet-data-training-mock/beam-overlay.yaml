@@ -1,0 +1,1303 @@
+# beam-overlay.yaml — mobile-fleet-data-training-mock
+# Generated per templates/beam-overlay-schema.yaml
+#
+# ============================================================================
+# TRAINING MOCK — NOT A PRODUCTION ARTIFACT.
+# ============================================================================
+# Generated without live stakeholder engagement, at the requester's explicit direction,
+# to illustrate real Stage 1 file shapes and the Curated/Contextualized DDVC boundary for
+# a data-modeler training exercise. Two deliberate shortcuts were taken throughout, per
+# explicit instruction, and are NOT how a real BEAM workshop should be run:
+#   1. Every natural_key is assumed to be the documented system identifier field, assumed
+#      stable, with no per-entity source-system stability probing.
+#   2. Every entity (including Transactional/event entities) is given scd_policy: Type2 on
+#      its full attribute set, on the stated rationale that a Type-1 current-state view can
+#      always be derived from a Type-2 history table, and that event tables are not
+#      guaranteed immutable at the source (FMS allows edits/corrections to already-recorded
+#      events), so append-only would silently lose that audit trail.
+# domain_owner fields are role-based placeholders, not named/confirmed individuals, and are
+# marked status: provisional throughout — nobody actually confirmed ownership.
+#
+# Section 7 is a NON-STANDARD ADDITION beyond this schema. CLAUDE.md states plainly that
+# KPI definitions/metric calculations belong to Stage 2, not this repo — Section 7 exists
+# here anyway, at explicit request, specifically so a training audience can see how a
+# Contextualized layer is built on top of a Curated one in one file. Do not treat Section 7
+# as a template for a real overlay.
+# ============================================================================
+
+---
+## SECTION 1: PRODUCT SCOPE
+
+product_name: "mobile-fleet-data-training-mock"
+ddvc_layer: "curated"
+product_purpose: "Canonical haul cycle, delay, and equipment time data supporting fleet productivity and availability analysis at HVC. (Training mock — not a production artifact.)"
+
+pillar_references:
+  - pillar: "02-mining-operations-extraction"
+    process_areas: ["2.2 Load & Haul"]
+    entity_catalog_sections: ["Master & Reference Entities", "Transactional / Event Entities"]
+
+sites_in_scope: ["HVC", "QB"]
+primary_site: "HVC"
+
+workshop_date: "2026-08-06"
+workshop_participants: []   # none — training mock, no live stakeholder session
+overlay_status: "complete"  # complete, not validated — see validate-overlay report
+
+---
+## SECTION 2: ENTITY REGISTER
+
+entities:
+
+  - entity_name: "mobile_equipment"
+    entity_type: "Master"
+    ddvc_layer: "curated"
+    status: "needs-workshop"   # escalated from provisional during this refresh — see process_model_overrides below: this is now a known, real MDM gap, not just an unconfirmed-but-otherwise-fine entity
+
+    natural_key:
+      description: "A governed surrogate identifying one real-world physical equipment unit, produced by reconciling Minestar and Wenco's per-system records. NOT the same as either system's own unit ID, and NOT simply fleet_number, because per standards/teck-vocabulary-master.md §3.5, HVC runs both Minestar and Wenco concurrently against the same equipment concept with no MDM engine, each holding duplicate 'active' rows — fleet_number alone does not resolve to a single row even within one source system."
+      source_system: "Governed master file (product team + site steward maintained) — see mobile_equipment_source_xref"
+      key_field_name: "equipment_master_id"
+      key_stability: "unknown"
+      key_stability_notes: "Cannot be assessed as stable or at-risk because the governed master file this key depends on does not exist yet — this is a proposed governance pattern from this workshop, not a confirmed, operating one. Stability depends entirely on the site steward's mapping process actually being implemented and consistently followed."
+      multi_source_key_conflict: true
+      xref_required: true
+      status: "needs-workshop"
+
+    source_systems:
+      - system_name: "Governed master file (product team + site steward maintained)"
+        schema_or_table: "Not yet formalized — proposed as a maintained reference table, not an automated Raw-layer ingestion"
+        in_raw_layer: "no"
+        raw_schema_path: ""
+        cdc_available: "n/a — hand-maintained, not a CDC source"
+        known_quality_issues:
+          - "The governance process itself does not exist yet. Until it does, there is no actual mechanism producing this entity — see open_items OI-009."
+
+    scd_policy: "Type2"
+    scd_rationale: "Full-attribute-history tracking, extended during this refresh to cover the mastering decision itself: when the site steward corrects a mapping (e.g. discovers two Source rows actually represent different physical trucks), that correction must be auditable, not just the equipment's own attribute changes. A Type-1 current-state view is derived from this table for consumers who only need current state."
+    history_requirement: "full-history"
+    scd_status: "confirmed"
+
+    domain_owner:
+      name: "TBC"
+      role: "Joint: Product Team + HVC Site Steward — role-based placeholder, per standards/teck-vocabulary-master.md §3.5's description of who maintains the governed master file"
+      contact: "TBC — requires live workshop confirmation"
+      authority_scope: "Equipment master data, fleet classification, AND the Minestar/Wenco mastering decision itself (which source row is authoritative)"
+      status: "needs-workshop"
+
+    site_overrides:
+      - site: "QB"
+        field: "Source system mastering gap (see natural_key and this entity's whole redesign above)"
+        standard_value: "N/A — this is an HVC-specific finding, not a canonical model value"
+        site_value: "NOT CONFIRMED — standards/teck-vocabulary-master.md §3.5 confirms the Minestar+Wenco duplicate-record problem at HVC specifically; whether QB has an equivalent multi-FMS mastering gap is marked TBC there, not yet checked"
+        rationale: "Do not assume the mastering pattern is HVC-only until QB is actually checked — vocabulary master explicitly flags other multi-FMS sites as TBC, not as confirmed-absent"
+        data_product_impact: "If QB also runs duplicate FMS instances, it needs its own Source/Map entity pair (mobile_equipment_source_<qb-system-a>, etc.) — carried to open_items"
+
+    process_model_overrides:
+      - field: "Entity Type and Source System(s)"
+        standard_statement: "Standard pillar model treats mobile_equipment as type Master with a single blended source, 'FMS (Minestar, Wenco, Modular)', implying one governed operational system of record."
+        teck_actual: "At HVC, Minestar and Wenco run concurrently against the same equipment concept with no MDM engine, each independently holding duplicate rows all marked 'active,' per standards/teck-vocabulary-master.md §3.5. mobile_equipment must now be modeled as the governed OUTPUT of a mastering process — see the new mobile_equipment_source_minestar, mobile_equipment_source_wenco (entity_type: Source), and mobile_equipment_source_xref (entity_type: Map) entities below."
+        impact: "mobile_equipment can no longer be treated as directly Raw-sourced (in_raw_layer changes from an implicit 'yes' to explicit 'no'); its natural key changes from fleet_number to a new governed equipment_master_id; and it now depends on a governance process (site steward + product team maintained file) that does not yet exist — this is a genuine, not cosmetic, redesign of the entity."
+        confirmed_by: "Not confirmed by a named authority — this redesign follows the pattern templates/beam-workshop.md §B.0 and standards/teck-vocabulary-master.md §3.5 prescribe for exactly this scenario; a real workshop must confirm it with the site steward and product team"
+
+  - entity_name: "mobile_equipment_source_minestar"
+    entity_type: "Source"
+    ddvc_layer: "curated"
+    status: "provisional"
+
+    natural_key:
+      description: "The equipment identifier as recorded within Minestar specifically. Does not guarantee one row per real-world truck even within this single source — Minestar itself is known to carry duplicate active rows for the same physical equipment."
+      source_system: "Minestar"
+      key_field_name: "minestar_unit_id"
+      key_stability: "at-risk"
+      key_stability_notes: "Per standards/teck-vocabulary-master.md §3.5, Minestar carries duplicate 'active' rows for the same physical equipment with no automated reconciliation. minestar_unit_id is unique per row, but not guaranteed unique per real-world asset."
+      multi_source_key_conflict: false
+      xref_required: true
+      status: "confirmed"
+
+    source_systems:
+      - system_name: "Minestar"
+        schema_or_table: "Minestar equipment table (illustrative — actual table name TBC)"
+        in_raw_layer: "yes"
+        raw_schema_path: "TBC — requires confirmation with data engineering"
+        cdc_available: "unknown"
+        known_quality_issues:
+          - "Duplicate rows marked 'active' for the same physical equipment, per standards/teck-vocabulary-master.md §3.5"
+          - "No field within Minestar itself distinguishes which duplicate is authoritative"
+
+    scd_policy: "Type2"
+    scd_rationale: "Full-attribute history preserved as Minestar itself records it — including the duplicate rows — since a Source entity's whole purpose is preserving exactly what the system contains, not cleaning it up. Operators need point-in-time Minestar state for operational reporting."
+    history_requirement: "full-history"
+    scd_status: "confirmed"
+
+    domain_owner:
+      name: "TBC"
+      role: "Minestar System Administrator (HVC) — role-based placeholder"
+      contact: "TBC — requires live workshop confirmation"
+      authority_scope: "Minestar's own equipment table content — NOT the cross-system mastering decision (that belongs to mobile_equipment's domain_owner)"
+      status: "needs-workshop"
+
+    site_overrides:
+      - site: "QB"
+        field: "Entity applicability"
+        standard_value: "N/A"
+        site_value: "NOT CONFIRMED whether QB runs Minestar at all — standards/teck-vocabulary-master.md §1 marks QB's FMS as TBC"
+        rationale: "This entity is HVC-specific by construction; do not assume it applies at QB without confirmation"
+        data_product_impact: "If QB does not run Minestar, this entity is simply not populated for QB — no product impact, just scope clarity"
+
+    process_model_overrides: []
+
+  - entity_name: "mobile_equipment_source_wenco"
+    entity_type: "Source"
+    ddvc_layer: "curated"
+    status: "provisional"
+
+    natural_key:
+      description: "The equipment identifier as recorded within Wenco specifically. Mirrors mobile_equipment_source_minestar's key-stability caveat for Wenco."
+      source_system: "Wenco"
+      key_field_name: "wenco_unit_id"
+      key_stability: "at-risk"
+      key_stability_notes: "Per standards/teck-vocabulary-master.md §3.5, the duplicate-active-row problem is described across both Minestar and Wenco, not Minestar alone."
+      multi_source_key_conflict: false
+      xref_required: true
+      status: "confirmed"
+
+    source_systems:
+      - system_name: "Wenco"
+        schema_or_table: "Wenco equipment table (illustrative — actual table name TBC)"
+        in_raw_layer: "yes"
+        raw_schema_path: "TBC — requires confirmation with data engineering"
+        cdc_available: "unknown"
+        known_quality_issues:
+          - "Duplicate rows marked 'active' for the same physical equipment, per standards/teck-vocabulary-master.md §3.5"
+          - "No field within Wenco itself distinguishes which duplicate is authoritative"
+
+    scd_policy: "Type2"
+    scd_rationale: "Same rationale as mobile_equipment_source_minestar, mirrored for Wenco."
+    history_requirement: "full-history"
+    scd_status: "confirmed"
+
+    domain_owner:
+      name: "TBC"
+      role: "Wenco System Administrator (HVC) — role-based placeholder"
+      contact: "TBC — requires live workshop confirmation"
+      authority_scope: "Wenco's own equipment table content — NOT the cross-system mastering decision"
+      status: "needs-workshop"
+
+    site_overrides:
+      - site: "QB"
+        field: "Entity applicability"
+        standard_value: "N/A"
+        site_value: "NOT CONFIRMED whether QB runs Wenco at all — standards/teck-vocabulary-master.md §1 marks QB's FMS as TBC"
+        rationale: "This entity is HVC-specific by construction; do not assume it applies at QB without confirmation"
+        data_product_impact: "If QB does not run Wenco, this entity is simply not populated for QB"
+
+    process_model_overrides: []
+
+  - entity_name: "mobile_equipment_source_xref"
+    entity_type: "Map"
+    ddvc_layer: "curated"
+    status: "needs-workshop"
+
+    natural_key:
+      description: "The composite association of one governed equipment_master_id with one (source system, source-system equipment ID) pair, for a specific validity window."
+      source_system: "Governed master file (product team + site steward maintained) — the same governance artifact as mobile_equipment itself"
+      key_field_name: "xref_id (surrogate), functionally unique on equipment_master_id + source_system_name + source_system_equipment_id + valid_from_utc"
+      key_stability: "unknown"
+      key_stability_notes: "Depends entirely on the governance process existing and being followed — see mobile_equipment's natural_key.key_stability_notes for the same caveat."
+      multi_source_key_conflict: false
+      xref_required: false   # this IS the xref entity — it does not itself require another one
+      status: "needs-workshop"
+
+    source_systems:
+      - system_name: "Governed master file (product team + site steward maintained)"
+        schema_or_table: "Not yet formalized"
+        in_raw_layer: "no"
+        raw_schema_path: ""
+        cdc_available: "n/a — hand-maintained"
+        known_quality_issues:
+          - "The governance process itself does not exist yet — see open_items OI-009"
+
+    scd_policy: "Type2"
+    scd_rationale: "This entity's entire purpose is tracking which source row is authoritative for a master over a time window — it is inherently Type-2-shaped by design (valid_from_utc/valid_to_utc are structural to the entity, not just a workshop default), not merely following the blanket instruction applied elsewhere in this overlay."
+    history_requirement: "full-history"
+    scd_status: "confirmed"
+
+    domain_owner:
+      name: "TBC"
+      role: "Joint: Product Team + HVC Site Steward — same as mobile_equipment's domain_owner, since the mapping decision and the master record are governed together"
+      contact: "TBC — requires live workshop confirmation"
+      authority_scope: "Which source row is authoritative for a given master, and when that changes"
+      status: "needs-workshop"
+
+    site_overrides: []
+    process_model_overrides: []
+
+  - entity_name: "equipment_class"
+    entity_type: "Reference"
+    ddvc_layer: "curated"
+    status: "provisional"
+
+    natural_key:
+      description: "The class identifier for a functional/capacity grouping of equipment."
+      source_system: "FMS fleet reference data"
+      key_field_name: "class_id"
+      key_stability: "stable"
+      key_stability_notes: ""
+      multi_source_key_conflict: false
+      xref_required: false
+      status: "confirmed"
+
+    source_systems:
+      - system_name: "FMS fleet reference data"
+        schema_or_table: "equipment_class_ref (illustrative)"
+        in_raw_layer: "yes"
+        raw_schema_path: "TBC"
+        cdc_available: "unknown"
+        known_quality_issues: []
+
+    scd_policy: "Type2"
+    scd_rationale: "Reference data, but capacity standards are versioned per the pillar model's own lifecycle note ('versioned when capacity standards change') — full history retained; Type-1 view derived for current lookups."
+    history_requirement: "full-history"
+    scd_status: "confirmed"
+
+    domain_owner:
+      name: "TBC"
+      role: "Fleet Planning Engineer — role-based placeholder"
+      contact: "TBC — requires live workshop confirmation"
+      authority_scope: "Equipment class taxonomy and capacity standards"
+      status: "needs-workshop"
+
+    site_overrides: []
+    process_model_overrides: []
+
+  - entity_name: "operator"
+    entity_type: "Master"
+    ddvc_layer: "curated"
+    status: "provisional"
+
+    natural_key:
+      description: "The unique operator identifier assigned to a mine employee or contractor."
+      source_system: "FMS (operator assignment module)"
+      key_field_name: "operator_id"
+      key_stability: "stable"
+      key_stability_notes: ""
+      multi_source_key_conflict: false
+      xref_required: false
+      status: "confirmed"
+
+    source_systems:
+      - system_name: "FMS (operator assignment module)"
+        schema_or_table: "operator_master (illustrative)"
+        in_raw_layer: "yes"
+        raw_schema_path: "TBC"
+        cdc_available: "unknown"
+        known_quality_issues:
+          - "PII consideration: operator_name and employment_type require access governance review before Curated exposure — not resolved in this mock"
+
+    scd_policy: "Type2"
+    scd_rationale: "Full-attribute history (authorization_classes, employment_type, active_flag) so a change in an operator's authorized equipment classes is auditable, e.g. for incident investigation. Type-1 current view derived for routine shift-assignment lookups."
+    history_requirement: "full-history"
+    scd_status: "confirmed"
+
+    domain_owner:
+      name: "TBC"
+      role: "Mine Operations Superintendent (HVC), with HR-Ops liaison for PII fields — role-based placeholder"
+      contact: "TBC — requires live workshop confirmation"
+      authority_scope: "Operator authorization and employment status"
+      status: "needs-workshop"
+
+    site_overrides:
+      - site: "QB"
+        field: "authorization_classes / employment_type"
+        standard_value: "NOT CONFIRMED — assumed same authorization/certification categories as HVC"
+        site_value: "NOT CONFIRMED — QB may operate under a different labour agreement or contractor mix than HVC; unlike the equipment-side variants above, this was not checked and cleared, it is a genuine unresolved question"
+        rationale: "Operator authorization frameworks are typically negotiated per-site (union agreements, contractor arrangements) and are not documented in the pillar model at all — this is outside the process model's scope, not just unconfirmed within it"
+        data_product_impact: "If authorization_classes taxonomy differs by site, a single conformed operator dimension (see dimension_candidates) may need site-scoped code lists rather than one shared vocabulary — carried to open_items"
+
+    process_model_overrides: []
+
+  - entity_name: "location"
+    entity_type: "Reference"
+    ddvc_layer: "curated"
+    status: "provisional"
+
+    natural_key:
+      description: "The unique identifier for a named destination node (crusher, stockpile zone, waste dump bench, fuel bay)."
+      source_system: "FMS (location/destination master)"
+      key_field_name: "location_id"
+      key_stability: "stable"
+      key_stability_notes: ""
+      multi_source_key_conflict: false
+      xref_required: false
+      status: "confirmed"
+
+    source_systems:
+      - system_name: "FMS (location/destination master)"
+        schema_or_table: "location_master (illustrative)"
+        in_raw_layer: "yes"
+        raw_schema_path: "TBC"
+        cdc_available: "unknown"
+        known_quality_issues: []
+
+    scd_policy: "Type2"
+    scd_rationale: "Full-attribute history so destination re-designations (e.g. a waste dump bench reaching capacity and being retired) are auditable against historical haul_cycle deliveries. Type-1 view derived for current active-destination lookups."
+    history_requirement: "full-history"
+    scd_status: "confirmed"
+
+    domain_owner:
+      name: "TBC"
+      role: "Mine Planning Engineer — role-based placeholder"
+      contact: "TBC — requires live workshop confirmation"
+      authority_scope: "Mine design and destination location definitions"
+      status: "needs-workshop"
+
+    site_overrides: []
+    process_model_overrides: []
+
+  - entity_name: "shift"
+    entity_type: "Reference"
+    ddvc_layer: "curated"
+    status: "provisional"
+
+    natural_key:
+      description: "The unique identifier for a shift instance at a site."
+      source_system: "FMS (shift scheduling module)"
+      key_field_name: "shift_id"
+      key_stability: "stable"
+      key_stability_notes: ""
+      multi_source_key_conflict: false
+      xref_required: false
+      status: "confirmed"
+
+    source_systems:
+      - system_name: "FMS (shift scheduling module)"
+        schema_or_table: "shift_master (illustrative)"
+        in_raw_layer: "yes"
+        raw_schema_path: "TBC"
+        cdc_available: "unknown"
+        known_quality_issues: []
+
+    scd_policy: "Type2"
+    scd_rationale: "Full-attribute history retained for audit; in practice shift records rarely change post-close, but Type-2 is applied uniformly per the workshop's standing instruction rather than case-by-case."
+    history_requirement: "full-history"
+    scd_status: "confirmed"
+
+    domain_owner:
+      name: "TBC"
+      role: "Mine Operations Superintendent (HVC) — role-based placeholder"
+      contact: "TBC — requires live workshop confirmation"
+      authority_scope: "Shift schedule definition"
+      status: "needs-workshop"
+
+    site_overrides:
+      - site: "QB"
+        field: "shift_start_utc / shift_end_utc boundaries, local time offset"
+        standard_value: "HVC shift boundary convention"
+        site_value: "NOT CONFIRMED — this is exactly the kind of variant standards/teck-vocabulary-master.md Section 2.1 (Shift Definitions) is designed to capture, and it is currently marked TBC there for every site"
+        rationale: "Shift boundary/timezone handling is flagged in the vocabulary master as unresolved for all sites, not specific to this product"
+        data_product_impact: "delay_event and haul_cycle durations spanning a shift boundary may be misattributed if local-vs-UTC shift boundary handling differs by site and is not resolved — carried to open_items"
+
+    process_model_overrides: []
+
+  - entity_name: "haul_cycle"
+    entity_type: "Transactional"
+    ddvc_layer: "curated"
+    status: "provisional"
+
+    natural_key:
+      description: "The unique identifier for one complete truck trip from loading to return."
+      source_system: "FMS (Minestar dispatch module)"
+      key_field_name: "cycle_id"
+      key_stability: "stable"
+      key_stability_notes: ""
+      multi_source_key_conflict: false
+      xref_required: false
+      status: "confirmed"
+
+    source_systems:
+      - system_name: "FMS (Minestar dispatch module)"
+        schema_or_table: "haul_cycle_fact (illustrative)"
+        in_raw_layer: "yes"
+        raw_schema_path: "TBC"
+        cdc_available: "unknown"
+        known_quality_issues: []
+      - system_name: "PI Historian"
+        schema_or_table: "strut pressure / GPS telemetry tags feeding payload_est_t and stage timestamps"
+        in_raw_layer: "yes"
+        raw_schema_path: "TBC"
+        cdc_available: "n/a — time-series append"
+        known_quality_issues:
+          - "payload_est_t accuracy depends on a per-equipment-class strut-pressure calibration factor not yet documented in this mock (Known Gap G2 in the pillar model)"
+
+    scd_policy: "Type2"
+    scd_rationale: "Full-attribute history retained rather than append-only, because FMS dispatch records are correctable after the fact (e.g. a mis-assigned material_type or destination_location_id correction) — an append-only model would lose the correction audit trail. Type-1 'current' view is the latest version per cycle_id."
+    history_requirement: "full-history"
+    scd_status: "confirmed"
+
+    domain_owner:
+      name: "TBC"
+      role: "Dispatch / Mine Controller Superintendent (HVC) — role-based placeholder"
+      contact: "TBC — requires live workshop confirmation"
+      authority_scope: "Haul cycle dispatch and production data"
+      status: "needs-workshop"
+
+    site_overrides:
+      - site: "QB"
+        field: "truck class / nominal payload distribution"
+        standard_value: "220-360t class trucks per pillar model's Commodity Variations table"
+        site_value: "Same large-format class as HVC — both porphyry Cu, year-round operation per the pillar model"
+        rationale: "No material haul_cycle structural variant expected between HVC and QB; documented as checked, not silently skipped"
+        data_product_impact: "None expected"
+
+    process_model_overrides:
+      - field: "Key Attributes (timestamp set)"
+        standard_statement: "Standard model carries queue_shovel_start_utc, spot_shovel_utc, load_start_utc, load_end_utc, haul_start_utc, dump_utc, return_end_utc, cycle_duration_s — no separate queue-at-dump or spot-at-dump timestamps."
+        teck_actual: "Not yet verified against actual FMS field list — added queue_dump_start_utc and spot_dump_utc during this workshop on the reasoning that Section 2.2.3.2 (Queue at Destination) and 2.2.3.3 (Spot Truck at Dump Location) are documented as distinct activities in the process model and should be independently auditable, matching the same start/end rigor already applied at the shovel end."
+        impact: "Without these two fields, queue-at-dump and spot-at-dump durations cannot be separated from dump_utc — TUM OD/SBO classification at the destination (2.2.3.2) cannot be audited independently. This is a genuine gap, not a stylistic addition."
+        confirmed_by: "Not confirmed — flagged for verification with FMS system owner; carried to open_items"
+
+  - entity_name: "haul_cycle_stage_event"
+    entity_type: "Transactional"
+    ddvc_layer: "curated"
+    status: "needs-workshop"
+
+    natural_key:
+      description: "The unique identifier for one lifecycle-stage occurrence within one haul cycle."
+      source_system: "FMS state-transition event stream, if one exists — otherwise this entity is derived by rule from haul_cycle's own timestamp columns"
+      key_field_name: "stage_event_id"
+      key_stability: "unknown"
+      key_stability_notes: "Whether this entity is sourced from a real discrete FMS event stream or must be synthesized by a derivation rule from haul_cycle timestamps is not yet known — this determines whether it is Raw-sourced or purely Curated-computed. Requires live confirmation with the FMS system owner before this entity can be built for real."
+      multi_source_key_conflict: false
+      xref_required: false
+      status: "needs-workshop"
+
+    source_systems:
+      - system_name: "FMS state-transition event stream (unconfirmed) or derived from haul_cycle"
+        schema_or_table: "unknown"
+        in_raw_layer: "no"
+        raw_schema_path: ""
+        cdc_available: "unknown"
+        known_quality_issues: []
+
+    scd_policy: "Type2"
+    scd_rationale: "Applied per the workshop's standing full-history instruction; genuinely low-risk here since each row is a closed, timestamped stage occurrence unlikely to be retroactively edited — but Type-2 is applied uniformly rather than case-by-case per instruction."
+    history_requirement: "full-history"
+    scd_status: "confirmed"
+
+    domain_owner:
+      name: "TBC"
+      role: "Dispatch / Mine Controller Superintendent (HVC) — role-based placeholder"
+      contact: "TBC — requires live workshop confirmation"
+      authority_scope: "Haul cycle stage-level event data (proposed entity)"
+      status: "needs-workshop"
+
+    site_overrides: []
+    process_model_overrides: []
+
+  - entity_name: "delay_event"
+    entity_type: "Transactional"
+    ddvc_layer: "curated"
+    status: "provisional"
+
+    natural_key:
+      description: "The unique identifier for one discrete delay occurrence for one equipment unit."
+      source_system: "FMS (queue/delay tracking)"
+      key_field_name: "delay_id"
+      key_stability: "stable"
+      key_stability_notes: ""
+      multi_source_key_conflict: false
+      xref_required: false
+      status: "confirmed"
+
+    source_systems:
+      - system_name: "FMS (queue/delay tracking)"
+        schema_or_table: "delay_event_fact (illustrative)"
+        in_raw_layer: "yes"
+        raw_schema_path: "TBC"
+        cdc_available: "unknown"
+        known_quality_issues:
+          - "work_order_id linkage not enforced at source for TUM:DT events — Gap XP-01 in the programme Gap Register; carried to open_items"
+
+    scd_policy: "Type2"
+    scd_rationale: "Full-attribute history is essential here, not just a default: TUM category reclassification after the fact (a delay initially logged OD later corrected to SBO, or vice versa) is exactly the scenario an append-only model would silently overwrite or lose. Type-1 current view is the latest classification per delay_id."
+    history_requirement: "full-history"
+    scd_status: "confirmed"
+
+    domain_owner:
+      name: "TBC"
+      role: "Mine Controller / Dispatch Superintendent (HVC) — role-based placeholder"
+      contact: "TBC — requires live workshop confirmation"
+      authority_scope: "TUM classification authority for delay events"
+      status: "needs-workshop"
+
+    site_overrides:
+      - site: "QB"
+        field: "delay_reason_code vocabulary"
+        standard_value: "HVC site-standard delay reason codes"
+        site_value: "NOT CONFIRMED — no cross-site delay code harmonisation currently exists per the pillar model's own Standard Alignment notes; this is flagged as an MDM gap, not resolved here"
+        rationale: "Delay reason code vocabularies are typically site-configured in FMS and not centrally governed"
+        data_product_impact: "Cross-site delay analytics (e.g. comparing HVC vs. QB OD rates) are not reliable until reason codes are harmonised or mapped to a common vocabulary — carried to open_items"
+
+    process_model_overrides: []
+
+  - entity_name: "operator_shift_assignment"
+    entity_type: "Transactional"
+    ddvc_layer: "curated"
+    status: "provisional"
+
+    natural_key:
+      description: "The unique identifier for one operator-to-equipment assignment for one shift."
+      source_system: "FMS"
+      key_field_name: "assignment_id"
+      key_stability: "stable"
+      key_stability_notes: ""
+      multi_source_key_conflict: false
+      xref_required: false
+      status: "confirmed"
+
+    source_systems:
+      - system_name: "FMS"
+        schema_or_table: "operator_shift_assignment_fact (illustrative)"
+        in_raw_layer: "yes"
+        raw_schema_path: "TBC"
+        cdc_available: "unknown"
+        known_quality_issues: []
+
+    scd_policy: "Type2"
+    scd_rationale: "Full-attribute history so mid-shift operator changes (relief, equipment swap) are auditable rather than overwritten."
+    history_requirement: "full-history"
+    scd_status: "confirmed"
+
+    domain_owner:
+      name: "TBC"
+      role: "Mine Operations Superintendent (HVC) — role-based placeholder"
+      contact: "TBC — requires live workshop confirmation"
+      authority_scope: "Operator-equipment shift assignment"
+      status: "needs-workshop"
+
+    site_overrides: []
+    process_model_overrides: []
+
+  - entity_name: "stockpile_inventory_movement"
+    entity_type: "Transactional"
+    ddvc_layer: "curated"
+    status: "provisional"
+
+    natural_key:
+      description: "The unique identifier for one stockpile inventory movement (addition or drawdown)."
+      source_system: "FMS (tonnes); survey system (volume)"
+      key_field_name: "movement_id"
+      key_stability: "stable"
+      key_stability_notes: "CORRECTED during this refresh: multi_source_key_conflict/xref_required were originally set true here, but on review that mis-applies the Source/Map pattern (see mobile_equipment for the real thing). This entity does not have the same real-world entity represented by conflicting identity rows across systems — FMS and the survey system are describing two different aspects of the same stockpile (per-movement mass vs. periodic volume), not two competing accounts of 'who is this entity.' That is a measurement-reconciliation concern (pillar model Known Gap G5, Contextualized-layer territory), not an MDM/mastering one — no Map entity is needed here."
+      multi_source_key_conflict: false
+      xref_required: false
+      status: "confirmed"
+
+    source_systems:
+      - system_name: "FMS"
+        schema_or_table: "stockpile_movement_fact (illustrative) — tonnage side"
+        in_raw_layer: "yes"
+        raw_schema_path: "TBC"
+        cdc_available: "unknown"
+        known_quality_issues: []
+      - system_name: "Survey system (drone/GPS volumetric survey)"
+        schema_or_table: "stockpile_survey (illustrative) — volume side, periodic not per-movement"
+        in_raw_layer: "yes"
+        raw_schema_path: "TBC"
+        cdc_available: "n/a — periodic batch"
+        known_quality_issues:
+          - "Volume survey is periodic, not per-movement — reconciliation logic between per-movement FMS mass records and periodic survey volume is a known Contextualized-layer concern (pillar model Known Gap G5), not resolved here"
+
+    scd_policy: "Type2"
+    scd_rationale: "Applied per standing instruction; movements are naturally append-heavy (one row per event) but Type-2 full-attribute tracking is retained uniformly in case of source correction."
+    history_requirement: "full-history"
+    scd_status: "confirmed"
+
+    domain_owner:
+      name: "TBC"
+      role: "Stockpile Controller / Mine Planner (HVC) — role-based placeholder"
+      contact: "TBC — requires live workshop confirmation"
+      authority_scope: "Stockpile inventory and grade reconciliation"
+      status: "needs-workshop"
+
+    site_overrides: []
+    process_model_overrides: []
+
+---
+## SECTION 3: EVENT CANVAS OUTPUTS
+
+event_canvas:
+
+  - entity_name: "haul_cycle"
+    primary_business_event: "Haul Cycle Completed"
+    event_timestamp_source: "FMS (Minestar dispatch module)"
+    event_timestamp_field: "return_end_utc (cycle close event)"
+
+    measures:
+      - measure_name: "Payload Delivered"
+        teck_term: "Load weight"
+        business_definition: "The estimated mass of material delivered to destination in one haul cycle, derived from strut pressure telemetry at load completion."
+        unit_of_measure: "tonnes"
+        uom_suffix: "_wmt"
+        additivity: "additive"
+        additivity_notes: ""
+        source_system: "PI Historian (strut pressure telemetry) via FMS"
+        source_field: "payload_est_t"
+        raw_or_computed: "computed"
+        computation_rule: "Strut pressure readings (front/rear axle) converted to mass via a manufacturer-supplied, per-equipment-class calibration model. Calibration factor ownership/documentation is Known Gap G2 in the pillar model — not resolved in this mock."
+        business_rule_notes: "Wet mass tonnes (_wmt) — moisture correction to dry tonnes not applied at this grain; see Known Gap G2 and the pillar model's commodity variation note on wet-vs-dry tonnage."
+        open_items: ["Strut-pressure calibration factor source/ownership not documented — see open_items OI-004"]
+        status: "provisional"
+
+      - measure_name: "Queue-at-Shovel Duration"
+        teck_term: "Queue time"
+        business_definition: "Elapsed time from truck arrival at the dig face queue to shovel-side spot start."
+        unit_of_measure: "seconds"
+        uom_suffix: "_sec"
+        additivity: "additive"
+        additivity_notes: ""
+        source_system: "FMS"
+        source_field: "spot_shovel_utc − queue_shovel_start_utc"
+        raw_or_computed: "computed"
+        computation_rule: "spot_shovel_utc minus queue_shovel_start_utc"
+        business_rule_notes: "Classified TUM: OD (brief, inherent) or TUM: SBO (management decision) per the decision table in tum_classification_rules below — this classification, not the raw duration, is the analytically significant output."
+        open_items: []
+        status: "confirmed"
+
+      - measure_name: "Spot-at-Shovel Duration"
+        business_definition: "Elapsed time from queue exit to first bucket contact at the shovel."
+        unit_of_measure: "seconds"
+        uom_suffix: "_sec"
+        additivity: "additive"
+        additivity_notes: ""
+        source_system: "FMS"
+        source_field: "load_start_utc − spot_shovel_utc"
+        raw_or_computed: "computed"
+        computation_rule: "load_start_utc minus spot_shovel_utc"
+        business_rule_notes: "TUM: NP (non-productive operating time)."
+        open_items: []
+        status: "confirmed"
+
+      - measure_name: "Load Duration"
+        business_definition: "Elapsed time of active loading, from first bucket pass to last."
+        unit_of_measure: "seconds"
+        uom_suffix: "_sec"
+        additivity: "additive"
+        additivity_notes: ""
+        source_system: "FMS; PI Historian (pass count)"
+        source_field: "load_end_utc − load_start_utc"
+        raw_or_computed: "computed"
+        computation_rule: "load_end_utc minus load_start_utc"
+        business_rule_notes: "TUM: PT for shovel, TUM: WT for truck — the same wall-clock interval carries two different TUM roles depending on which equipment_id the measure is attributed to."
+        open_items: []
+        status: "confirmed"
+
+      - measure_name: "Loaded Haul Duration"
+        business_definition: "Elapsed time of the loaded travel segment from the dig face to the destination."
+        unit_of_measure: "seconds"
+        uom_suffix: "_sec"
+        additivity: "additive"
+        additivity_notes: ""
+        source_system: "FMS; GPS/GNSS"
+        source_field: "queue_dump_start_utc − haul_start_utc"
+        raw_or_computed: "computed"
+        computation_rule: "queue_dump_start_utc (proposed field — see process_model_overrides on haul_cycle) minus haul_start_utc. If queue_dump_start_utc is not actually available at source, this falls back to dump_utc minus haul_start_utc, which conflates loaded-haul with queue-at-dump — an accuracy loss to flag as an open item."
+        business_rule_notes: "TUM: WT (productive)."
+        open_items: ["Depends on queue_dump_start_utc actually existing at source — see open_items OI-001"]
+        status: "provisional"
+
+      - measure_name: "Queue-at-Dump Duration"
+        business_definition: "Elapsed time from arrival at the destination queue to reaching dump spot position."
+        unit_of_measure: "seconds"
+        uom_suffix: "_sec"
+        additivity: "additive"
+        additivity_notes: ""
+        source_system: "FMS"
+        source_field: "spot_dump_utc − queue_dump_start_utc"
+        raw_or_computed: "computed"
+        computation_rule: "spot_dump_utc minus queue_dump_start_utc (both proposed fields — see open_items OI-001)"
+        business_rule_notes: "Classified TUM: OD or TUM: SBO — the destination-side mirror of the shovel-side queue classification, per the process narrative's 2.2.3.2 gateway."
+        open_items: ["Cannot be computed until queue_dump_start_utc and spot_dump_utc are confirmed available at source — see open_items OI-001"]
+        status: "needs-workshop"
+
+      - measure_name: "Spot-at-Dump Duration"
+        business_definition: "Elapsed time from dump queue exit to dump position reached."
+        unit_of_measure: "seconds"
+        uom_suffix: "_sec"
+        additivity: "additive"
+        additivity_notes: ""
+        source_system: "FMS"
+        source_field: "dump_utc − spot_dump_utc"
+        raw_or_computed: "computed"
+        computation_rule: "dump_utc minus spot_dump_utc (spot_dump_utc is a proposed field — see open_items OI-001)"
+        business_rule_notes: "TUM: NP."
+        open_items: ["Depends on spot_dump_utc — see open_items OI-001"]
+        status: "needs-workshop"
+
+      - measure_name: "Empty Return Duration"
+        business_definition: "Elapsed time of the empty travel segment from destination back to the next assigned face."
+        unit_of_measure: "seconds"
+        uom_suffix: "_sec"
+        additivity: "additive"
+        additivity_notes: ""
+        source_system: "FMS; GPS/GNSS"
+        source_field: "return_end_utc − dump_utc"
+        raw_or_computed: "computed"
+        computation_rule: "return_end_utc minus dump_utc"
+        business_rule_notes: "TUM: NP, with brief TUM: OD sub-segments possible for fuelling/operator change per the process narrative — not separately measured at this grain."
+        open_items: []
+        status: "confirmed"
+
+      - measure_name: "Total Cycle Duration"
+        business_definition: "Total elapsed time of the complete haul cycle, queue-at-shovel through return."
+        unit_of_measure: "seconds"
+        uom_suffix: "_sec"
+        additivity: "semi-additive"
+        additivity_notes: "Additive across distinct haul_cycle instances (can sum total cycle-seconds across a shift), but not meaningfully additive across overlapping/parallel cycles from different trucks at the same moment — a fleet-level 'total cycle time' is not a proxy for elapsed shift time."
+        source_system: "FMS"
+        source_field: "return_end_utc − queue_shovel_start_utc"
+        raw_or_computed: "computed"
+        computation_rule: "return_end_utc minus queue_shovel_start_utc; equivalently the sum of all stage durations above"
+        business_rule_notes: ""
+        open_items: []
+        status: "confirmed"
+
+    reason_code_vocabulary: []
+
+    tum_classification_rules:
+      - observable_condition: "Truck queued at shovel or destination for a brief, operationally inherent wait (e.g. shovel finishing prior truck's load)"
+        correct_tum_category: "OD"
+        decision_authority: "FMS auto-classification against a site OD/SBO threshold, confirmed by mine controller"
+        common_misclassification: "Classified as SBO when it is actually a brief, inherent queue — inflates apparent management-caused standby"
+        escalation_path: "Mine controller review if queue duration approaches the site threshold and cause is ambiguous"
+      - observable_condition: "Truck queued for 45 minutes at an offline/shut-down crusher awaiting restart — a management decision, not an inherent operational wait"
+        correct_tum_category: "SBO"
+        decision_authority: "Mine controller, explicit classification required — this is the workshop template's own worked example of the most commonly misclassified TUM distinction"
+        common_misclassification: "Left as OD by default because FMS's default threshold-based auto-classification does not distinguish 'brief inherent wait' from 'extended wait due to a management/equipment decision' — duration alone is not sufficient to classify correctly"
+        escalation_path: "Mine controller must actively override the FMS default classification; no escalation beyond mine controller is defined in the pillar model"
+
+    grain_statement: "Each row represents one complete haul cycle — one truck's trip from queuing at the shovel through return to the next assigned face — for one truck, at one site, per shift."
+    grain_confirmed_by: "TBC — not confirmed by a named authority; training mock"
+    grain_status: "needs-workshop"
+
+  - entity_name: "haul_cycle_stage_event"
+    primary_business_event: "Haul Cycle Stage Completed"
+    event_timestamp_source: "FMS state-transition event stream (unconfirmed) or derived from haul_cycle"
+    event_timestamp_field: "end_ts"
+
+    measures:
+      - measure_name: "Stage Duration"
+        business_definition: "The elapsed time of one lifecycle stage (queue-shovel, spot-shovel, load, haul, queue-dump, spot-dump, dump, or empty-return) within one haul cycle."
+        unit_of_measure: "seconds"
+        uom_suffix: "_sec"
+        additivity: "additive"
+        additivity_notes: "Additive within a haul_cycle (the 8 stage durations sum to Total Cycle Duration) and additive across cycles when grouped by stage_type — e.g. 'total queue-at-shovel seconds this shift'."
+        source_system: "FMS state-transition event stream (unconfirmed) or derived from haul_cycle timestamps"
+        source_field: "end_ts − start_ts"
+        raw_or_computed: "computed"
+        computation_rule: "end_ts minus start_ts for the given stage_type"
+        business_rule_notes: "This entity exists specifically so every duration used elsewhere (haul_cycle's measures, the TUM classification rules) is traceable to an explicit start/end boundary rather than an opaque pre-computed number."
+        open_items: ["Whether this is a real source event stream or a derived/synthetic entity is unconfirmed — see open_items OI-002"]
+        status: "needs-workshop"
+
+    reason_code_vocabulary: []
+
+    tum_classification_rules:
+      - observable_condition: "stage_type = load, on the shovel's equipment_id"
+        correct_tum_category: "PT"
+        decision_authority: "FMS auto-classification by stage_type and equipment role"
+        common_misclassification: "None documented at this grain — misclassification risk moves downstream to whether a stage's boundary timestamps are correct, not which TUM category the stage_type implies"
+        escalation_path: "n/a at this grain"
+      - observable_condition: "stage_type = load, on the truck's equipment_id"
+        correct_tum_category: "WT"
+        decision_authority: "FMS auto-classification by stage_type and equipment role"
+        common_misclassification: "None documented at this grain"
+        escalation_path: "n/a at this grain"
+
+    grain_statement: "Each row represents one lifecycle stage occurrence within one haul cycle, for one piece of equipment."
+    grain_confirmed_by: "TBC — not confirmed by a named authority; proposed entity, training mock"
+    grain_status: "needs-workshop"
+
+  - entity_name: "delay_event"
+    primary_business_event: "Equipment Delay Recorded"
+    event_timestamp_source: "FMS (queue/delay tracking)"
+    event_timestamp_field: "delay_start_utc"
+
+    measures:
+      - measure_name: "Delay Duration"
+        business_definition: "The elapsed time of one discrete delay occurrence for one equipment unit."
+        unit_of_measure: "seconds"
+        uom_suffix: "_sec"
+        additivity: "additive"
+        additivity_notes: ""
+        source_system: "FMS"
+        source_field: "delay_end_utc − delay_start_utc"
+        raw_or_computed: "computed"
+        computation_rule: "delay_end_utc minus delay_start_utc"
+        business_rule_notes: "Additive within a tum_category grouping (e.g. total OD seconds per equipment per shift) — this is the atomic measure the Section 7 TUM KPIs are built from."
+        open_items: []
+        status: "confirmed"
+
+    reason_code_vocabulary:
+      - code: "TBC"
+        teck_label: "Delay reason code vocabulary below TUM category level (e.g. specific breakdown causes, specific SBO triggers)"
+        standard_mapping: "Not enumerated in the pillar model — explicitly flagged there as Known Gap G1: 'Delay reason code library below TUM category level not enumerated — Teck-specific codes required'"
+        standard_reference: "GMG TUM — parent categories only (CT/ST/AT/OT/WT/PT/NP/OD/SBO/DT/UT/SBE) are standardized; sub-codes are site-specific"
+        sites_applicable: ["HVC", "QB"]
+        notes: "This is a real, pre-existing gap in the pillar model itself (Gap G1), not something this mock introduces. A real workshop must elicit the actual site-standard delay reason code list from FMS configuration."
+
+    tum_classification_rules:
+      - observable_condition: "Equipment stopped due to mechanical failure or breakdown, maintenance dispatched"
+        correct_tum_category: "DT"
+        decision_authority: "Mine controller, on notification from operator or automated fault code"
+        common_misclassification: "Logged without a work_order_id linkage — Gap XP-01 in the programme Gap Register: 'FMS mine controllers classify TUM:DT without entering a work order number,' which breaks the ability to explain why equipment was down"
+        escalation_path: "Should trigger EAM/CMMS work order creation (Pillar 5) — linkage not currently enforced; see open_items OI-003"
+      - observable_condition: "Extended equipment idle period outside the mine plan (e.g. no operator assigned, shift understaffed) where equipment is otherwise mechanically available"
+        correct_tum_category: "SBE"
+        decision_authority: "Mine controller"
+        common_misclassification: "Confused with SBO — SBE is external/not-required-by-plan standby (e.g. no operator, seasonal closure per the pillar model's Red Dog example), SBO is a management decision to hold equipment that IS part of the active plan"
+        escalation_path: "Mine controller judgment call; no further escalation defined in the pillar model"
+
+    grain_statement: "Each row represents one discrete delay occurrence for one equipment unit, bounded by delay_start_utc and delay_end_utc."
+    grain_confirmed_by: "TBC — not confirmed by a named authority; training mock"
+    grain_status: "needs-workshop"
+
+  - entity_name: "stockpile_inventory_movement"
+    primary_business_event: "Stockpile Inventory Movement Recorded"
+    event_timestamp_source: "FMS"
+    event_timestamp_field: "movement_timestamp_utc"
+
+    measures:
+      - measure_name: "Movement Mass"
+        business_definition: "The mass added to or drawn down from a stockpile zone in one movement event."
+        unit_of_measure: "tonnes"
+        uom_suffix: "_dmt"
+        additivity: "additive"
+        additivity_notes: "Additive within a stockpile_zone_id and movement_type grouping; sign convention (addition positive, drawdown negative, or a separate signed field) not yet decided — open item."
+        source_system: "FMS"
+        source_field: "mass_t"
+        raw_or_computed: "raw"
+        computation_rule: ""
+        business_rule_notes: "Dry tonnes (_dmt) assumed for stockpile accounting per standard metallurgical accounting convention — not independently confirmed in this mock."
+        open_items: ["Addition/drawdown sign convention not confirmed"]
+        status: "provisional"
+
+    reason_code_vocabulary: []
+    tum_classification_rules: []
+
+    grain_statement: "Each row represents one atomic stockpile inventory movement — one addition (haul cycle dump) or one drawdown (reclaim) — for one stockpile zone."
+    grain_confirmed_by: "TBC — not confirmed by a named authority; training mock"
+    grain_status: "needs-workshop"
+
+  - entity_name: "operator_shift_assignment"
+    primary_business_event: "Operator Assigned to Equipment for Shift"
+    event_timestamp_source: "FMS"
+    event_timestamp_field: "assignment_start_utc"
+
+    measures:
+      - measure_name: "Assignment Duration"
+        business_definition: "The elapsed time one operator is assigned to one piece of equipment within one shift."
+        unit_of_measure: "seconds"
+        uom_suffix: "_sec"
+        additivity: "additive"
+        additivity_notes: ""
+        source_system: "FMS"
+        source_field: "assignment_end_utc − assignment_start_utc"
+        raw_or_computed: "computed"
+        computation_rule: "assignment_end_utc minus assignment_start_utc"
+        business_rule_notes: "Not itself TUM-classified — this entity establishes who is accountable for the equipment's TUM-classified time during the assignment window, not a TUM state itself."
+        open_items: []
+        status: "confirmed"
+
+    reason_code_vocabulary: []
+    tum_classification_rules: []
+
+    grain_statement: "Each row represents one operator's assignment to one piece of equipment for one shift."
+    grain_confirmed_by: "TBC — not confirmed by a named authority; training mock"
+    grain_status: "needs-workshop"
+
+---
+## SECTION 4: DIMENSION CANDIDATES
+
+dimension_candidates:
+  - entity_name: "mobile_equipment"
+    conformed_candidate: "yes"
+    conformed_rationale: "Shared across every Pillar 2 process area (Drill & Blast, Load & Haul, Mine Services) and referenced by Pillar 5 (work_order, condition monitoring) per the pillar model's own Cross-Pillar Dependencies section — a textbook conformed dimension, on the condition below."
+    cross_product_usage: ["Any Pillar 2 data product", "Pillar 5 maintenance/reliability products"]
+    governance_notes: "UPDATED during this refresh: being 'conformed' across Pillars 2 and 5 now depends on the Minestar/Wenco mastering gap being resolved first (standards/teck-vocabulary-master.md §3.5) — a conformed dimension built on an ungoverned, duplicate-carrying identity is not actually safe to conform, it just propagates the ambiguity to every consumer. The single designated data steward this entity needs is now specifically the joint product-team + site-steward role that maintains the new governed master file and mobile_equipment_source_xref — not yet assigned."
+
+  - entity_name: "operator"
+    conformed_candidate: "yes"
+    conformed_rationale: "Referenced across all Pillar 2 process areas for shift-level accountability."
+    cross_product_usage: ["Any Pillar 2 data product"]
+    governance_notes: "Contains PII (operator_name, employment_type) — access governance review required before treating as a freely conformed dimension across products; flagged, not resolved, in this mock."
+
+  - entity_name: "location"
+    conformed_candidate: "yes"
+    conformed_rationale: "Destination nodes (crusher, stockpile, waste dump) are referenced by Load & Haul and consumed downstream by Pillar 3 (Processing) at the crusher handoff."
+    cross_product_usage: ["Pillar 3 Processing & Beneficiation products"]
+    governance_notes: ""
+
+  - entity_name: "shift"
+    conformed_candidate: "yes"
+    conformed_rationale: "The universal temporal grain across the entire programme per the pillar model's own note that shift is the GMG TUM Calendar Time boundary."
+    cross_product_usage: ["Every pillar's data products"]
+    governance_notes: "Shift boundary/timezone handling by site is unresolved — see open_items — and should be resolved before this dimension is treated as safely conformed across sites."
+
+  - entity_name: "equipment_class"
+    conformed_candidate: "candidate"
+    conformed_rationale: "Likely conformed across Pillar 2 and Pillar 5, but capacity/classification standards may be Pillar-5-maintained (asset hierarchy) rather than Pillar-2-owned — ownership not resolved in this mock."
+    cross_product_usage: ["Pillar 5 asset hierarchy, if aligned"]
+    governance_notes: ""
+
+---
+## SECTION 5: OPEN ITEMS
+
+open_items:
+  - id: "OI-001"
+    entity_name: "haul_cycle"
+    field_path: "entities[haul_cycle].process_model_overrides; event_canvas[haul_cycle].measures[Queue-at-Dump Duration, Spot-at-Dump Duration]"
+    description: "queue_dump_start_utc and spot_dump_utc were added to haul_cycle during this workshop to close an auditability gap (see the entity's process_model_overrides note), but their actual existence in FMS has not been confirmed. If FMS does not capture these as discrete events, the queue-at-dump and spot-at-dump measures cannot be computed as designed and must either fall back to a coarser dump_utc-only measure, or be sourced from the haul_cycle_stage_event entity if that entity turns out to have a real source (see OI-002)."
+    gate_impact: "block-stage2"
+    owner: "FMS system owner (name TBC)"
+    target_date: "TBC"
+    status: "open"
+
+  - id: "OI-002"
+    entity_name: "haul_cycle_stage_event"
+    field_path: "entities[haul_cycle_stage_event].natural_key.key_stability_notes; entities[haul_cycle_stage_event].source_systems"
+    description: "Whether FMS emits a real discrete event per haul cycle lifecycle stage, or whether this entity must be synthetically derived from haul_cycle's own timestamp columns, is unconfirmed. This determines whether haul_cycle_stage_event is a genuine Raw-sourced Curated entity or a purely computed view — a materially different build."
+    gate_impact: "block-stage2"
+    owner: "FMS system owner (name TBC)"
+    target_date: "TBC"
+    status: "open"
+
+  - id: "OI-003"
+    entity_name: "delay_event"
+    field_path: "entities[delay_event].source_systems[0].known_quality_issues; event_canvas[delay_event].tum_classification_rules"
+    description: "work_order_id is not enforced as a linkage on TUM:DT delay_event records at source. This is Gap XP-01 in the programme Gap Register — described there as the single most critical cross-pillar linkage gap in the programme, and as fundamentally limiting the (Contextualized) MFD data product without it."
+    gate_impact: "warn-stage2"
+    owner: "Joint Pillar 2 + Pillar 5 BEAM workshop decision, per Gap XP-01's stated resolution path"
+    target_date: "TBC"
+    status: "open"
+
+  - id: "OI-004"
+    entity_name: "haul_cycle"
+    field_path: "event_canvas[haul_cycle].measures[Payload Delivered].computation_rule"
+    description: "Strut-pressure-to-payload calibration factor ownership and documentation location is not established — pillar model Known Gap G2."
+    gate_impact: "warn-stage2"
+    owner: "TBC"
+    target_date: "TBC"
+    status: "open"
+
+  - id: "OI-005"
+    entity_name: "shift"
+    field_path: "entities[shift].site_overrides"
+    description: "Shift boundary local-vs-UTC handling by site is unresolved across the entire programme per standards/teck-vocabulary-master.md Section 2.1, not specific to this product. Affects any haul_cycle or delay_event spanning a shift boundary."
+    gate_impact: "warn-stage2"
+    owner: "TBC"
+    target_date: "TBC"
+    status: "open"
+
+  - id: "OI-006"
+    entity_name: "delay_event"
+    field_path: "entities[delay_event].site_overrides"
+    description: "No cross-site delay reason code harmonisation currently exists between HVC and QB — flagged as an MDM gap."
+    gate_impact: "warn-stage2"
+    owner: "TBC"
+    target_date: "TBC"
+    status: "open"
+
+  - id: "OI-008"
+    entity_name: "operator"
+    field_path: "entities[operator].site_overrides"
+    description: "Whether QB operates under a different labour agreement or contractor authorization framework than HVC is unconfirmed and not addressed anywhere in the pillar model — this is outside the process model's scope entirely, not just unelicited within it."
+    gate_impact: "warn-stage2"
+    owner: "TBC"
+    target_date: "TBC"
+    status: "open"
+
+  - id: "OI-007"
+    entity_name: "ALL"
+    field_path: "entities[*].domain_owner"
+    description: "Every domain_owner in this overlay is a role-based placeholder, not a named, confirmed individual — no live stakeholder workshop was run. This entire overlay requires a real BEAM workshop with named participants before any Stage 2 handoff."
+    gate_impact: "block-stage2"
+    owner: "Workshop sponsor — to schedule a real session"
+    target_date: "TBC"
+    status: "open"
+
+  - id: "OI-009"
+    entity_name: "mobile_equipment"
+    field_path: "entities[mobile_equipment].natural_key.source_system; entities[mobile_equipment_source_xref]"
+    description: "The governed master file and the site-steward mapping process it depends on do not exist yet — this workshop proposed the pattern (mobile_equipment as Master, mobile_equipment_source_minestar/wenco as Source, mobile_equipment_source_xref as Map) per standards/teck-vocabulary-master.md §3.5, but no one has built it, confirmed it, or assigned an owner. Every haul_cycle, delay_event, and operator_shift_assignment record that references equipment_id inherits this ambiguity until it is resolved."
+    gate_impact: "block-stage2"
+    owner: "Product team + HVC site steward (names TBC) — joint ownership per the governance pattern itself"
+    target_date: "TBC"
+    status: "open"
+
+  - id: "OI-010"
+    entity_name: "haul_cycle"
+    field_path: "entities[haul_cycle]; event_canvas[haul_cycle]"
+    description: "Per the scenario that prompted this refresh, event data (haul_cycle, delay_event) currently attributes to only one row at a given time even though Minestar and Wenco both show duplicate 'active' equipment rows — meaning FMS's dispatch/event stream evidently DOES resolve equipment identity operationally, today, without any governed Master/Map existing. HOW it resolves this (tribal knowledge, an undocumented default rule, whichever system dispatched the truck) is unknown and unrecorded. This matters because the eventual Master/Map governance process must either match whatever FMS is implicitly doing already, or explicitly change it — and no one has asked FMS's system owner which case this is."
+    gate_impact: "warn-stage2"
+    owner: "FMS system owner (name TBC)"
+    target_date: "TBC"
+    status: "open"
+
+  - id: "OI-011"
+    entity_name: "mobile_equipment"
+    field_path: "standards/teck-vocabulary-master.md §1 (Source System Name Canonicalisation) vs. §3.5 (Source System Mastering Gap)"
+    description: "Vocabulary master §1 lists HVC's FMS as 'Minestar' only (status: provisional). §3.5, added in the same session that introduced Source/Map entity types, states HVC confirmed runs both Minestar AND Wenco concurrently. These two entries conflict and have not been reconciled against each other in the vocabulary file itself — flagging per the vocabulary master's own instruction to log conflicts as a vocabulary_addition rather than silently pick one."
+    gate_impact: "warn-stage2"
+    owner: "TBC — whoever owns standards/teck-vocabulary-master.md maintenance"
+    target_date: "TBC"
+    status: "open"
+
+  - id: "OI-012"
+    entity_name: "mobile_equipment_source_minestar"
+    field_path: "entities[mobile_equipment_source_minestar].site_overrides; entities[mobile_equipment_source_wenco].site_overrides"
+    description: "Whether QB (or any other site) has an equivalent multi-FMS mastering gap to HVC's Minestar/Wenco situation is unconfirmed — standards/teck-vocabulary-master.md explicitly marks other multi-FMS sites as TBC, not confirmed-absent. If QB does have an equivalent gap, it needs its own Source/Map entity pair under its own system names, not a reuse of the Minestar/Wenco-named entities defined here."
+    gate_impact: "warn-stage2"
+    owner: "TBC"
+    target_date: "TBC"
+    status: "open"
+
+---
+## SECTION 6: VOCABULARY ADDITIONS
+
+vocabulary_additions:
+  - teck_term: "Queue-at-dump / Spot-at-dump"
+    canonical_mapping: "Proposed refinement of the existing haul_cycle timestamp set; not yet a confirmed Teck term"
+    definition: "The destination-side mirror of the already-modeled queue-at-shovel and spot-at-shovel stages, added during this workshop to close an auditability gap in dump-side TUM classification"
+    context: "Used when discussing haul_cycle stage-level timing at the destination (crusher, stockpile, waste dump)"
+    sites_applicable: ["HVC", "QB"]
+    proposed_by: "Workshop facilitation (training mock — not a real stakeholder)"
+    status: "proposed"
+
+  - teck_term: "haul_cycle_stage_event"
+    canonical_mapping: "Proposed new entity — not in the standard pillar model"
+    definition: "A discrete, timestamped lifecycle-stage occurrence within one haul cycle, added to make stage durations auditable from explicit start/end boundaries"
+    context: "Referenced when discussing haul_cycle decomposition and TUM classification audit trails"
+    sites_applicable: ["HVC", "QB"]
+    proposed_by: "Workshop facilitation (training mock — not a real stakeholder)"
+    status: "proposed"
+
+  - teck_term: "HVC FMS system name conflict (Minestar-only vs. Minestar+Wenco)"
+    canonical_mapping: "standards/teck-vocabulary-master.md §1 vs. §3.5 — not yet reconciled with each other"
+    definition: "§1's Source System Name Canonicalisation table lists HVC's FMS as 'Minestar' only, status provisional. §3.5's Source System Mastering Gap entry states HVC confirmed runs both Minestar and Wenco concurrently. Flagged here per the vocabulary master's own instruction to log conflicts rather than silently resolve them — see open_items OI-011."
+    context: "Surfaced while revising mobile_equipment's source_systems during this workshop refresh"
+    sites_applicable: ["HVC"]
+    proposed_by: "Workshop facilitation (training mock — not a real stakeholder)"
+    status: "proposed"
+
+---
+# ============================================================================
+## SECTION 7: CONTEXTUALIZED DIMENSIONAL MODEL — NON-STANDARD, TRAINING ONLY
+# ============================================================================
+# NOT part of templates/beam-overlay-schema.yaml. NOT produced by validate-overlay's
+# schema checks (it has nothing to check this against). Included here, at explicit
+# request, specifically to show a training audience how named industry KPIs are built
+# on top of the Curated atomic measures in Sections 1-6 above.
+#
+# CLAUDE.md is explicit that KPI definitions/metric calculations belong to Stage 2
+# (teck-data-modeling), not this repo. This section exists here only because this run
+# was explicitly framed as a mock for a training exercise, not a real deliverable.
+#
+# REVISION (this pass): the first version of this section jumped straight from
+# delay_event/haul_cycle to KPI formulas, with no explicit dimensional model in between —
+# no fact table, no conformed dimensions, "grain" stated as prose rather than a real
+# structure. This revision "doubles back" on that, per the request: it defines the base
+# TUM metrics (category durations, not just roll-up KPIs) as first-class fact-table
+# measures, at an explicit minimal analytical grain, with conformed dimensions, so the
+# derivation from atomic Curated data -> intermediate metric -> named KPI is a real,
+# traceable chain rather than a formula asserted in prose.
+#
+# MINIMAL ANALYTICAL GRAIN (as directed): site, shift, equipment, operator.
+# LOCATION DECISION (asked for explicitly, answered here — not just conversationally):
+#   - NOT included in the required grain for TUM availability/reliability metrics.
+#     Equipment state (available / operating / down / delayed) is a property of the
+#     equipment's time over a shift, not its spatial position — "Physical Availability by
+#     location" is not a naturally meaningful slice the way "by shift" or "by operator" is.
+#   - IS carried as an OPTIONAL, degenerate dimension on fct_equipment_time_usage instead
+#     of being omitted outright, because haul_cycle_stage_event already has location
+#     context implicitly (queue_shovel vs. queue_dump are different physical places), so a
+#     delay-location drill-down has real underlying data — just not required for the
+#     headline KPIs.
+#   - IS a first-class, REQUIRED dimension on fct_material_movement. haul_cycle already
+#     carries destination_location_id, and "how much moved to which stockpile/waste dump"
+#     is operationally central, not an edge case — this one was a real gap in the first
+#     version, not a judgment call.
+#
+# GMG TUM hierarchy used below is a best-effort reconstruction from the twelve category
+# codes the pillar model itself uses (CT/ST/AT/OT/WT/PT/NP/OD/SBO/DT/UT/SBE) — the pillar
+# model defines the codes as an enum but does not spell out their parent/child tree. This
+# hierarchy has NOT been verified against the published GMG Time Usage Model guideline and
+# should be checked before being treated as authoritative. dim_tum_category below encodes
+# it as an explicit parent/child table specifically so the KPI formulas are correct
+# regardless of whether source data assigns only leaf codes (most likely) or sometimes the
+# roll-up codes directly:
+#
+#   Calendar Time (CT)
+#   ├── Available Time (AT)
+#   │   ├── Operating Time (OT)
+#   │   │   ├── Working Time (WT)      — productive function, truck-side (haul/dump/load)
+#   │   │   ├── Productive Time (PT)   — productive function, shovel/drill-side
+#   │   │   ├── Non-Productive Op. (NP) — tramming, spotting
+#   │   │   ├── Operating Delay (OD)   — brief, inherent wait
+#   │   │   └── Standby Operating (SBO) — management-decision wait, equipment in plan
+#   │   └── Standby External (SBE)     — outside the mine plan (no operator, seasonal closure)
+#   └── Down Time (DT)
+#       ├── Scheduled Down Time (ST)   — planned maintenance
+#       └── Unscheduled Down Time (UT) — breakdown/failure
+# ============================================================================
+
+## 7.1 — DIMENSIONS (conformed where noted; new where not)
+
+contextualized_dimensions:
+
+  - dimension_name: "dim_site"
+    conformed_from: "n/a — new, small reference dimension (site codes already used throughout this overlay: HVC, QB)"
+    grain: "One row per site"
+    key_attributes: ["site_code (PK)", "site_name", "region"]
+    notes: "Trivial dimension; included because it's part of the directed minimal grain, not because it needs elaboration."
+
+  - dimension_name: "dim_shift"
+    conformed_from: "Curated entity `shift` (Section 2/3 above) — same natural key, no redesign needed"
+    grain: "One row per shift instance per site"
+    key_attributes: ["shift_id (PK)", "shift_date", "shift_type", "site_code (FK)", "shift_start_utc", "shift_end_utc"]
+    notes: "Chosen as the temporal grain per the direction given (site, shift, equipment, operator) — no separate dim_date was added; shift_date already carries the day-level grain a calendar dimension would provide, and adding one would exceed the stated scope."
+
+  - dimension_name: "dim_equipment"
+    conformed_from: "Curated entity `mobile_equipment` (Section 2 above)"
+    grain: "One row per governed physical equipment unit"
+    key_attributes: ["equipment_master_id (PK)", "fleet_number", "equipment_class", "make", "model", "nominal_payload_t"]
+    notes: "IMPORTANT CROSS-REFERENCE: this dimension is only as trustworthy as the Minestar/Wenco mastering gap (open_items OI-009) being resolved. A Contextualized-layer equipment dimension built today would silently inherit that unresolved identity ambiguity — flagged again here so it isn't lost between sections."
+
+  - dimension_name: "dim_operator"
+    conformed_from: "Curated entity `operator` (Section 2 above)"
+    grain: "One row per person per role"
+    key_attributes: ["operator_id (PK)", "operator_name", "authorization_classes", "employment_type"]
+    notes: "Same PII governance flag as the Curated entity (Section 4 dimension_candidates governance_notes) — carries forward, not re-litigated here."
+
+  - dimension_name: "dim_tum_category"
+    conformed_from: "NEW — not present in the standard pillar model or the first version of this section. Encodes the hierarchy diagrammed above as data, not just prose."
+    grain: "One row per GMG TUM category code"
+    key_attributes: ["tum_category_code (PK)", "category_label", "parent_category_code (FK to self; null for CT)", "is_productive (bool)", "standard_alignment"]
+    notes: "Required so KPI formulas can filter 'all leaf codes under OT' etc. without hardcoding a category list in every formula. Same GMG-verification caveat as the hierarchy diagram above."
+
+  - dimension_name: "dim_material_type"
+    conformed_from: "NEW small reference dimension — material_type values already exist on haul_cycle (Section 2/3) but were never formalized as their own dimension"
+    grain: "One row per material classification"
+    key_attributes: ["material_type_code (PK) — ore | waste | marginal", "material_type_label"]
+    notes: ""
+
+  - dimension_name: "dim_location"
+    conformed_from: "Curated entity `location` (Section 2 above)"
+    grain: "One row per named destination node"
+    key_attributes: ["location_id (PK)", "location_name", "location_type"]
+    notes: "REQUIRED dimension on fct_material_movement; OPTIONAL/degenerate on fct_equipment_time_usage — see the location decision note above. This dual role is itself worth surfacing to a training audience: the same conformed dimension can be mandatory in one fact and optional in another, and that's a normal, correct outcome, not an inconsistency."
+
+## 7.2 — FACTS (the base metrics — this is what the first version of this section skipped)
+
+contextualized_facts:
+
+  - fact_name: "fct_equipment_time_usage"
+    grain_statement: "One row per (site, shift, equipment, operator, tum_category) — optionally further split by location for delay drill-down. This is the base TUM metric fact every availability and reliability KPI below is computed from."
+    dimensions: ["dim_site", "dim_shift", "dim_equipment", "dim_operator", "dim_tum_category", "dim_location (optional/degenerate)"]
+    measures:
+      - measure_name: "duration_s"
+        business_definition: "Total seconds of that TUM category accumulated by that equipment/operator/shift, summed from delay_event and haul_cycle_stage_event."
+        additivity: "additive"
+        source: "SUM(delay_event.duration_s) + SUM(haul_cycle_stage_event.duration_s) grouped by (site, shift, equipment, operator, tum_category)"
+      - measure_name: "episode_count"
+        business_definition: "Count of discrete delay_event/haul_cycle_stage_event rows contributing to duration_s for that grain cell — added specifically so MTBS and MTTR (which need an event COUNT, not just a summed duration) are computable directly from this fact without a separate query against the atomic entities."
+        additivity: "additive"
+        source: "COUNT(delay_event rows) + COUNT(haul_cycle_stage_event rows) grouped the same way"
+    etl_notes:
+      - "operator attribution is NOT direct: delay_event does not carry operator_id. It must be derived via a time-window join against operator_shift_assignment (equipment_id + shift_id -> operator_id). A delay_event spanning a mid-shift operator swap cannot be cleanly attributed to one operator — flag as an open item when this is built for real, not silently assigned to whichever operator happens to join first."
+      - "Data-quality check, not just a formula: SUM(duration_s) across ALL tum_category rows for one (site, shift, equipment, operator) should equal that shift's elapsed wall-clock duration. A shortfall means unclassified or missing time — this equality is exactly the GMG TUM promise (every second is classified into some category), and it's directly testable against this fact table."
+    status: "illustrative — proposed structure, not built or validated against real data"
+
+  - fact_name: "fct_material_movement"
+    grain_statement: "One row per (site, shift, equipment, operator, material_type, destination_location). Destination location is a required part of this grain — see the location decision note above."
+    dimensions: ["dim_site", "dim_shift", "dim_equipment", "dim_operator", "dim_material_type", "dim_location (required)"]
+    measures:
+      - measure_name: "payload_t"
+        business_definition: "Mass delivered, summed from haul_cycle.payload_est_t."
+        additivity: "additive"
+        source: "SUM(haul_cycle.payload_est_t) grouped by (site, shift, truck_id, operator, material_type, destination_location_id)"
+      - measure_name: "cycle_count"
+        business_definition: "Count of haul_cycle rows contributing to payload_t for that grain cell."
+        additivity: "additive"
+        source: "COUNT(haul_cycle rows), same grouping"
+    etl_notes:
+      - "truck_id (not shovel_id) is the equipment attribution for this fact — a haul_cycle's payload belongs to the truck that delivered it, not the shovel that loaded it. If shovel-side loading productivity is needed later, that's a different fact at a different grain, not an overload of this one."
+    status: "illustrative — proposed structure, not built or validated against real data"
+
+## 7.3 — KPIs (now expressed against the facts above, not asserted in prose)
+
+contextualized_kpis:
+
+  - kpi_name: "Physical Availability (PA)"
+    business_definition: "The proportion of calendar time equipment is mechanically available for use, whether or not it is actually operated."
+    formula: "PA = SUM(fct_equipment_time_usage.duration_s WHERE tum_category NOT under DT) / SUM(fct_equipment_time_usage.duration_s, all categories)"
+    fact_table: "fct_equipment_time_usage"
+    grain: "site, shift, equipment, operator (rolls up over tum_category — the fact's finer grain — via the WHERE/no-WHERE sums)"
+    status: "illustrative — GMG TUM hierarchy above not independently verified"
+
+  - kpi_name: "Operational Availability / Use of Availability (UofA)"
+    business_definition: "The proportion of available time equipment is actually placed into operation, whether productively or not."
+    formula: "UofA = SUM(duration_s WHERE tum_category under OT) / SUM(duration_s WHERE tum_category NOT under DT)"
+    fact_table: "fct_equipment_time_usage"
+    grain: "site, shift, equipment, operator"
+    status: "illustrative — GMG TUM hierarchy above not independently verified"
+
+  - kpi_name: "Effective Utilization / Effective Use of Availability (EU)"
+    business_definition: "The proportion of calendar time equipment spends in genuinely productive operation (excludes non-productive operating time and delays even while nominally 'operating')."
+    formula: "EU = SUM(duration_s WHERE tum_category IN ('WT','PT')) / SUM(duration_s, all categories)"
+    fact_table: "fct_equipment_time_usage"
+    grain: "site, shift, equipment, operator"
+    status: "illustrative — GMG TUM hierarchy above not independently verified"
+
+  - kpi_name: "Mean Time Between Failures (MTBF)"
+    business_definition: "Average operating time between unscheduled failure events for a piece of equipment."
+    formula: "MTBF = SUM(duration_s WHERE tum_category NOT under DT) / SUM(episode_count WHERE tum_category = 'DT' AND [cross-pillar: linked work_order.failure_type = unscheduled])"
+    fact_table: "fct_equipment_time_usage — INCOMPLETE without a Pillar 5 work_order join for the unscheduled/scheduled split"
+    grain: "site, shift, equipment, operator"
+    status: "illustrative — CROSS-PILLAR, cannot be fully computed from this overlay's facts alone; deliberately left incomplete to illustrate the boundary (see open_items OI-003 / Gap XP-01)"
+
+  - kpi_name: "Mean Time Between Shutdowns (MTBS)"
+    business_definition: "Average operating time between any stoppage event, scheduled or unscheduled."
+    formula: "MTBS = SUM(duration_s WHERE tum_category NOT under DT) / SUM(episode_count WHERE tum_category = 'DT')"
+    fact_table: "fct_equipment_time_usage"
+    grain: "site, shift, equipment, operator"
+    status: "illustrative — NOW fully computable from fct_equipment_time_usage alone (the episode_count measure is what makes this work; the first version of this section didn't have a count measure at all)"
+
+  - kpi_name: "Mean Time To Repair (MTTR)"
+    business_definition: "Average duration of a down-time event from failure to return-to-service."
+    formula: "MTTR = SUM(duration_s WHERE tum_category = 'DT') / SUM(episode_count WHERE tum_category = 'DT')"
+    fact_table: "fct_equipment_time_usage"
+    grain: "site, shift, equipment, operator"
+    status: "illustrative — fully computable from fct_equipment_time_usage for the duration math; true failure-mode attribution (WHY it took that long) still requires the Pillar 5 work_order linkage"
+
+  - kpi_name: "Total Material Moved"
+    business_definition: "Total mass delivered across all haul cycles in a period, all material types."
+    formula: "Total Material Moved = SUM(fct_material_movement.payload_t)"
+    fact_table: "fct_material_movement"
+    grain: "site, shift, equipment, operator, destination_location (material_type unfiltered)"
+    status: "illustrative — fully computable from this overlay's facts alone, no cross-pillar dependency; the cleanest example here"
+
+  - kpi_name: "Ore Moved / Waste Moved"
+    business_definition: "Total mass delivered, split by material classification."
+    formula: "Ore Moved = SUM(payload_t WHERE material_type = 'ore'); Waste Moved = SUM(payload_t WHERE material_type = 'waste')"
+    fact_table: "fct_material_movement"
+    grain: "site, shift, equipment, operator, destination_location"
+    status: "illustrative — fully computable from this overlay's facts alone. material_type classification itself originates in Pillar 2 process area 2.1 (Drill & Blast, material_classification entity) — referenced, not owned, by this Load & Haul product."
+
+  - kpi_name: "Strip Ratio"
+    business_definition: "The ratio of waste material moved to ore material moved — a standard open-pit productivity/economics indicator."
+    formula: "Strip Ratio = Waste Moved / Ore Moved"
+    fact_table: "fct_material_movement"
+    grain: "site, shift, equipment, operator, destination_location"
+    status: "illustrative — fully computable from this overlay's facts alone"
