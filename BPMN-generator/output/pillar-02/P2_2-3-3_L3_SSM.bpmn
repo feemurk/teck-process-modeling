@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="P2_L3_SSM_def"
+                  targetNamespace="http://teck.com/bpmn">
+
+  <!-- SPEC RESOLUTIONS (per prompt template "Error Handling"):
+       1. Spec flow F11 is listed as ICE01 → SE. A BPMN start event cannot carry an incoming
+          sequence flow. Process model 2.3.3.1 describes monitoring resuming with the next
+          scheduled scan, so F11 is retargeted to P2_L3_SSM_T01 (Collect Prism/Radar
+          Displacement Data) — the first activity of the scan cycle.
+       2. Spec flow F04 carries the condition text "[No — normal; loop to ICE01]" while its
+          From/To columns read XGW01 → EE01. The From/To columns are treated as authoritative:
+          a normal reading terminates that scan instance at EE01, and the timer start event
+          re-triggers the next scan. -->
+
+  <bpmn:collaboration id="P2_L3_SSM_collab">
+    <bpmn:participant id="P2_L3_SSM_PL" name="Slope Stability Monitoring" processRef="P2_L3_SSM_proc"/>
+  </bpmn:collaboration>
+
+  <bpmn:process id="P2_L3_SSM_proc" isExecutable="false">
+
+    <bpmn:laneSet id="P2_L3_SSM_laneSet">
+      <bpmn:lane id="P2_L3_SSM_LN_SYS" name="Automated Monitoring System">
+        <bpmn:flowNodeRef>P2_L3_SSM_SE</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_SSM_T01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_SSM_ICE01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_SSM_EE01</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L3_SSM_LN_GEO" name="Geotechnical Engineer">
+        <bpmn:flowNodeRef>P2_L3_SSM_T02</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_SSM_XGW01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_SSM_T03</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_SSM_XGW02</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_SSM_T04</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L3_SSM_LN_MCT" name="Mine Controller">
+        <bpmn:flowNodeRef>P2_L3_SSM_T05</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_SSM_EE02</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="P2_L3_SSM_SE" name="Scheduled scan interval (15-60 min)">
+      <bpmn:outgoing>P2_L3_SSM_F01</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="P2_L3_SSM_SE_timer"/>
+    </bpmn:startEvent>
+
+    <bpmn:serviceTask id="P2_L3_SSM_T01" name="Collect Prism/Radar Displacement Data (2.3.3.1)">
+      <bpmn:incoming>P2_L3_SSM_F01</bpmn:incoming>
+      <bpmn:incoming>P2_L3_SSM_F11</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_SSM_F02</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:task id="P2_L3_SSM_T02" name="Review Displacement Data vs. Alert Threshold">
+      <bpmn:incoming>P2_L3_SSM_F02</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_SSM_F03</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="P2_L3_SSM_XGW01" name="Alert threshold exceeded?" default="P2_L3_SSM_F04">
+      <bpmn:incoming>P2_L3_SSM_F03</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_SSM_F04</bpmn:outgoing>
+      <bpmn:outgoing>P2_L3_SSM_F05</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:task id="P2_L3_SSM_T03" name="Assess Stability Event; Determine Risk Level">
+      <bpmn:incoming>P2_L3_SSM_F05</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_SSM_F06</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="P2_L3_SSM_XGW02" name="Operational constraint required?" default="P2_L3_SSM_F07">
+      <bpmn:incoming>P2_L3_SSM_F06</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_SSM_F07</bpmn:outgoing>
+      <bpmn:outgoing>P2_L3_SSM_F08</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:intermediateCatchEvent id="P2_L3_SSM_ICE01" name="Await next scan interval">
+      <bpmn:incoming>P2_L3_SSM_F07</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_SSM_F11</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="P2_L3_SSM_ICE01_timer"/>
+    </bpmn:intermediateCatchEvent>
+
+    <bpmn:task id="P2_L3_SSM_T04" name="Issue Exclusion Zone / Access Restriction">
+      <bpmn:incoming>P2_L3_SSM_F08</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_SSM_F09</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="P2_L3_SSM_T05" name="Enforce Exclusion; Record TUM: OD or SBO">
+      <bpmn:incoming>P2_L3_SSM_F09</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_SSM_F10</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:endEvent id="P2_L3_SSM_EE01" name="Normal reading logged; continue monitoring">
+      <bpmn:incoming>P2_L3_SSM_F04</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="P2_L3_SSM_EE02" name="Exclusion zone active; mine controller enforcing">
+      <bpmn:incoming>P2_L3_SSM_F10</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="P2_L3_SSM_F01" sourceRef="P2_L3_SSM_SE" targetRef="P2_L3_SSM_T01"/>
+    <bpmn:sequenceFlow id="P2_L3_SSM_F02" sourceRef="P2_L3_SSM_T01" targetRef="P2_L3_SSM_T02"/>
+    <bpmn:sequenceFlow id="P2_L3_SSM_F03" sourceRef="P2_L3_SSM_T02" targetRef="P2_L3_SSM_XGW01"/>
+    <bpmn:sequenceFlow id="P2_L3_SSM_F04" name="No — normal reading logged" sourceRef="P2_L3_SSM_XGW01" targetRef="P2_L3_SSM_EE01"/>
+    <bpmn:sequenceFlow id="P2_L3_SSM_F05" name="Alert — threshold exceeded" sourceRef="P2_L3_SSM_XGW01" targetRef="P2_L3_SSM_T03"/>
+    <bpmn:sequenceFlow id="P2_L3_SSM_F06" sourceRef="P2_L3_SSM_T03" targetRef="P2_L3_SSM_XGW02"/>
+    <bpmn:sequenceFlow id="P2_L3_SSM_F07" name="No constraint needed" sourceRef="P2_L3_SSM_XGW02" targetRef="P2_L3_SSM_ICE01"/>
+    <bpmn:sequenceFlow id="P2_L3_SSM_F08" name="Constraint needed" sourceRef="P2_L3_SSM_XGW02" targetRef="P2_L3_SSM_T04"/>
+    <bpmn:sequenceFlow id="P2_L3_SSM_F09" sourceRef="P2_L3_SSM_T04" targetRef="P2_L3_SSM_T05"/>
+    <bpmn:sequenceFlow id="P2_L3_SSM_F10" sourceRef="P2_L3_SSM_T05" targetRef="P2_L3_SSM_EE02"/>
+    <bpmn:sequenceFlow id="P2_L3_SSM_F11" name="Next scan — resume monitoring" sourceRef="P2_L3_SSM_ICE01" targetRef="P2_L3_SSM_T01"/>
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="P2_L3_SSM_diagram">
+    <bpmndi:BPMNPlane id="P2_L3_SSM_plane" bpmnElement="P2_L3_SSM_collab">
+      <bpmndi:BPMNShape id="P2_L3_SSM_PL_di" bpmnElement="P2_L3_SSM_PL" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1630" height="540"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_SSM_LN_SYS_di" bpmnElement="P2_L3_SSM_LN_SYS" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1600" height="180"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_SSM_LN_GEO_di" bpmnElement="P2_L3_SSM_LN_GEO" isHorizontal="true">
+        <dc:Bounds x="190" y="260" width="1600" height="180"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_SSM_LN_MCT_di" bpmnElement="P2_L3_SSM_LN_MCT" isHorizontal="true">
+        <dc:Bounds x="190" y="440" width="1600" height="180"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="P2_L3_SSM_SE_di" bpmnElement="P2_L3_SSM_SE">
+        <dc:Bounds x="277" y="152" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_SSM_T01_di" bpmnElement="P2_L3_SSM_T01">
+        <dc:Bounds x="390" y="130" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_SSM_T02_di" bpmnElement="P2_L3_SSM_T02">
+        <dc:Bounds x="600" y="310" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_SSM_XGW01_di" bpmnElement="P2_L3_SSM_XGW01">
+        <dc:Bounds x="810" y="325" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_SSM_T03_di" bpmnElement="P2_L3_SSM_T03">
+        <dc:Bounds x="930" y="310" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_SSM_XGW02_di" bpmnElement="P2_L3_SSM_XGW02">
+        <dc:Bounds x="1140" y="325" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_SSM_ICE01_di" bpmnElement="P2_L3_SSM_ICE01">
+        <dc:Bounds x="1312" y="152" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_SSM_T04_di" bpmnElement="P2_L3_SSM_T04">
+        <dc:Bounds x="1260" y="310" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_SSM_T05_di" bpmnElement="P2_L3_SSM_T05">
+        <dc:Bounds x="1470" y="490" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_SSM_EE01_di" bpmnElement="P2_L3_SSM_EE01">
+        <dc:Bounds x="982" y="152" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_SSM_EE02_di" bpmnElement="P2_L3_SSM_EE02">
+        <dc:Bounds x="1687" y="512" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="P2_L3_SSM_F01_di" bpmnElement="P2_L3_SSM_F01">
+        <di:waypoint x="313" y="170"/>
+        <di:waypoint x="390" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_SSM_F02_di" bpmnElement="P2_L3_SSM_F02">
+        <di:waypoint x="530" y="170"/>
+        <di:waypoint x="565" y="170"/>
+        <di:waypoint x="565" y="350"/>
+        <di:waypoint x="600" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_SSM_F03_di" bpmnElement="P2_L3_SSM_F03">
+        <di:waypoint x="740" y="350"/>
+        <di:waypoint x="810" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_SSM_F04_di" bpmnElement="P2_L3_SSM_F04">
+        <di:waypoint x="860" y="350"/>
+        <di:waypoint x="921" y="350"/>
+        <di:waypoint x="921" y="170"/>
+        <di:waypoint x="982" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_SSM_F05_di" bpmnElement="P2_L3_SSM_F05">
+        <di:waypoint x="860" y="350"/>
+        <di:waypoint x="930" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_SSM_F06_di" bpmnElement="P2_L3_SSM_F06">
+        <di:waypoint x="1070" y="350"/>
+        <di:waypoint x="1140" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_SSM_F07_di" bpmnElement="P2_L3_SSM_F07">
+        <di:waypoint x="1190" y="350"/>
+        <di:waypoint x="1251" y="350"/>
+        <di:waypoint x="1251" y="170"/>
+        <di:waypoint x="1312" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_SSM_F08_di" bpmnElement="P2_L3_SSM_F08">
+        <di:waypoint x="1190" y="350"/>
+        <di:waypoint x="1260" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_SSM_F09_di" bpmnElement="P2_L3_SSM_F09">
+        <di:waypoint x="1400" y="350"/>
+        <di:waypoint x="1435" y="350"/>
+        <di:waypoint x="1435" y="530"/>
+        <di:waypoint x="1470" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_SSM_F10_di" bpmnElement="P2_L3_SSM_F10">
+        <di:waypoint x="1610" y="530"/>
+        <di:waypoint x="1687" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_SSM_F11_di" bpmnElement="P2_L3_SSM_F11">
+        <di:waypoint x="1330" y="188"/>
+        <di:waypoint x="1330" y="245"/>
+        <di:waypoint x="460" y="245"/>
+        <di:waypoint x="460" y="210"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="P2_L3_DRL_def"
+                  targetNamespace="http://teck.com/bpmn">
+
+  <bpmn:collaboration id="P2_L3_DRL_collab">
+    <bpmn:participant id="P2_L3_DRL_PL" name="Drilling Execution" processRef="P2_L3_DRL_proc"/>
+  </bpmn:collaboration>
+
+  <bpmn:process id="P2_L3_DRL_proc" isExecutable="false">
+
+    <bpmn:laneSet id="P2_L3_DRL_laneSet">
+      <bpmn:lane id="P2_L3_DRL_LN_FMS" name="FMS / Drill Guidance System">
+        <bpmn:flowNodeRef>P2_L3_DRL_SE</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_DRL_XGW01</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L3_DRL_LN_OPR" name="Drill Rig Operator">
+        <bpmn:flowNodeRef>P2_L3_DRL_T01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_DRL_T02</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_DRL_T03</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L3_DRL_LN_ENG" name="Drill &amp; Blast Engineer">
+        <bpmn:flowNodeRef>P2_L3_DRL_T04</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_DRL_XGW02</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_DRL_T05</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_DRL_EE01</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="P2_L3_DRL_SE" name="Drill plan dispatched from FMS">
+      <bpmn:outgoing>P2_L3_DRL_F01</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:task id="P2_L3_DRL_T01" name="Navigate Drill Rig to Hole Collar (2.1.2.1) — TUM: NP">
+      <bpmn:incoming>P2_L3_DRL_F01</bpmn:incoming>
+      <bpmn:incoming>P2_L3_DRL_F05</bpmn:incoming>
+      <bpmn:incoming>P2_L3_DRL_F10</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DRL_F02</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="P2_L3_DRL_T02" name="Drill Hole with MWD Capture (2.1.2.2) — TUM: PT">
+      <bpmn:incoming>P2_L3_DRL_F02</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DRL_F03</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="P2_L3_DRL_T03" name="Measure As-Drilled Depth and Water (2.1.2.3)">
+      <bpmn:incoming>P2_L3_DRL_F03</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DRL_F04</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="P2_L3_DRL_XGW01" name="More holes in pattern?" default="P2_L3_DRL_F05">
+      <bpmn:incoming>P2_L3_DRL_F04</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DRL_F05</bpmn:outgoing>
+      <bpmn:outgoing>P2_L3_DRL_F06</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:task id="P2_L3_DRL_T04" name="Validate Hole Quality — QC Accept/Reject (2.1.2.4)">
+      <bpmn:incoming>P2_L3_DRL_F06</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DRL_F07</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="P2_L3_DRL_XGW02" name="All holes pass QC?" default="P2_L3_DRL_F08">
+      <bpmn:incoming>P2_L3_DRL_F07</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DRL_F08</bpmn:outgoing>
+      <bpmn:outgoing>P2_L3_DRL_F09</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:task id="P2_L3_DRL_T05" name="Issue Remediation Instruction for Failed Holes">
+      <bpmn:incoming>P2_L3_DRL_F09</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_DRL_F10</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:endEvent id="P2_L3_DRL_EE01" name="All holes QC-accepted; pattern ready for charging">
+      <bpmn:incoming>P2_L3_DRL_F08</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="P2_L3_DRL_F01" sourceRef="P2_L3_DRL_SE" targetRef="P2_L3_DRL_T01"/>
+    <bpmn:sequenceFlow id="P2_L3_DRL_F02" sourceRef="P2_L3_DRL_T01" targetRef="P2_L3_DRL_T02"/>
+    <bpmn:sequenceFlow id="P2_L3_DRL_F03" sourceRef="P2_L3_DRL_T02" targetRef="P2_L3_DRL_T03"/>
+    <bpmn:sequenceFlow id="P2_L3_DRL_F04" sourceRef="P2_L3_DRL_T03" targetRef="P2_L3_DRL_XGW01"/>
+    <bpmn:sequenceFlow id="P2_L3_DRL_F05" name="Yes — next hole in pattern (loop)" sourceRef="P2_L3_DRL_XGW01" targetRef="P2_L3_DRL_T01"/>
+    <bpmn:sequenceFlow id="P2_L3_DRL_F06" name="No — all holes drilled" sourceRef="P2_L3_DRL_XGW01" targetRef="P2_L3_DRL_T04"/>
+    <bpmn:sequenceFlow id="P2_L3_DRL_F07" sourceRef="P2_L3_DRL_T04" targetRef="P2_L3_DRL_XGW02"/>
+    <bpmn:sequenceFlow id="P2_L3_DRL_F08" name="Yes — all pass" sourceRef="P2_L3_DRL_XGW02" targetRef="P2_L3_DRL_EE01"/>
+    <bpmn:sequenceFlow id="P2_L3_DRL_F09" name="No — failures exist" sourceRef="P2_L3_DRL_XGW02" targetRef="P2_L3_DRL_T05"/>
+    <bpmn:sequenceFlow id="P2_L3_DRL_F10" name="Remediate — loop back to re-drill" sourceRef="P2_L3_DRL_T05" targetRef="P2_L3_DRL_T01"/>
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="P2_L3_DRL_diagram">
+    <bpmndi:BPMNPlane id="P2_L3_DRL_plane" bpmnElement="P2_L3_DRL_collab">
+      <bpmndi:BPMNShape id="P2_L3_DRL_PL_di" bpmnElement="P2_L3_DRL_PL" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1510" height="670"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DRL_LN_FMS_di" bpmnElement="P2_L3_DRL_LN_FMS" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1480" height="180"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DRL_LN_OPR_di" bpmnElement="P2_L3_DRL_LN_OPR" isHorizontal="true">
+        <dc:Bounds x="190" y="260" width="1480" height="180"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DRL_LN_ENG_di" bpmnElement="P2_L3_DRL_LN_ENG" isHorizontal="true">
+        <dc:Bounds x="190" y="440" width="1480" height="310"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="P2_L3_DRL_SE_di" bpmnElement="P2_L3_DRL_SE">
+        <dc:Bounds x="277" y="152" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DRL_T01_di" bpmnElement="P2_L3_DRL_T01">
+        <dc:Bounds x="390" y="310" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DRL_T02_di" bpmnElement="P2_L3_DRL_T02">
+        <dc:Bounds x="600" y="310" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DRL_T03_di" bpmnElement="P2_L3_DRL_T03">
+        <dc:Bounds x="810" y="310" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DRL_XGW01_di" bpmnElement="P2_L3_DRL_XGW01">
+        <dc:Bounds x="1020" y="145" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DRL_T04_di" bpmnElement="P2_L3_DRL_T04">
+        <dc:Bounds x="1140" y="490" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DRL_XGW02_di" bpmnElement="P2_L3_DRL_XGW02">
+        <dc:Bounds x="1350" y="505" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DRL_T05_di" bpmnElement="P2_L3_DRL_T05">
+        <dc:Bounds x="1470" y="490" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_DRL_EE01_di" bpmnElement="P2_L3_DRL_EE01">
+        <dc:Bounds x="1522" y="642" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="P2_L3_DRL_F01_di" bpmnElement="P2_L3_DRL_F01">
+        <di:waypoint x="313" y="170"/>
+        <di:waypoint x="352" y="170"/>
+        <di:waypoint x="352" y="350"/>
+        <di:waypoint x="390" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DRL_F02_di" bpmnElement="P2_L3_DRL_F02">
+        <di:waypoint x="530" y="350"/>
+        <di:waypoint x="600" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DRL_F03_di" bpmnElement="P2_L3_DRL_F03">
+        <di:waypoint x="740" y="350"/>
+        <di:waypoint x="810" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DRL_F04_di" bpmnElement="P2_L3_DRL_F04">
+        <di:waypoint x="950" y="350"/>
+        <di:waypoint x="985" y="350"/>
+        <di:waypoint x="985" y="170"/>
+        <di:waypoint x="1020" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DRL_F05_di" bpmnElement="P2_L3_DRL_F05">
+        <di:waypoint x="1045" y="195"/>
+        <di:waypoint x="1045" y="425"/>
+        <di:waypoint x="460" y="425"/>
+        <di:waypoint x="460" y="390"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DRL_F06_di" bpmnElement="P2_L3_DRL_F06">
+        <di:waypoint x="1070" y="170"/>
+        <di:waypoint x="1105" y="170"/>
+        <di:waypoint x="1105" y="530"/>
+        <di:waypoint x="1140" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DRL_F07_di" bpmnElement="P2_L3_DRL_F07">
+        <di:waypoint x="1280" y="530"/>
+        <di:waypoint x="1350" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DRL_F08_di" bpmnElement="P2_L3_DRL_F08">
+        <di:waypoint x="1400" y="530"/>
+        <di:waypoint x="1461" y="530"/>
+        <di:waypoint x="1461" y="660"/>
+        <di:waypoint x="1522" y="660"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DRL_F09_di" bpmnElement="P2_L3_DRL_F09">
+        <di:waypoint x="1400" y="530"/>
+        <di:waypoint x="1470" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_DRL_F10_di" bpmnElement="P2_L3_DRL_F10">
+        <di:waypoint x="1540" y="570"/>
+        <di:waypoint x="1540" y="627"/>
+        <di:waypoint x="460" y="627"/>
+        <di:waypoint x="460" y="390"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

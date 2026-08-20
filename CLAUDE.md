@@ -286,7 +286,7 @@ site-specific. "Payload" at Red Dog has specific regulatory implications that
 
 Expected values:
 - `user.email` → `feemurk@gmail.com`
-- `remote origin` → `git@github-feemurk:feemurk/teck-process-models.git`
+- `remote origin` → `git@github.com:feemurk/teck-process-modeling.git`
 
 Block all commits if either check fails.
 
