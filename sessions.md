@@ -4,6 +4,79 @@ Chronological record of significant work sessions in this repository.
 
 ---
 
+## Session 4 — 2026-08-06/07 · Source/Map Entity Types, Mock BEAM Workshop, ERD Tooling
+
+**Author:** Fahim Kanji (`feemurk@gmail.com`)
+**Branch:** main
+**Status:** Complete
+
+### Summary
+
+Two distinct threads, kept clearly separated below because one is a real, reusable
+methodology enhancement and the other is explicitly a non-production training exercise —
+conflating them would be the exact mistake this note exists to prevent.
+
+**Thread 1 — real, reusable protocol changes (not mock).** `CLAUDE.md` was extended with a
+formal Curated/Contextualized product-type distinction (Contextualized products depend on
+an upstream Curated product; `extract-entities` now checks for this before scoping one).
+`templates/beam-workshop.md`, `.claude/commands/extract-entities.md`,
+`templates/entity-extraction.md`, and `templates/beam-overlay-schema.yaml` were extended
+with two Teck-specific entity types — **Source** (raw per-source-system record, duplicates
+intact) and **Map** (crosswalk from a governed Master ID to Source ID(s), with a validity
+window) — for sites running duplicate/overlapping source systems with no MDM engine.
+`standards/teck-vocabulary-master.md` §3.5 documents the confirmed trigger case: HVC runs
+both Minestar and Wenco concurrently against the same equipment concept, each holding
+duplicate "active" rows, with no reconciliation. These apply to any future real workshop.
+
+**Thread 2 — `mobile-fleet-data-training-mock` (MOCK, NOT A LEGITIMATE PRODUCT).** A
+complete Stage 1 artifact set (`process-model-ref.md`, `beam-overlay.yaml`,
+`session-log.md`, `validate-overlay-report.md`, `erd.drawio`) was generated for Pillar 2
+Load & Haul without any live stakeholder engagement, at explicit request, purely so a
+data-modeler training exercise has realistic file shapes to teach from — including how the
+new Source/Map pattern applies to the HVC Minestar/Wenco scenario, and how a Contextualized
+dimensional model (7 dimensions, 2 facts, 9 KPIs) is built on top of a Curated layer.
+`validate-overlay` on this overlay returns **BLOCK by design** and is not meant to reach
+PASS. Full detail, including a prominent non-production banner, is in
+`workshops/mobile-fleet-data-training-mock/session-log.md`, which that workshop's own
+closing entry marks CLOSED.
+
+### Files Added
+
+| File | Description |
+|------|-------------|
+| `BPMN-generator/tools/erd_layout.py` | Generates draw.io/mxGraph XML entity-relationship diagrams (multi-tab), with computed two-row + routing-lane layout and no auto-routing — reusable for any future ERD, not mock-specific |
+| `BPMN-generator/tools/erd_verify.py` | Mechanical verification gate for erd_layout.py output — real geometric segment-vs-box collision checking across every tab in a file |
+| `workshops/mobile-fleet-data-training-mock/*` | Mock training artifact set — see Thread 2 above and the workshop's own session-log.md banner |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `CLAUDE.md` | Added PRODUCT TYPES section (Curated vs. Contextualized); Contextualized scoping now requires an existing upstream Curated product |
+| `templates/beam-workshop.md`, `.claude/commands/extract-entities.md`, `templates/entity-extraction.md`, `templates/beam-overlay-schema.yaml` | Added `Source` and `Map` entity types with full definitions and the multi-FMS-no-MDM trigger scenario |
+| `standards/teck-vocabulary-master.md` | Added §3.5, Source System Mastering Gap (Multi-FMS Sites) — HVC Minestar/Wenco confirmed |
+
+### Verification
+
+- `erd_verify.py` passes all 11 checks across both diagram tabs (28 + 19 vertices, 21 + 15
+  edges) — including a real geometric collision check that caught and led to fixing a lane-
+  clearance sizing bug (tab 2's higher edge-per-lane count spilled past a clearance
+  constant tuned for tab 1) before this was called done.
+- `beam-overlay.yaml` passes a mechanical schema field check (0 REQUIRED-field failures)
+  while genuinely, correctly failing `validate-overlay` (status BLOCK) — the intended state
+  for an unworkshopped mock, not a defect.
+
+### Next Steps
+
+- [ ] If a real Mobile Fleet Data (MFD) product is scoped, run it as a genuine BEAM
+      workshop with named participants — do not reuse `mobile-fleet-data-training-mock`'s
+      content as a starting point beyond its illustrative file shapes.
+- [ ] Consider whether other sites (QB, Red Dog, etc.) have an equivalent multi-FMS
+      mastering gap to HVC's — currently marked TBC, not confirmed-absent, per
+      `standards/teck-vocabulary-master.md` §3.5.
+
+---
+
 ## Session 3 — 2026-08-06 · Pillar 2 BPMN Generation, Naming Standard, Lucidchart Rendering Fix
 
 **Author:** Fahim Kanji (`feemurk@gmail.com`)

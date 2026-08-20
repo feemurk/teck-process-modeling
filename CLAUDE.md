@@ -29,6 +29,37 @@ It does this by combining two things:
 
 ---
 
+## PRODUCT TYPES: CURATED AND CONTEXTUALIZED
+
+Every product scoped through this repo is one of two types:
+
+1. **Curated product** — a canonical model representing Teck's business processes and
+   grammar as entities, events, and their relationships. It captures *what happens* in
+   the business, independent of any specific reporting or analytical use case.
+2. **Contextualized product** — takes the canonical entities and events from a Curated
+   product and produces performance measurement and analytical tooling for specific use
+   cases. The most common Contextualized product is a **dimensional model** that deploys
+   business rules as metrics and KPIs, enabling reporting at the shift level and higher
+   grains, and supporting self-service exploration and diagnostics against common
+   analytical dimensions.
+
+**Contextualized products depend on Curated products.** A Contextualized product workshop
+scopes and adapts entities/events that already exist in an upstream Curated product — it
+does not invent new canonical entities. The upstream Curated product's
+`process-model-ref.md` and `beam-overlay.yaml` must exist before a Contextualized product
+is scoped — this is checked automatically by `extract entities for [product-name]`.
+
+**Both product types independently traverse all three pipeline stages** (Stage 1 → Stage 2
+→ Stage 3, see RELATIONSHIP TO DOWNSTREAM REPOS below). A Curated product and its
+dependent Contextualized product(s) are each scoped, workshopped, modeled, and deployed as
+separate pipeline runs, in dependency order — Curated first.
+
+This maps to the DDVC-layer language already used elsewhere in this file (see
+`extract entities for [product-name]` and `NEVER DO`): Curated-layer entities belong to
+Curated products; Contextualized-layer entities belong to Contextualized products.
+
+---
+
 ## RELATIONSHIP TO DOWNSTREAM REPOS
 
 ```
@@ -45,6 +76,15 @@ teck-data-modeling (Stage 2)
         ▼
 teck-dbt / teck-dlt (Stage 3)
 ```
+
+Stage 3 (`teck-dbt` / `teck-dlt`) consumes the ODCS contract produced by Stage 2 and
+deploys it as physical dbt transformation models and DLT ingestion pipelines — the layer
+that actually materializes and serves the data product to consumers.
+
+`[product-name]` in this diagram can be either a Curated or a Contextualized product (see
+PRODUCT TYPES above). Each runs the full Stage 1 → 2 → 3 pipeline independently; a
+Contextualized product's Stage 1 artifacts additionally reference its upstream Curated
+product's entities and events.
 
 The three files that cross the Stage 1 → Stage 2 boundary are:
 1. `workshops/[product-name]/process-model-ref.md` — scoped entity extract from the pillar model
@@ -263,6 +303,8 @@ When `CORRECTION:` is received:
 - Accept a stakeholder answer that would embed business logic in the Curated layer
   (flag it, document it as a Contextualized concern, park it as an open item)
 - Conflate Teck-specific process variants with errors in the industry-standard model
+- Scope a Contextualized product without confirming its upstream Curated product's
+  `process-model-ref.md` and `beam-overlay.yaml` already exist
 
 ---
 
