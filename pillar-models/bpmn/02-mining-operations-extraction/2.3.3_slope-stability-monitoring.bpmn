@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_L3_2_3_3" targetNamespace="https://teck.example/process-models/pillar-02">
+  <bpmn:collaboration id="Collab_L3_2_3_3">
+    <bpmn:participant id="Pool_L3_2_3_3" name="2.3.3 Slope Stability Monitoring" processRef="Process_L3_2_3_3"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_L3_2_3_3" isExecutable="false">
+    <bpmn:documentation>L1/L2/L3 Process. Geotechnical instrumentation continuously monitors pit wall displacement and pore water pressure to detect precursor signs of slope instability. Safety-critical monitoring function. Displacement alerts can trigger exclusion zones and production interruptions classified as TUM delays.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_L3_2_3_3">
+      <bpmn:lane id="Lane_L3_2_3_3_ms" name="Monitoring System">
+        <bpmn:flowNodeRef>Start_L3_2_3_3_s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Par_L3_2_3_3_f</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Service_L3_2_3_3_2_3_3_1</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_L3_2_3_3_mc" name="Mine Controller">
+        <bpmn:flowNodeRef>Task_L3_2_3_3_i</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_2_3_3_e3</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_L3_2_3_3_ge" name="Geotechnical Engineer">
+        <bpmn:flowNodeRef>Task_L3_2_3_3_2_3_3_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Par_L3_2_3_3_j</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L3_2_3_3_g1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_2_3_3_e1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_2_3_3_a</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L3_2_3_3_g2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_2_3_3_e2</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_L3_2_3_3_s" name="Scan interval or alert trigger">
+      <bpmn:outgoing>Flow_L3_2_3_3_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:parallelGateway id="Par_L3_2_3_3_f" name="Fork">
+      <bpmn:incoming>Flow_L3_2_3_3_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_2_3_3_2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_2_3_3_3</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:serviceTask id="Service_L3_2_3_3_2_3_3_1" name="2.3.3.1 Collect Prism and Radar Displacement Data">
+      <bpmn:documentation>Robotic total station surveys retroreflective prisms installed on pit walls at regular intervals (typically 15–60 min), computing 3D displacement vectors for each prism. Ground-based slope monitoring radar (GBSAR) provides continuous surface displacement maps, updated at 15–60 minute scan intervals. Both datasets are time-stamped in UTC. Velocity thresholds trigger automated alerts.
+ISA-95 level: 1 / 2
+Actors: Geotechnical Engineer; Automated monitoring system
+Standard alignment: ISA-95 Level 1 (sensing); ISA-95 Level 2 (monitoring/alert)
+DDVC layer: Raw (time-series: slope_monitoring_telemetry)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_2_3_3_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_2_3_3_4</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:task id="Task_L3_2_3_3_2_3_3_2" name="2.3.3.2 Read and Assess Piezometer Data">
+      <bpmn:documentation>Vibrating wire piezometers in geotechnical boreholes measure pore water pressure at specific depth horizons. Data loggers record pressure readings at 15–60 min intervals and transmit via telemetry to the geotechnical database. Geotechnical engineer reviews trends for rising pore pressure anomalies. Anomalous readings trigger engineering assessment and potential dewatering response or operational constraint.
+ISA-95 level: 1 / 3
+Actors: Geotechnical Engineer
+Standard alignment: ISA-95 Levels 1, 3
+DDVC layer: Raw (time-series); Curated (geotechnical_reading)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_2_3_3_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_2_3_3_5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:parallelGateway id="Par_L3_2_3_3_j" name="Join">
+      <bpmn:incoming>Flow_L3_2_3_3_4</bpmn:incoming>
+      <bpmn:incoming>Flow_L3_2_3_3_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_2_3_3_6</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:exclusiveGateway id="Gw_L3_2_3_3_g1" name="Threshold exceeded?" default="Flow_L3_2_3_3_7">
+      <bpmn:incoming>Flow_L3_2_3_3_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_2_3_3_7</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_2_3_3_8</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_L3_2_3_3_e1" name="Reading logged">
+      <bpmn:incoming>Flow_L3_2_3_3_8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="Task_L3_2_3_3_a" name="Assess stability event">
+      <bpmn:documentation>Derived from the Process Flow Narratives section (not a row in the Process Decomposition).</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_2_3_3_7</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_2_3_3_9</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_L3_2_3_3_g2" name="Constraint required?" default="Flow_L3_2_3_3_10">
+      <bpmn:incoming>Flow_L3_2_3_3_9</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_2_3_3_10</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_2_3_3_11</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_L3_2_3_3_e2" name="Event documented">
+      <bpmn:incoming>Flow_L3_2_3_3_11</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="Task_L3_2_3_3_i" name="Issue operational constraint">
+      <bpmn:documentation>Derived from the Process Flow Narratives section (not a row in the Process Decomposition).</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_2_3_3_10</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_2_3_3_12</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_L3_2_3_3_e3" name="Constraint enforced">
+      <bpmn:incoming>Flow_L3_2_3_3_12</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_L3_2_3_3_1" sourceRef="Start_L3_2_3_3_s" targetRef="Par_L3_2_3_3_f"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_3_3_2" sourceRef="Par_L3_2_3_3_f" targetRef="Service_L3_2_3_3_2_3_3_1"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_3_3_3" sourceRef="Par_L3_2_3_3_f" targetRef="Task_L3_2_3_3_2_3_3_2"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_3_3_4" sourceRef="Service_L3_2_3_3_2_3_3_1" targetRef="Par_L3_2_3_3_j"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_3_3_5" sourceRef="Task_L3_2_3_3_2_3_3_2" targetRef="Par_L3_2_3_3_j"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_3_3_6" sourceRef="Par_L3_2_3_3_j" targetRef="Gw_L3_2_3_3_g1"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_3_3_7" name="Yes" sourceRef="Gw_L3_2_3_3_g1" targetRef="Task_L3_2_3_3_a"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_3_3_8" name="No" sourceRef="Gw_L3_2_3_3_g1" targetRef="End_L3_2_3_3_e1"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_3_3_9" sourceRef="Task_L3_2_3_3_a" targetRef="Gw_L3_2_3_3_g2"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_3_3_10" name="Yes" sourceRef="Gw_L3_2_3_3_g2" targetRef="Task_L3_2_3_3_i"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_3_3_11" name="No" sourceRef="Gw_L3_2_3_3_g2" targetRef="End_L3_2_3_3_e2"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_3_3_12" sourceRef="Task_L3_2_3_3_i" targetRef="End_L3_2_3_3_e3"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_L3_2_3_3">
+    <bpmndi:BPMNPlane id="Plane_L3_2_3_3" bpmnElement="Collab_L3_2_3_3">
+      <bpmndi:BPMNShape id="Pool_L3_2_3_3_di" bpmnElement="Pool_L3_2_3_3" isHorizontal="true"><dc:Bounds x="20" y="20" width="1360" height="710"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_2_3_3_ms_di" bpmnElement="Lane_L3_2_3_3_ms" isHorizontal="true"><dc:Bounds x="60" y="20" width="1320" height="200"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_2_3_3_mc_di" bpmnElement="Lane_L3_2_3_3_mc" isHorizontal="true"><dc:Bounds x="60" y="220" width="1320" height="200"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_2_3_3_ge_di" bpmnElement="Lane_L3_2_3_3_ge" isHorizontal="true"><dc:Bounds x="60" y="420" width="1320" height="310"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_L3_2_3_3_s_di" bpmnElement="Start_L3_2_3_3_s"><dc:Bounds x="110" y="87" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="88" y="149" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Par_L3_2_3_3_f_di" bpmnElement="Par_L3_2_3_3_f"><dc:Bounds x="202" y="80" width="70" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Service_L3_2_3_3_2_3_3_1_di" bpmnElement="Service_L3_2_3_3_2_3_3_1"><dc:Bounds x="308" y="75" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_2_3_3_2_3_3_2_di" bpmnElement="Task_L3_2_3_3_2_3_3_2"><dc:Bounds x="308" y="475" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Par_L3_2_3_3_j_di" bpmnElement="Par_L3_2_3_3_j"><dc:Bounds x="514" y="480" width="70" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L3_2_3_3_g1_di" bpmnElement="Gw_L3_2_3_3_g1" isMarkerVisible="true"><dc:Bounds x="620" y="480" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="605" y="446" width="100" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_2_3_3_e1_di" bpmnElement="End_L3_2_3_3_e1"><dc:Bounds x="811" y="612" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="789" y="674" width="100" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_2_3_3_a_di" bpmnElement="Task_L3_2_3_3_a"><dc:Bounds x="754" y="475" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L3_2_3_3_g2_di" bpmnElement="Gw_L3_2_3_3_g2" isMarkerVisible="true"><dc:Bounds x="960" y="480" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="945" y="446" width="100" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_2_3_3_e2_di" bpmnElement="End_L3_2_3_3_e2"><dc:Bounds x="1151" y="612" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1129" y="674" width="100" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_2_3_3_i_di" bpmnElement="Task_L3_2_3_3_i"><dc:Bounds x="1094" y="275" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_2_3_3_e3_di" bpmnElement="End_L3_2_3_3_e3"><dc:Bounds x="1300" y="287" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1278" y="349" width="100" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_L3_2_3_3_1_di" bpmnElement="Flow_L3_2_3_3_1"><di:waypoint x="166" y="115"/><di:waypoint x="202" y="115"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_3_3_2_di" bpmnElement="Flow_L3_2_3_3_2"><di:waypoint x="272" y="115"/><di:waypoint x="308" y="115"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_3_3_3_di" bpmnElement="Flow_L3_2_3_3_3"><di:waypoint x="237" y="150"/><di:waypoint x="237" y="515"/><di:waypoint x="308" y="515"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_3_3_4_di" bpmnElement="Flow_L3_2_3_3_4"><di:waypoint x="478" y="115"/><di:waypoint x="549" y="115"/><di:waypoint x="549" y="480"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_3_3_5_di" bpmnElement="Flow_L3_2_3_3_5"><di:waypoint x="478" y="515"/><di:waypoint x="514" y="515"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_3_3_6_di" bpmnElement="Flow_L3_2_3_3_6"><di:waypoint x="584" y="515"/><di:waypoint x="620" y="515"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_3_3_7_di" bpmnElement="Flow_L3_2_3_3_7"><di:waypoint x="690" y="515"/><di:waypoint x="754" y="515"/><bpmndi:BPMNLabel><dc:Bounds x="694" y="495" width="28" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_3_3_8_di" bpmnElement="Flow_L3_2_3_3_8"><di:waypoint x="655" y="550"/><di:waypoint x="655" y="640"/><di:waypoint x="811" y="640"/><bpmndi:BPMNLabel><dc:Bounds x="661" y="556" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_3_3_9_di" bpmnElement="Flow_L3_2_3_3_9"><di:waypoint x="924" y="515"/><di:waypoint x="960" y="515"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_3_3_10_di" bpmnElement="Flow_L3_2_3_3_10"><di:waypoint x="1030" y="515"/><di:waypoint x="1076" y="515"/><di:waypoint x="1076" y="315"/><di:waypoint x="1094" y="315"/><bpmndi:BPMNLabel><dc:Bounds x="1034" y="495" width="28" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_3_3_11_di" bpmnElement="Flow_L3_2_3_3_11"><di:waypoint x="995" y="550"/><di:waypoint x="995" y="640"/><di:waypoint x="1151" y="640"/><bpmndi:BPMNLabel><dc:Bounds x="1001" y="556" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_3_3_12_di" bpmnElement="Flow_L3_2_3_3_12"><di:waypoint x="1264" y="315"/><di:waypoint x="1300" y="315"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

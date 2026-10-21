@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_L3_2_1_4" targetNamespace="https://teck.example/process-models/pillar-02">
+  <bpmn:collaboration id="Collab_L3_2_1_4">
+    <bpmn:participant id="Pool_L3_2_1_4" name="2.1.4 Detonation &amp; Assessment" processRef="Process_L3_2_1_4"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_L3_2_1_4" isExecutable="false">
+    <bpmn:documentation>L0/L3 Process. Controlled detonation of the charged blast pattern and systematic post-blast assessment of fragmentation outcome, safety clearance, and muck pile geometry. Fragmentation assessment data feeds back into drill design optimization.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_L3_2_1_4">
+      <bpmn:lane id="Lane_L3_2_1_4_en" name="Drill &amp; Blast Engineer">
+        <bpmn:flowNodeRef>Task_L3_2_1_4_2_1_4_4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L3_2_1_4_g2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_2_1_4_e1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_2_1_4_e2</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_L3_2_1_4_sf" name="Shot-firer / D&amp;B Supervisor">
+        <bpmn:flowNodeRef>Start_L3_2_1_4_s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_2_1_4_2_1_4_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_2_1_4_2_1_4_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_2_1_4_2_1_4_3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L3_2_1_4_g1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_2_1_4_m</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_L3_2_1_4_s" name="Initiation network complete">
+      <bpmn:outgoing>Flow_L3_2_1_4_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_L3_2_1_4_2_1_4_1" name="2.1.4.1 Establish and Clear Exclusion Zone">
+      <bpmn:documentation>Shot-firer, with supervisor approval, establishes and enforces the required exclusion zone radius around the blast pattern. All personnel, equipment, and vehicles are evacuated beyond the exclusion boundary. Equipment assigned to exclusion zone enters TUM state: Operating Standby (SBO) if management-directed wait, or Operating Delay (OD) if brief temporary interruption.
+ISA-95 level: 0 / 3
+Actors: Shot-firer; Drill &amp; Blast Supervisor; Mine Controller
+Standard alignment: GMG TUM (OD or SBO for affected equipment); ISA-95 Level 3 (dispatch/tracking)
+DDVC layer: Raw; Curated (delay_event with TUM classification)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_2_1_4_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_2_1_4_2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_L3_2_1_4_2_1_4_2" name="2.1.4.2 Initiate Blast">
+      <bpmn:documentation>Shot-firer connects and activates the firing device (blasting machine or EBS logger/blaster unit), triggering detonation of the initiation network. The blast event timestamp (UTC) is recorded as the canonical transaction timestamp for the blast event entity. For EBS, the logger records each individual detonator firing time vs. programmed delay.
+ISA-95 level: 0
+Actors: Shot-firer
+Standard alignment: ISA-95 Level 0
+DDVC layer: Raw; Curated (blast_event)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_2_1_4_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_2_1_4_3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_L3_2_1_4_2_1_4_3" name="2.1.4.3 Conduct Post-Blast Safety Inspection">
+      <bpmn:documentation>Shot-firer and supervisor conduct a systematic walk-through of the blasted area after the required re-entry waiting period (smoke and fume clearance). Inspection checks for misfires, unexploded holes, and hazardous muck pile geometry. Safety clearance record is issued before any equipment re-enters.
+ISA-95 level: 0 / 3
+Actors: Shot-firer; Drill &amp; Blast Supervisor
+Standard alignment: ISA-95 Level 3 (quality/safety check)
+DDVC layer: Raw</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_2_1_4_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_2_1_4_4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_L3_2_1_4_g1" name="Misfire found?" default="Flow_L3_2_1_4_5">
+      <bpmn:incoming>Flow_L3_2_1_4_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_2_1_4_5</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_2_1_4_6</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_L3_2_1_4_m" name="Misfire protocol activated">
+      <bpmn:incoming>Flow_L3_2_1_4_6</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="Task_L3_2_1_4_2_1_4_4" name="2.1.4.4 Assess Fragmentation Quality">
+      <bpmn:documentation>Digital photographs or drone imagery of the muck pile surface are processed through fragmentation analysis software to generate a particle size distribution (PSD) curve. P80 fragmentation size is compared against target specification. Result feeds into blast design database as a closed-loop performance record against design parameters. [COPPER/ZINC NOTE: P80 targets differ by ore hardness — porphyry Cu ores (QB, HVC) typically harder than sedex Zn (Red Dog); design parameters differ accordingly.]
+ISA-95 level: 3
+Actors: Drill &amp; Blast Engineer
+Standard alignment: ISA-95 Level 3 (quality management); GMG Mobile Equipment Open Data (imaging data)
+DDVC layer: Raw; Curated (blast_event — fragmentation result attribute)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_2_1_4_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_2_1_4_7</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_L3_2_1_4_g2" name="P80 in spec?" default="Flow_L3_2_1_4_8">
+      <bpmn:incoming>Flow_L3_2_1_4_7</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_2_1_4_8</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_2_1_4_9</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_L3_2_1_4_e1" name="Fragmentation accepted">
+      <bpmn:incoming>Flow_L3_2_1_4_8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_L3_2_1_4_e2" name="Re-blast assessment issued">
+      <bpmn:incoming>Flow_L3_2_1_4_9</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_L3_2_1_4_1" sourceRef="Start_L3_2_1_4_s" targetRef="Task_L3_2_1_4_2_1_4_1"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_1_4_2" sourceRef="Task_L3_2_1_4_2_1_4_1" targetRef="Task_L3_2_1_4_2_1_4_2"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_1_4_3" sourceRef="Task_L3_2_1_4_2_1_4_2" targetRef="Task_L3_2_1_4_2_1_4_3"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_1_4_4" sourceRef="Task_L3_2_1_4_2_1_4_3" targetRef="Gw_L3_2_1_4_g1"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_1_4_5" name="No" sourceRef="Gw_L3_2_1_4_g1" targetRef="Task_L3_2_1_4_2_1_4_4"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_1_4_6" name="Yes" sourceRef="Gw_L3_2_1_4_g1" targetRef="End_L3_2_1_4_m"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_1_4_7" sourceRef="Task_L3_2_1_4_2_1_4_4" targetRef="Gw_L3_2_1_4_g2"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_1_4_8" name="Yes" sourceRef="Gw_L3_2_1_4_g2" targetRef="End_L3_2_1_4_e1"/>
+    <bpmn:sequenceFlow id="Flow_L3_2_1_4_9" name="No" sourceRef="Gw_L3_2_1_4_g2" targetRef="End_L3_2_1_4_e2"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_L3_2_1_4">
+    <bpmndi:BPMNPlane id="Plane_L3_2_1_4" bpmnElement="Collab_L3_2_1_4">
+      <bpmndi:BPMNShape id="Pool_L3_2_1_4_di" bpmnElement="Pool_L3_2_1_4" isHorizontal="true"><dc:Bounds x="20" y="20" width="1354" height="620"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_2_1_4_en_di" bpmnElement="Lane_L3_2_1_4_en" isHorizontal="true"><dc:Bounds x="60" y="20" width="1314" height="310"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_2_1_4_sf_di" bpmnElement="Lane_L3_2_1_4_sf" isHorizontal="true"><dc:Bounds x="60" y="330" width="1314" height="310"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_L3_2_1_4_s_di" bpmnElement="Start_L3_2_1_4_s"><dc:Bounds x="110" y="397" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="88" y="459" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_2_1_4_2_1_4_1_di" bpmnElement="Task_L3_2_1_4_2_1_4_1"><dc:Bounds x="202" y="385" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_2_1_4_2_1_4_2_di" bpmnElement="Task_L3_2_1_4_2_1_4_2"><dc:Bounds x="408" y="385" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_2_1_4_2_1_4_3_di" bpmnElement="Task_L3_2_1_4_2_1_4_3"><dc:Bounds x="614" y="385" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L3_2_1_4_g1_di" bpmnElement="Gw_L3_2_1_4_g1" isMarkerVisible="true"><dc:Bounds x="820" y="390" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="805" y="370" width="100" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_2_1_4_m_di" bpmnElement="End_L3_2_1_4_m"><dc:Bounds x="1011" y="522" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="989" y="584" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_2_1_4_2_1_4_4_di" bpmnElement="Task_L3_2_1_4_2_1_4_4"><dc:Bounds x="954" y="75" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L3_2_1_4_g2_di" bpmnElement="Gw_L3_2_1_4_g2" isMarkerVisible="true"><dc:Bounds x="1160" y="80" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="1145" y="60" width="100" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_2_1_4_e1_di" bpmnElement="End_L3_2_1_4_e1"><dc:Bounds x="1294" y="87" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1272" y="149" width="100" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_2_1_4_e2_di" bpmnElement="End_L3_2_1_4_e2"><dc:Bounds x="1294" y="212" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1272" y="274" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_L3_2_1_4_1_di" bpmnElement="Flow_L3_2_1_4_1"><di:waypoint x="166" y="425"/><di:waypoint x="202" y="425"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_1_4_2_di" bpmnElement="Flow_L3_2_1_4_2"><di:waypoint x="372" y="425"/><di:waypoint x="408" y="425"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_1_4_3_di" bpmnElement="Flow_L3_2_1_4_3"><di:waypoint x="578" y="425"/><di:waypoint x="614" y="425"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_1_4_4_di" bpmnElement="Flow_L3_2_1_4_4"><di:waypoint x="784" y="425"/><di:waypoint x="820" y="425"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_1_4_5_di" bpmnElement="Flow_L3_2_1_4_5"><di:waypoint x="890" y="425"/><di:waypoint x="936" y="425"/><di:waypoint x="936" y="115"/><di:waypoint x="954" y="115"/><bpmndi:BPMNLabel><dc:Bounds x="894" y="405" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_1_4_6_di" bpmnElement="Flow_L3_2_1_4_6"><di:waypoint x="855" y="460"/><di:waypoint x="855" y="550"/><di:waypoint x="1011" y="550"/><bpmndi:BPMNLabel><dc:Bounds x="861" y="466" width="28" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_1_4_7_di" bpmnElement="Flow_L3_2_1_4_7"><di:waypoint x="1124" y="115"/><di:waypoint x="1160" y="115"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_1_4_8_di" bpmnElement="Flow_L3_2_1_4_8"><di:waypoint x="1230" y="115"/><di:waypoint x="1294" y="115"/><bpmndi:BPMNLabel><dc:Bounds x="1234" y="95" width="28" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_2_1_4_9_di" bpmnElement="Flow_L3_2_1_4_9"><di:waypoint x="1195" y="150"/><di:waypoint x="1195" y="240"/><di:waypoint x="1294" y="240"/><bpmndi:BPMNLabel><dc:Bounds x="1201" y="156" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
