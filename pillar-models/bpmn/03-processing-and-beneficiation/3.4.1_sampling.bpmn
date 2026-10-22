@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_L3_3_4_1" targetNamespace="https://teck.example/process-models/pillar-03">
+  <bpmn:collaboration id="Collab_L3_3_4_1">
+    <bpmn:participant id="Pool_L3_3_4_1" name="3.4.1 Sampling" processRef="Process_L3_3_4_1"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_L3_3_4_1" isExecutable="false">
+    <bpmn:documentation>L1/L3 Process. Representative sampling of all plant streams at defined measurement points is the foundation of metallurgical accounting. AMIRA P754 Principle 6 (representative, unbiased sampling) is the governing constraint. Automatic samplers on continuous streams; grab/composite sampling for batch and periodic streams.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_L3_3_4_1">
+      <bpmn:lane id="Lane_L3_3_4_1_ins" name="Auto-sampler / Plant Chemist">
+        <bpmn:flowNodeRef>Start_L3_3_4_1_s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Par_L3_3_4_1_f</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Service_L3_3_4_1_3_4_1_1</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_L3_3_4_1_tech" name="Process Technician">
+        <bpmn:flowNodeRef>Task_L3_3_4_1_3_4_1_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Par_L3_3_4_1_j</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_4_1_n1</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_L3_3_4_1_lab" name="Laboratory Technician">
+        <bpmn:flowNodeRef>Task_L3_3_4_1_3_4_1_3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_3_4_1_e</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_L3_3_4_1_s" name="Shift start; samplers active">
+      <bpmn:outgoing>Flow_L3_3_4_1_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:parallelGateway id="Par_L3_3_4_1_f" name="Fork">
+      <bpmn:incoming>Flow_L3_3_4_1_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_4_1_2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_3_4_1_3</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:serviceTask id="Service_L3_3_4_1_3_4_1_1" name="3.4.1.1 Collect In-Stream Samples via Auto-Sampler">
+      <bpmn:documentation>Automatic samplers (cross-stream, vezin-type, or cross-belt) collect primary increments from designated plant streams at timed intervals (typically every 15–60 minutes). Streams sampled: flotation feed, Cu rougher concentrate, Cu final concentrate, Cu tailings, Zn rougher concentrate (where applicable), Zn final concentrate, Zn tailings, Pb final concentrate (where applicable), plant composite tailings. Primary increments are accumulated in a sample cutter over the shift to form a shift composite. [P754: grade (all relevant metals + moisture) | automatic in-stream sampler | continuous increment (every 15–60 min); shift composite assembled | Principles 6, 7, 10 | YES for concentrate final streams; NO for intermediate streams]
+ISA-95 level: 1
+Actors: Automated (auto-sampler); Plant Chemist (oversight)
+Standard alignment: ISA-95 Level 1; AMIRA P754 Principles 6, 7, 10
+DDVC layer: Raw; Curated (sample_submission)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_4_1_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_4_1_4</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:task id="Task_L3_3_4_1_3_4_1_2" name="3.4.1.2 Collect Grab and Composite Samples">
+      <bpmn:documentation>Operators collect grab samples from specific point locations (filter cake conveyor, concentrate shed, reclaim conveyor) at defined intervals or for batch-specific QC. Composites are formed from multiple grab increments accumulated over the shift. Used where auto-samplers are not installed or for verification sampling. [P754: grade + moisture | grab sample (manual) | defined intervals per sampling plan | Principles 6, 7 | Conditional — depends on stream designation in site sampling plan]
+ISA-95 level: 3
+Actors: Process Technician
+Standard alignment: ISA-95 Level 3 (quality management); AMIRA P754 Principles 6, 7
+DDVC layer: Raw</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_4_1_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_4_1_5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:parallelGateway id="Par_L3_3_4_1_j" name="Join">
+      <bpmn:incoming>Flow_L3_3_4_1_4</bpmn:incoming>
+      <bpmn:incoming>Flow_L3_3_4_1_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_4_1_6</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:task id="Task_L3_3_4_1_n1" name="Submit shift composite samples to LIMS">
+      <bpmn:documentation>Derived from the Process Flow Narratives section (not a row in the Process Decomposition). Registered with source stream, collection interval, shift ID and chain-of-custody record.</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_4_1_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_4_1_7</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_L3_3_4_1_3_4_1_3" name="3.4.1.3 Prepare Samples for Analysis">
+      <bpmn:documentation>Physical samples are processed in the sample preparation laboratory: weighed (wet mass), dried (oven at 105°C), re-weighed (dry mass — moisture % calculated), pulverised (ring mill or LM5) to a fine powder, split (riffle splitter or rotary divider) to produce the assay sub-sample, and sealed for dispatch to the primary laboratory. QC samples (duplicates, certified reference materials, blanks) are inserted at the sample preparation stage. [P754: mass (wet and dry mass for moisture %); grain size of prepared pulp | gravimetric balance + oven; ring mill; riffle splitter | per sample received | Principles 6, 7, 10 | NO — sample preparation is internal to the QA/QC process]
+ISA-95 level: 3
+Actors: Laboratory Technician
+Standard alignment: ISA-95 Level 3; AMIRA P754 Principles 6, 7, 10
+DDVC layer: Raw; Curated (sample_submission — preparation attributes)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_4_1_7</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_4_1_8</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_L3_3_4_1_e" name="Assay pulps ready">
+      <bpmn:incoming>Flow_L3_3_4_1_8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_L3_3_4_1_1" sourceRef="Start_L3_3_4_1_s" targetRef="Par_L3_3_4_1_f"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_4_1_2" sourceRef="Par_L3_3_4_1_f" targetRef="Service_L3_3_4_1_3_4_1_1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_4_1_3" sourceRef="Par_L3_3_4_1_f" targetRef="Task_L3_3_4_1_3_4_1_2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_4_1_4" sourceRef="Service_L3_3_4_1_3_4_1_1" targetRef="Par_L3_3_4_1_j"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_4_1_5" sourceRef="Task_L3_3_4_1_3_4_1_2" targetRef="Par_L3_3_4_1_j"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_4_1_6" sourceRef="Par_L3_3_4_1_j" targetRef="Task_L3_3_4_1_n1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_4_1_7" sourceRef="Task_L3_3_4_1_n1" targetRef="Task_L3_3_4_1_3_4_1_3"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_4_1_8" sourceRef="Task_L3_3_4_1_3_4_1_3" targetRef="End_L3_3_4_1_e"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_L3_3_4_1">
+    <bpmndi:BPMNPlane id="Plane_L3_3_4_1" bpmnElement="Collab_L3_3_4_1">
+      <bpmndi:BPMNShape id="Pool_L3_3_4_1_di" bpmnElement="Pool_L3_3_4_1" isHorizontal="true"><dc:Bounds x="20" y="20" width="1128" height="510"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_4_1_ins_di" bpmnElement="Lane_L3_3_4_1_ins" isHorizontal="true"><dc:Bounds x="60" y="20" width="1088" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_4_1_tech_di" bpmnElement="Lane_L3_3_4_1_tech" isHorizontal="true"><dc:Bounds x="60" y="190" width="1088" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_4_1_lab_di" bpmnElement="Lane_L3_3_4_1_lab" isHorizontal="true"><dc:Bounds x="60" y="360" width="1088" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_L3_3_4_1_s_di" bpmnElement="Start_L3_3_4_1_s"><dc:Bounds x="110" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="88" y="139" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Par_L3_3_4_1_f_di" bpmnElement="Par_L3_3_4_1_f"><dc:Bounds x="202" y="70" width="70" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Service_L3_3_4_1_3_4_1_1_di" bpmnElement="Service_L3_3_4_1_3_4_1_1"><dc:Bounds x="308" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_4_1_3_4_1_2_di" bpmnElement="Task_L3_3_4_1_3_4_1_2"><dc:Bounds x="308" y="235" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Par_L3_3_4_1_j_di" bpmnElement="Par_L3_3_4_1_j"><dc:Bounds x="514" y="240" width="70" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_4_1_n1_di" bpmnElement="Task_L3_3_4_1_n1"><dc:Bounds x="620" y="235" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_4_1_3_4_1_3_di" bpmnElement="Task_L3_3_4_1_3_4_1_3"><dc:Bounds x="826" y="405" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_3_4_1_e_di" bpmnElement="End_L3_3_4_1_e"><dc:Bounds x="1032" y="417" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1010" y="479" width="100" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_L3_3_4_1_1_di" bpmnElement="Flow_L3_3_4_1_1"><di:waypoint x="166" y="105"/><di:waypoint x="202" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_4_1_2_di" bpmnElement="Flow_L3_3_4_1_2"><di:waypoint x="272" y="105"/><di:waypoint x="308" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_4_1_3_di" bpmnElement="Flow_L3_3_4_1_3"><di:waypoint x="237" y="140"/><di:waypoint x="237" y="275"/><di:waypoint x="308" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_4_1_4_di" bpmnElement="Flow_L3_3_4_1_4"><di:waypoint x="478" y="105"/><di:waypoint x="549" y="105"/><di:waypoint x="549" y="240"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_4_1_5_di" bpmnElement="Flow_L3_3_4_1_5"><di:waypoint x="478" y="275"/><di:waypoint x="514" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_4_1_6_di" bpmnElement="Flow_L3_3_4_1_6"><di:waypoint x="584" y="275"/><di:waypoint x="620" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_4_1_7_di" bpmnElement="Flow_L3_3_4_1_7"><di:waypoint x="790" y="275"/><di:waypoint x="808" y="275"/><di:waypoint x="808" y="445"/><di:waypoint x="826" y="445"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_4_1_8_di" bpmnElement="Flow_L3_3_4_1_8"><di:waypoint x="996" y="445"/><di:waypoint x="1032" y="445"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

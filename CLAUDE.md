@@ -32,7 +32,7 @@ It does this by combining two things:
 ## RELATIONSHIP TO DOWNSTREAM REPOS
 
 ```
-teck-process-models (this repo)
+teck-process-modeling (this repo)
         │
         │  workshops/[product-name]/process-model-ref.md
         │  workshops/[product-name]/beam-overlay.yaml
@@ -286,7 +286,7 @@ site-specific. "Payload" at Red Dog has specific regulatory implications that
 
 Expected values:
 - `user.email` → `feemurk@gmail.com`
-- `remote origin` → `git@github.com:feemurk/teck-process-modeling.git`
+- `remote origin` → `https://github.com/feemurk/teck-process-modeling.git`
 
 Block all commits if either check fails.
 
