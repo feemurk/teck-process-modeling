@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="P2_L3_MPP_def"
+                  targetNamespace="http://teck.com/bpmn">
+
+  <bpmn:collaboration id="P2_L3_MPP_collab">
+    <bpmn:participant id="P2_L3_MPP_PL" name="Muck Pile Preparation" processRef="P2_L3_MPP_proc"/>
+  </bpmn:collaboration>
+
+  <bpmn:process id="P2_L3_MPP_proc" isExecutable="false">
+
+    <bpmn:laneSet id="P2_L3_MPP_laneSet">
+      <bpmn:lane id="P2_L3_MPP_LN_GCG" name="Grade Control Geologist">
+        <bpmn:flowNodeRef>P2_L3_MPP_SE</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_MPP_T01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_MPP_T03</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L3_MPP_LN_LAB" name="LIMS / Laboratory">
+        <bpmn:flowNodeRef>P2_L3_MPP_T02</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_MPP_ICE01</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L3_MPP_LN_FMS" name="FMS / Mine Controller">
+        <bpmn:flowNodeRef>P2_L3_MPP_T04</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_MPP_EE01</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="P2_L3_MPP_SE" name="Safety clearance issued; muck pile accessible">
+      <bpmn:outgoing>P2_L3_MPP_F01</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:task id="P2_L3_MPP_T01" name="Collect Grade Control Samples (2.1.5.1)">
+      <bpmn:incoming>P2_L3_MPP_F01</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_MPP_F02</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:serviceTask id="P2_L3_MPP_T02" name="Submit Samples to LIMS">
+      <bpmn:incoming>P2_L3_MPP_F02</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_MPP_F03</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:intermediateCatchEvent id="P2_L3_MPP_ICE01" name="Lab TAT — assay turnaround (8-24 hrs)">
+      <bpmn:incoming>P2_L3_MPP_F03</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_MPP_F04</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="P2_L3_MPP_ICE01_timer"/>
+    </bpmn:intermediateCatchEvent>
+
+    <bpmn:task id="P2_L3_MPP_T03" name="Classify Material and Assign Destination (2.1.5.2)">
+      <bpmn:incoming>P2_L3_MPP_F04</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_MPP_F05</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:serviceTask id="P2_L3_MPP_T04" name="Upload Destination Assignment to FMS">
+      <bpmn:incoming>P2_L3_MPP_F05</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_MPP_F06</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:endEvent id="P2_L3_MPP_EE01" name="Material classified; FMS destinations active; Load &amp; Haul can commence">
+      <bpmn:incoming>P2_L3_MPP_F06</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="P2_L3_MPP_F01" sourceRef="P2_L3_MPP_SE" targetRef="P2_L3_MPP_T01"/>
+    <bpmn:sequenceFlow id="P2_L3_MPP_F02" sourceRef="P2_L3_MPP_T01" targetRef="P2_L3_MPP_T02"/>
+    <bpmn:sequenceFlow id="P2_L3_MPP_F03" sourceRef="P2_L3_MPP_T02" targetRef="P2_L3_MPP_ICE01"/>
+    <bpmn:sequenceFlow id="P2_L3_MPP_F04" name="Results received" sourceRef="P2_L3_MPP_ICE01" targetRef="P2_L3_MPP_T03"/>
+    <bpmn:sequenceFlow id="P2_L3_MPP_F05" sourceRef="P2_L3_MPP_T03" targetRef="P2_L3_MPP_T04"/>
+    <bpmn:sequenceFlow id="P2_L3_MPP_F06" sourceRef="P2_L3_MPP_T04" targetRef="P2_L3_MPP_EE01"/>
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="P2_L3_MPP_diagram">
+    <bpmndi:BPMNPlane id="P2_L3_MPP_plane" bpmnElement="P2_L3_MPP_collab">
+      <bpmndi:BPMNShape id="P2_L3_MPP_PL_di" bpmnElement="P2_L3_MPP_PL" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1300" height="540"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_MPP_LN_GCG_di" bpmnElement="P2_L3_MPP_LN_GCG" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1270" height="180"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_MPP_LN_LAB_di" bpmnElement="P2_L3_MPP_LN_LAB" isHorizontal="true">
+        <dc:Bounds x="190" y="260" width="1270" height="180"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_MPP_LN_FMS_di" bpmnElement="P2_L3_MPP_LN_FMS" isHorizontal="true">
+        <dc:Bounds x="190" y="440" width="1270" height="180"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="P2_L3_MPP_SE_di" bpmnElement="P2_L3_MPP_SE">
+        <dc:Bounds x="277" y="152" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_MPP_T01_di" bpmnElement="P2_L3_MPP_T01">
+        <dc:Bounds x="390" y="130" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_MPP_T02_di" bpmnElement="P2_L3_MPP_T02">
+        <dc:Bounds x="600" y="310" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_MPP_ICE01_di" bpmnElement="P2_L3_MPP_ICE01">
+        <dc:Bounds x="817" y="332" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_MPP_T03_di" bpmnElement="P2_L3_MPP_T03">
+        <dc:Bounds x="930" y="130" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_MPP_T04_di" bpmnElement="P2_L3_MPP_T04">
+        <dc:Bounds x="1140" y="490" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_MPP_EE01_di" bpmnElement="P2_L3_MPP_EE01">
+        <dc:Bounds x="1357" y="512" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="P2_L3_MPP_F01_di" bpmnElement="P2_L3_MPP_F01">
+        <di:waypoint x="313" y="170"/>
+        <di:waypoint x="390" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_MPP_F02_di" bpmnElement="P2_L3_MPP_F02">
+        <di:waypoint x="530" y="170"/>
+        <di:waypoint x="565" y="170"/>
+        <di:waypoint x="565" y="350"/>
+        <di:waypoint x="600" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_MPP_F03_di" bpmnElement="P2_L3_MPP_F03">
+        <di:waypoint x="740" y="350"/>
+        <di:waypoint x="817" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_MPP_F04_di" bpmnElement="P2_L3_MPP_F04">
+        <di:waypoint x="853" y="350"/>
+        <di:waypoint x="892" y="350"/>
+        <di:waypoint x="892" y="170"/>
+        <di:waypoint x="930" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_MPP_F05_di" bpmnElement="P2_L3_MPP_F05">
+        <di:waypoint x="1070" y="170"/>
+        <di:waypoint x="1105" y="170"/>
+        <di:waypoint x="1105" y="530"/>
+        <di:waypoint x="1140" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_MPP_F06_di" bpmnElement="P2_L3_MPP_F06">
+        <di:waypoint x="1280" y="530"/>
+        <di:waypoint x="1357" y="530"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

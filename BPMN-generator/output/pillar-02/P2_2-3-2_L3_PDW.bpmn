@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="P2_L3_PDW_def"
+                  targetNamespace="http://teck.com/bpmn">
+
+  <!-- SPEC RESOLUTIONS (per prompt template "Error Handling"):
+       1. Spec flow F03 is listed as XGW01 → SE. A BPMN start event cannot carry an incoming
+          sequence flow. Process model 2.3.2.1 describes SCADA polling the sump level
+          continuously, so F03 is retargeted to a new timer intermediate catch event
+          (P2_L3_PDW_ICE01, "Await next level poll interval") which returns to XGW01 via a new
+          flow P2_L3_PDW_F12. This preserves the spec's wait-and-recheck semantics legally.
+       2. Spec flow F09 is listed as XGW03 → SE with condition "Above low — continue". Per the
+          narrative the pump is still running and the operator continues monitoring, so F09 is
+          retargeted to P2_L3_PDW_T02 (Monitor Pump Operation and Telemetry). -->
+
+  <bpmn:collaboration id="P2_L3_PDW_collab">
+    <bpmn:participant id="P2_L3_PDW_PL" name="Pit Dewatering" processRef="P2_L3_PDW_proc"/>
+  </bpmn:collaboration>
+
+  <bpmn:process id="P2_L3_PDW_proc" isExecutable="false">
+
+    <bpmn:laneSet id="P2_L3_PDW_laneSet">
+      <bpmn:lane id="P2_L3_PDW_LN_SCA" name="Dewatering SCADA / Automation">
+        <bpmn:flowNodeRef>P2_L3_PDW_SE</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_PDW_XGW01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_PDW_ICE01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_PDW_T01</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_PDW_XGW03</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_PDW_T04</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_PDW_EE01</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P2_L3_PDW_LN_OPR" name="Dewatering Operator">
+        <bpmn:flowNodeRef>P2_L3_PDW_T02</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_PDW_XGW02</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P2_L3_PDW_T03</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="P2_L3_PDW_SE" name="Continuous — SCADA monitors sump level">
+      <bpmn:outgoing>P2_L3_PDW_F01</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="P2_L3_PDW_SE_timer"/>
+    </bpmn:startEvent>
+
+    <bpmn:exclusiveGateway id="P2_L3_PDW_XGW01" name="Sump level above high setpoint?" default="P2_L3_PDW_F03">
+      <bpmn:incoming>P2_L3_PDW_F01</bpmn:incoming>
+      <bpmn:incoming>P2_L3_PDW_F12</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_PDW_F02</bpmn:outgoing>
+      <bpmn:outgoing>P2_L3_PDW_F03</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:intermediateCatchEvent id="P2_L3_PDW_ICE01" name="Await next level poll interval">
+      <bpmn:incoming>P2_L3_PDW_F03</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_PDW_F12</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="P2_L3_PDW_ICE01_timer"/>
+    </bpmn:intermediateCatchEvent>
+
+    <bpmn:serviceTask id="P2_L3_PDW_T01" name="Start Pump (SCADA auto or operator manual) (2.3.2.1)">
+      <bpmn:incoming>P2_L3_PDW_F02</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_PDW_F04</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:task id="P2_L3_PDW_T02" name="Monitor Pump Operation and Telemetry">
+      <bpmn:incoming>P2_L3_PDW_F04</bpmn:incoming>
+      <bpmn:incoming>P2_L3_PDW_F09</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_PDW_F05</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="P2_L3_PDW_XGW02" name="Pump fault alarm?" default="P2_L3_PDW_F07">
+      <bpmn:incoming>P2_L3_PDW_F05</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_PDW_F06</bpmn:outgoing>
+      <bpmn:outgoing>P2_L3_PDW_F07</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:task id="P2_L3_PDW_T03" name="Respond to Fault; Notify Maintenance">
+      <bpmn:incoming>P2_L3_PDW_F06</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_PDW_F08</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="P2_L3_PDW_XGW03" name="Sump level below low setpoint?" default="P2_L3_PDW_F09">
+      <bpmn:incoming>P2_L3_PDW_F07</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_PDW_F09</bpmn:outgoing>
+      <bpmn:outgoing>P2_L3_PDW_F10</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:serviceTask id="P2_L3_PDW_T04" name="Stop Pump; Record Run Time">
+      <bpmn:incoming>P2_L3_PDW_F10</bpmn:incoming>
+      <bpmn:outgoing>P2_L3_PDW_F11</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:endEvent id="P2_L3_PDW_EE01" name="Pump stopped; run time recorded">
+      <bpmn:incoming>P2_L3_PDW_F08</bpmn:incoming>
+      <bpmn:incoming>P2_L3_PDW_F11</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="P2_L3_PDW_F01" sourceRef="P2_L3_PDW_SE" targetRef="P2_L3_PDW_XGW01"/>
+    <bpmn:sequenceFlow id="P2_L3_PDW_F02" name="Above high setpoint" sourceRef="P2_L3_PDW_XGW01" targetRef="P2_L3_PDW_T01"/>
+    <bpmn:sequenceFlow id="P2_L3_PDW_F03" name="Below setpoint — wait and re-check" sourceRef="P2_L3_PDW_XGW01" targetRef="P2_L3_PDW_ICE01"/>
+    <bpmn:sequenceFlow id="P2_L3_PDW_F12" name="Poll interval elapsed" sourceRef="P2_L3_PDW_ICE01" targetRef="P2_L3_PDW_XGW01"/>
+    <bpmn:sequenceFlow id="P2_L3_PDW_F04" sourceRef="P2_L3_PDW_T01" targetRef="P2_L3_PDW_T02"/>
+    <bpmn:sequenceFlow id="P2_L3_PDW_F05" sourceRef="P2_L3_PDW_T02" targetRef="P2_L3_PDW_XGW02"/>
+    <bpmn:sequenceFlow id="P2_L3_PDW_F06" name="Fault" sourceRef="P2_L3_PDW_XGW02" targetRef="P2_L3_PDW_T03"/>
+    <bpmn:sequenceFlow id="P2_L3_PDW_F07" name="Normal" sourceRef="P2_L3_PDW_XGW02" targetRef="P2_L3_PDW_XGW03"/>
+    <bpmn:sequenceFlow id="P2_L3_PDW_F08" name="Fault handled — pump offline" sourceRef="P2_L3_PDW_T03" targetRef="P2_L3_PDW_EE01"/>
+    <bpmn:sequenceFlow id="P2_L3_PDW_F09" name="Above low setpoint — continue pumping" sourceRef="P2_L3_PDW_XGW03" targetRef="P2_L3_PDW_T02"/>
+    <bpmn:sequenceFlow id="P2_L3_PDW_F10" name="Below low setpoint" sourceRef="P2_L3_PDW_XGW03" targetRef="P2_L3_PDW_T04"/>
+    <bpmn:sequenceFlow id="P2_L3_PDW_F11" sourceRef="P2_L3_PDW_T04" targetRef="P2_L3_PDW_EE01"/>
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="P2_L3_PDW_diagram">
+    <bpmndi:BPMNPlane id="P2_L3_PDW_plane" bpmnElement="P2_L3_PDW_collab">
+      <bpmndi:BPMNShape id="P2_L3_PDW_PL_di" bpmnElement="P2_L3_PDW_PL" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1420" height="490"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_PDW_LN_SCA_di" bpmnElement="P2_L3_PDW_LN_SCA" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1390" height="310"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_PDW_LN_OPR_di" bpmnElement="P2_L3_PDW_LN_OPR" isHorizontal="true">
+        <dc:Bounds x="190" y="390" width="1390" height="180"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="P2_L3_PDW_SE_di" bpmnElement="P2_L3_PDW_SE">
+        <dc:Bounds x="277" y="152" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_PDW_XGW01_di" bpmnElement="P2_L3_PDW_XGW01">
+        <dc:Bounds x="390" y="145" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_PDW_ICE01_di" bpmnElement="P2_L3_PDW_ICE01">
+        <dc:Bounds x="562" y="152" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_PDW_T01_di" bpmnElement="P2_L3_PDW_T01">
+        <dc:Bounds x="510" y="260" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_PDW_T02_di" bpmnElement="P2_L3_PDW_T02">
+        <dc:Bounds x="720" y="440" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_PDW_XGW02_di" bpmnElement="P2_L3_PDW_XGW02">
+        <dc:Bounds x="930" y="455" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_PDW_T03_di" bpmnElement="P2_L3_PDW_T03">
+        <dc:Bounds x="1050" y="440" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_PDW_XGW03_di" bpmnElement="P2_L3_PDW_XGW03">
+        <dc:Bounds x="1095" y="145" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_PDW_T04_di" bpmnElement="P2_L3_PDW_T04">
+        <dc:Bounds x="1260" y="130" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P2_L3_PDW_EE01_di" bpmnElement="P2_L3_PDW_EE01">
+        <dc:Bounds x="1477" y="152" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="P2_L3_PDW_F01_di" bpmnElement="P2_L3_PDW_F01">
+        <di:waypoint x="313" y="170"/>
+        <di:waypoint x="390" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_PDW_F02_di" bpmnElement="P2_L3_PDW_F02">
+        <di:waypoint x="440" y="170"/>
+        <di:waypoint x="475" y="170"/>
+        <di:waypoint x="475" y="300"/>
+        <di:waypoint x="510" y="300"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_PDW_F03_di" bpmnElement="P2_L3_PDW_F03">
+        <di:waypoint x="440" y="170"/>
+        <di:waypoint x="562" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_PDW_F12_di" bpmnElement="P2_L3_PDW_F12">
+        <di:waypoint x="580" y="188"/>
+        <di:waypoint x="580" y="230"/>
+        <di:waypoint x="415" y="230"/>
+        <di:waypoint x="415" y="195"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_PDW_F04_di" bpmnElement="P2_L3_PDW_F04">
+        <di:waypoint x="650" y="300"/>
+        <di:waypoint x="685" y="300"/>
+        <di:waypoint x="685" y="480"/>
+        <di:waypoint x="720" y="480"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_PDW_F05_di" bpmnElement="P2_L3_PDW_F05">
+        <di:waypoint x="860" y="480"/>
+        <di:waypoint x="930" y="480"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_PDW_F06_di" bpmnElement="P2_L3_PDW_F06">
+        <di:waypoint x="980" y="480"/>
+        <di:waypoint x="1050" y="480"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_PDW_F07_di" bpmnElement="P2_L3_PDW_F07">
+        <di:waypoint x="980" y="480"/>
+        <di:waypoint x="1038" y="480"/>
+        <di:waypoint x="1038" y="170"/>
+        <di:waypoint x="1095" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_PDW_F08_di" bpmnElement="P2_L3_PDW_F08">
+        <di:waypoint x="1190" y="480"/>
+        <di:waypoint x="1334" y="480"/>
+        <di:waypoint x="1334" y="170"/>
+        <di:waypoint x="1477" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_PDW_F09_di" bpmnElement="P2_L3_PDW_F09">
+        <di:waypoint x="1120" y="195"/>
+        <di:waypoint x="1120" y="562"/>
+        <di:waypoint x="790" y="562"/>
+        <di:waypoint x="790" y="520"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_PDW_F10_di" bpmnElement="P2_L3_PDW_F10">
+        <di:waypoint x="1145" y="170"/>
+        <di:waypoint x="1260" y="170"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P2_L3_PDW_F11_di" bpmnElement="P2_L3_PDW_F11">
+        <di:waypoint x="1400" y="170"/>
+        <di:waypoint x="1477" y="170"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>
