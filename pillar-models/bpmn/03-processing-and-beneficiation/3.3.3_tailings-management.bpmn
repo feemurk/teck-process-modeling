@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_L3_3_3_3" targetNamespace="https://teck.example/process-models/pillar-03">
+  <bpmn:collaboration id="Collab_L3_3_3_3">
+    <bpmn:participant id="Pool_L3_3_3_3" name="3.3.3 Tailings Management" processRef="Process_L3_3_3_3"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_L3_3_3_3" isExecutable="false">
+    <bpmn:documentation>L0/L1/L2 Process. Flotation tailings (the mineral and gangue fraction not recovered as concentrate) are thickened, pumped, and deposited in the Tailings Storage Facility (TSF). Process water is recovered from the TSF and returned to the plant water circuit. Tailings represent the major waste stream of the plant and the closure of the plant-side mass balance.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_L3_3_3_3">
+      <bpmn:lane id="Lane_L3_3_3_3_dcs" name="DCS Auto-control">
+        <bpmn:flowNodeRef>Start_L3_3_3_3_s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Service_L3_3_3_3_3_3_3_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_3_3_3_3_3_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Service_L3_3_3_3_3_3_3_4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_3_3_3_e</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_L3_3_3_3_env" name="Environmental Officer / TSF Operator">
+        <bpmn:flowNodeRef>Task_L3_3_3_3_3_3_3_3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L3_3_3_3_g</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_3_3_n1</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_L3_3_3_3_s" name="Flotation tailings available">
+      <bpmn:outgoing>Flow_L3_3_3_3_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Service_L3_3_3_3_3_3_3_1" name="3.3.3.1 Thicken Tailings">
+      <bpmn:documentation>Tailings thickener(s) receive combined flotation tailings and settle solids for densification before pumping. Flocculant is dosed. Underflow density and flow rate are monitored. Thickened tailings underflow is pumped to the tailings pump station. Tailings thickener overflow (clarified water) returns directly to the process water circuit — this is a significant water recovery point. [P754: mass flow + density (t/hr solids) | magnetic flowmeter + nuclear density gauge | continuous (1-min) | Principles 1, 7 | NO]
+ISA-95 level: 0 / 2
+Actors: DCS Auto-control
+Standard alignment: ISA-95 Levels 0, 2; AMIRA P754 Principles 1, 7
+DDVC layer: Raw</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_3_3_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_3_3_2</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:task id="Task_L3_3_3_3_3_3_3_2" name="3.3.3.2 Pump Tailings to TSF">
+      <bpmn:documentation>Thickened tailings are pumped from the tailings pump station to the TSF via a tailings pipeline. Multiple pump stages may be required depending on head. Pipeline pressure, flow rate, and density are monitored continuously. Pump station DCS/SCADA provides automated control and alarming. Flow interruption (pipeline failure, pump failure) is a critical environmental incident trigger. [P754: mass flow + volume | magnetic flowmeter + nuclear density gauge | continuous (1-min) | Principles 1, 5 | NO — within plant boundary; custody transfer at TSF is environmental, not commercial]
+ISA-95 level: 1 / 2
+Actors: (not stated in decomposition)
+Standard alignment: ISA-95 Levels 1, 2; AMIRA P754 Principles 1, 5
+DDVC layer: Raw (time-series: tailings_pump_telemetry)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_3_3_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_3_3_3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_L3_3_3_3_3_3_3_3" name="3.3.3.3 Deposit Tailings at TSF">
+      <bpmn:documentation>Tailings slurry is discharged at the TSF via spigots on the embankment crest or beach. Discharge point rotation (spigot management) controls beach formation and pond location. TSF freeboard, pond level, seepage, and embankment deformation are monitored continuously by the environmental/geotechnical team. Deposition records (volume, density, cell number) are maintained for TSF mass balance closure. [P754: volume (deposited to TSF) | TSF survey + flow integration | periodic survey / continuous flow | Principles 1, 7 | PARTIAL — TSF is the final sink of the plant-side mass balance; total solids deposited is required for P754 reconciliation]
+ISA-95 level: 0 / 3
+Actors: Environmental Officer; TSF Operator
+Standard alignment: ISA-95 Levels 0, 3; AMIRA P754 Principles 1, 7
+DDVC layer: Raw; Curated (tsf_inventory_record)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_3_3_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_3_3_4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_L3_3_3_3_g" name="TSF freeboard below minimum?" default="Flow_L3_3_3_3_6">
+      <bpmn:incoming>Flow_L3_3_3_3_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_3_3_5</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_3_3_3_6</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_L3_3_3_3_n1" name="Reduce tailings input; start water management; notify environmental team">
+      <bpmn:documentation>Derived from the Process Flow Narratives section (not a row in the Process Decomposition). Monitor TSF (freeboard, pond level, seepage, embankment) is a narrative step with no L4 row.</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_3_3_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_3_3_7</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:serviceTask id="Service_L3_3_3_3_3_3_3_4" name="3.3.3.4 Recover Process Water from TSF">
+      <bpmn:documentation>Decant water from the TSF pond is returned to the plant via the reclaim water pump station. Reclaim flow rate and volume are measured by flow meter. Reclaim water quality (metal content, pH, suspended solids) is sampled for environmental monitoring. This water return closes the plant water circuit. [P754: volume (water recovery) | magnetic flowmeter on reclaim line | continuous (1-min) | Principles 1, 7 | NO — internal water circuit]
+ISA-95 level: 1 / 2
+Actors: DCS/SCADA; Environmental Officer
+Standard alignment: ISA-95 Levels 1, 2; AMIRA P754 Principles 1, 7
+DDVC layer: Raw</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_3_3_5</bpmn:incoming>
+      <bpmn:incoming>Flow_L3_3_3_3_7</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_3_3_8</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_L3_3_3_3_e" name="Process water returned to plant">
+      <bpmn:incoming>Flow_L3_3_3_3_8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_3_1" sourceRef="Start_L3_3_3_3_s" targetRef="Service_L3_3_3_3_3_3_3_1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_3_2" sourceRef="Service_L3_3_3_3_3_3_3_1" targetRef="Task_L3_3_3_3_3_3_3_2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_3_3" sourceRef="Task_L3_3_3_3_3_3_3_2" targetRef="Task_L3_3_3_3_3_3_3_3"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_3_4" sourceRef="Task_L3_3_3_3_3_3_3_3" targetRef="Gw_L3_3_3_3_g"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_3_5" name="No" sourceRef="Gw_L3_3_3_3_g" targetRef="Service_L3_3_3_3_3_3_3_4"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_3_6" name="Yes" sourceRef="Gw_L3_3_3_3_g" targetRef="Task_L3_3_3_3_n1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_3_7" sourceRef="Task_L3_3_3_3_n1" targetRef="Service_L3_3_3_3_3_3_3_4"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_3_8" sourceRef="Service_L3_3_3_3_3_3_3_4" targetRef="End_L3_3_3_3_e"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_L3_3_3_3">
+    <bpmndi:BPMNPlane id="Plane_L3_3_3_3" bpmnElement="Collab_L3_3_3_3">
+      <bpmndi:BPMNShape id="Pool_L3_3_3_3_di" bpmnElement="Pool_L3_3_3_3" isHorizontal="true"><dc:Bounds x="20" y="20" width="1328" height="510"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_3_3_dcs_di" bpmnElement="Lane_L3_3_3_3_dcs" isHorizontal="true"><dc:Bounds x="60" y="20" width="1288" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_3_3_env_di" bpmnElement="Lane_L3_3_3_3_env" isHorizontal="true"><dc:Bounds x="60" y="190" width="1288" height="340"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_L3_3_3_3_s_di" bpmnElement="Start_L3_3_3_3_s"><dc:Bounds x="110" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="88" y="139" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Service_L3_3_3_3_3_3_3_1_di" bpmnElement="Service_L3_3_3_3_3_3_3_1"><dc:Bounds x="202" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_3_3_3_3_3_2_di" bpmnElement="Task_L3_3_3_3_3_3_3_2"><dc:Bounds x="408" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_3_3_3_3_3_3_di" bpmnElement="Task_L3_3_3_3_3_3_3_3"><dc:Bounds x="614" y="235" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L3_3_3_3_g_di" bpmnElement="Gw_L3_3_3_3_g" isMarkerVisible="true"><dc:Bounds x="870" y="240" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="799" y="178" width="100" height="56"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_3_3_n1_di" bpmnElement="Task_L3_3_3_3_n1"><dc:Bounds x="820" y="405" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Service_L3_3_3_3_3_3_3_4_di" bpmnElement="Service_L3_3_3_3_3_3_3_4"><dc:Bounds x="1026" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_3_3_3_e_di" bpmnElement="End_L3_3_3_3_e"><dc:Bounds x="1232" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1210" y="139" width="100" height="56"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_3_1_di" bpmnElement="Flow_L3_3_3_3_1"><di:waypoint x="166" y="105"/><di:waypoint x="202" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_3_2_di" bpmnElement="Flow_L3_3_3_3_2"><di:waypoint x="372" y="105"/><di:waypoint x="408" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_3_3_di" bpmnElement="Flow_L3_3_3_3_3"><di:waypoint x="578" y="105"/><di:waypoint x="596" y="105"/><di:waypoint x="596" y="275"/><di:waypoint x="614" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_3_4_di" bpmnElement="Flow_L3_3_3_3_4"><di:waypoint x="784" y="275"/><di:waypoint x="870" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_3_5_di" bpmnElement="Flow_L3_3_3_3_5"><di:waypoint x="905" y="240"/><di:waypoint x="905" y="105"/><di:waypoint x="1026" y="105"/><bpmndi:BPMNLabel><dc:Bounds x="911" y="222" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_3_6_di" bpmnElement="Flow_L3_3_3_3_6"><di:waypoint x="905" y="310"/><di:waypoint x="905" y="405"/><bpmndi:BPMNLabel><dc:Bounds x="911" y="314" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_3_7_di" bpmnElement="Flow_L3_3_3_3_7"><di:waypoint x="990" y="445"/><di:waypoint x="1111" y="445"/><di:waypoint x="1111" y="145"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_3_8_di" bpmnElement="Flow_L3_3_3_3_8"><di:waypoint x="1196" y="105"/><di:waypoint x="1232" y="105"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

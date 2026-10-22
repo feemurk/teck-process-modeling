@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_L3_3_2_3" targetNamespace="https://teck.example/process-models/pillar-03">
+  <bpmn:collaboration id="Collab_L3_3_2_3">
+    <bpmn:participant id="Pool_L3_3_2_3" name="3.2.3 Zinc Flotation Circuit" processRef="Process_L3_3_2_3"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_L3_3_2_3" isExecutable="false">
+    <bpmn:documentation>[ZINC-SPECIFIC — where applicable] Applies to: Antamina (sequential after Cu), Red Dog (primary Zn circuit). L0/L1/L2 Process. At polymetallic operations, the Cu flotation tailings (or primary mill product at Red Dog) feed the Zn flotation circuit. Sphalerite (ZnS) must first be activated with copper sulphate (CuSO₄) before it becomes floatable — it is naturally depressed in the Cu circuit. The Zn circuit follows the same RSC architecture as the Cu circuit.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_L3_3_2_3">
+      <bpmn:lane id="Lane_L3_3_2_3_ops" name="Control Room Operator / Metallurgist / DCS">
+        <bpmn:flowNodeRef>Start_L3_3_2_3_s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Service_L3_3_2_3_3_2_3_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_2_3_3_2_3_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_2_3_3_2_3_3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_2_3_3_2_3_5</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_2_3_3_2_3_4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_3_2_3_e</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_L3_3_2_3_s" name="Cu tailings or mill product available">
+      <bpmn:outgoing>Flow_L3_3_2_3_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Service_L3_3_2_3_3_2_3_1" name="3.2.3.1 Activate Sphalerite with Copper Sulphate">
+      <bpmn:documentation>Copper sulphate (CuSO₄) is dosed into the Zn circuit feed (Cu flotation tailings or conditioning tank) to activate sphalerite surfaces for subsequent collector attachment. Without activation, sphalerite is hydrophilic and will not float. CuSO₄ dosage rate is controlled by DCS and is critical to Zn recovery — under-dosing suppresses Zn recovery; over-dosing can cause Cu re-activation and contaminate Zn concentrate. [P754: mass (CuSO₄) | dosing pump flow meter | continuous (1-min) | Principle 1 | NO]
+ISA-95 level: 1 / 2
+Actors: DCS Auto-control; Metallurgist
+Standard alignment: ISA-95 Levels 1, 2; AMIRA P754 Principle 1
+DDVC layer: Raw</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_2_3_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_3_2</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:task id="Task_L3_3_2_3_3_2_3_2" name="3.2.3.2 Operate Zn Rougher Flotation">
+      <bpmn:documentation>Zn rougher bank(s) float activated sphalerite from the conditioned feed. Operating philosophy mirrors Cu rougher — maximum Zn recovery priority. On-stream analysis measures Zn%, Pb%, and Fe% in rougher concentrate and tailings. At Red Dog, Pb must be selectively depressed in the Zn rougher to avoid Pb contamination of Zn concentrate (sphalerite/galena separation is critical). [P754: grade (Zn%, Pb%, Fe%) | on-stream XRF | continuous (2–4 min) | Principles 1, 2, 6, 7 | NO]
+ISA-95 level: 0 / 2
+Actors: (not stated in decomposition)
+Standard alignment: ISA-95 Levels 0, 2; AMIRA P754 Principles 1, 2, 6, 7
+DDVC layer: Raw (time-series: flotation_cell_telemetry)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_2_3_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_3_3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_L3_3_2_3_3_2_3_3" name="3.2.3.3 Operate Zn Scavenger Flotation">
+      <bpmn:documentation>Zn scavenger recovers residual sphalerite from Zn rougher tailings. Scavenger concentrate recycled to rougher or Zn regrind. Scavenger tailings are the Zn circuit final tailings — Zn grade in scavenger tailings is the key Zn recovery loss measurement. [P754: grade (Zn% in scavenger tailings) | on-stream XRF + periodic grab | continuous OSA / shift | Principles 6, 7 | PARTIAL — key loss measurement]
+ISA-95 level: 0 / 2
+Actors: (not stated in decomposition)
+Standard alignment: ISA-95 Levels 0, 2; AMIRA P754 Principles 6, 7
+DDVC layer: Raw</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_2_3_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_3_4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_L3_3_2_3_3_2_3_5" name="3.2.3.5 Operate Zn Regrind Mill">
+      <bpmn:documentation>Where Zn rougher/scavenger concentrate requires additional liberation, a Zn regrind mill (stirred media or ball mill) grinds concentrate before cleaning. [ZINC NOTE: Common at Red Dog to achieve required Zn concentrate grade from coarser-grained sphalerite.]
+ISA-95 level: 0 / 2
+Actors: (not stated in decomposition)
+Standard alignment: ISA-95 Levels 0, 2
+DDVC layer: Raw</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_2_3_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_3_5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_L3_3_2_3_3_2_3_4" name="3.2.3.4 Operate Zn Cleaner Flotation">
+      <bpmn:documentation>Zn cleaner bank(s) upgrade Zn rougher concentrate to final Zn concentrate grade (typically 50–55% Zn for smelter spec; Red Dog targets 57–60% Zn due to high-grade ore). Final Zn cleaner concentrate is a custody transfer point to Zn thickening. Shift composite sample collected from final Zn cleaner overflow. [P754: grade (Zn%, Pb%, Fe%, Cu%, Cd%) + mass flow | on-stream XRF + shift composite | continuous OSA + shift composite | Principles 1, 2, 5, 6, 7 | YES — Zn cleaner final concentrate is a custody transfer point]
+ISA-95 level: 0 / 2
+Actors: (not stated in decomposition)
+Standard alignment: ISA-95 Levels 0, 2; AMIRA P754 Principles 1, 2, 5, 6, 7
+DDVC layer: Raw; Curated (concentrate_production_record — Zn)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_2_3_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_3_6</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_L3_3_2_3_e" name="Zn concentrate to thickening">
+      <bpmn:incoming>Flow_L3_3_2_3_6</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_3_1" sourceRef="Start_L3_3_2_3_s" targetRef="Service_L3_3_2_3_3_2_3_1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_3_2" sourceRef="Service_L3_3_2_3_3_2_3_1" targetRef="Task_L3_3_2_3_3_2_3_2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_3_3" sourceRef="Task_L3_3_2_3_3_2_3_2" targetRef="Task_L3_3_2_3_3_2_3_3"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_3_4" sourceRef="Task_L3_3_2_3_3_2_3_3" targetRef="Task_L3_3_2_3_3_2_3_5"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_3_5" sourceRef="Task_L3_3_2_3_3_2_3_5" targetRef="Task_L3_3_2_3_3_2_3_4"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_3_6" sourceRef="Task_L3_3_2_3_3_2_3_4" targetRef="End_L3_3_2_3_e"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_L3_3_2_3">
+    <bpmndi:BPMNPlane id="Plane_L3_3_2_3" bpmnElement="Collab_L3_3_2_3">
+      <bpmndi:BPMNShape id="Pool_L3_3_2_3_di" bpmnElement="Pool_L3_3_2_3" isHorizontal="true"><dc:Bounds x="20" y="20" width="1328" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_2_3_ops_di" bpmnElement="Lane_L3_3_2_3_ops" isHorizontal="true"><dc:Bounds x="60" y="20" width="1288" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_L3_3_2_3_s_di" bpmnElement="Start_L3_3_2_3_s"><dc:Bounds x="110" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="88" y="139" width="100" height="56"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Service_L3_3_2_3_3_2_3_1_di" bpmnElement="Service_L3_3_2_3_3_2_3_1"><dc:Bounds x="202" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_2_3_3_2_3_2_di" bpmnElement="Task_L3_3_2_3_3_2_3_2"><dc:Bounds x="408" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_2_3_3_2_3_3_di" bpmnElement="Task_L3_3_2_3_3_2_3_3"><dc:Bounds x="614" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_2_3_3_2_3_5_di" bpmnElement="Task_L3_3_2_3_3_2_3_5"><dc:Bounds x="820" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_2_3_3_2_3_4_di" bpmnElement="Task_L3_3_2_3_3_2_3_4"><dc:Bounds x="1026" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_3_2_3_e_di" bpmnElement="End_L3_3_2_3_e"><dc:Bounds x="1232" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1210" y="139" width="100" height="56"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_3_1_di" bpmnElement="Flow_L3_3_2_3_1"><di:waypoint x="166" y="105"/><di:waypoint x="202" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_3_2_di" bpmnElement="Flow_L3_3_2_3_2"><di:waypoint x="372" y="105"/><di:waypoint x="408" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_3_3_di" bpmnElement="Flow_L3_3_2_3_3"><di:waypoint x="578" y="105"/><di:waypoint x="614" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_3_4_di" bpmnElement="Flow_L3_3_2_3_4"><di:waypoint x="784" y="105"/><di:waypoint x="820" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_3_5_di" bpmnElement="Flow_L3_3_2_3_5"><di:waypoint x="990" y="105"/><di:waypoint x="1026" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_3_6_di" bpmnElement="Flow_L3_3_2_3_6"><di:waypoint x="1196" y="105"/><di:waypoint x="1232" y="105"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -8,6 +8,7 @@ Layout follows the `bpmn-style-guide` rules (one screen at 1,920 px, 8 steps a r
 
 | Level | Diagram | L4 handling |
 |---|---|---|
+| L1 | [2 Mining Operations (Extraction)](2_mining-operations-extraction.bpmn) | L2 areas as collapsed sub-processes; 2.3 runs alongside 2.1 and 2.2 and is linked to 2.2 by an association |
 | L2 | [2.1 Drill & Blast](2.1_drill-and-blast.bpmn) | L3 as collapsed sub-processes |
 | L2 | [2.2 Load & Haul](2.2_load-and-haul.bpmn) | L3 as collapsed sub-processes |
 | L2 | [2.3 Mine Services](2.3_mine-services.bpmn) | L3 as **expanded groups with L4 shown inside** |

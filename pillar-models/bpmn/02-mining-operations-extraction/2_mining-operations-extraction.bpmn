@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_L1_2" targetNamespace="https://teck.example/process-models/pillar-03">
+  <bpmn:collaboration id="Collab_L1_2">
+    <bpmn:participant id="Pool_L1_2" name="2 Mining Operations (Extraction) (L1)" processRef="Process_L1_2"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_L1_2" isExecutable="false">
+    <bpmn:documentation>L1 Pillar. Physical extraction of material from the open pit, from blast pattern design to fragmented material delivered to its designated destination (primary crusher, ROM stockpile or waste dump). 2.1 Drill &amp; Blast produces the classified muck pile; 2.2 Load &amp; Haul moves it to the destination; 2.3 Mine Services runs alongside, keeping haul roads maintained, the pit dewatered and the walls monitored. All time classification follows GMG TUM.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_L1_2">
+      <bpmn:lane id="Lane_L1_2_db" name="Drill &amp; Blast Superintendent">
+        <bpmn:flowNodeRef>Start_L1_2_s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Sub_L1_2_2_1</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_L1_2_lh" name="Shovel Operator / Truck Operator / Mine Controller">
+        <bpmn:flowNodeRef>Sub_L1_2_2_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L1_2_e</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_L1_2_ms" name="Services Supervisor / Mine Controller">
+        <bpmn:flowNodeRef>Start_L1_2_s2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Sub_L1_2_2_3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L1_2_e2</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_L1_2_s" name="Short-term plan released">
+      <bpmn:outgoing>Flow_L1_2_1</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="Msg_L1_2_s"/>
+    </bpmn:startEvent>
+    <bpmn:subProcess id="Sub_L1_2_2_1" name="2.1 Drill &amp; Blast">
+      <bpmn:documentation>L2 Process Area. Converts in-situ rock into fragmented muck available for loading. Encompasses design, drilling, charging, detonation, and post-blast classification.
+ISA-95 level: 0–3
+Actors: Drill &amp; Blast Superintendent
+Standard alignment: GMG TUM, ISA-95
+DDVC layer: —</bpmn:documentation>
+      <bpmn:incoming>Flow_L1_2_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_L1_2_2</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:subProcess id="Sub_L1_2_2_2" name="2.2 Load &amp; Haul">
+      <bpmn:documentation>L2 Process Area. The primary material movement cycle: excavation of classified muck from dig face, loading into haul trucks, haulage to designated destination, and dumping. This is the 90-day proof-of-value anchor for the MFD data product. All time classification governed by GMG TUM.
+ISA-95 level: 0–3
+Actors: Shovel Operator; Truck Operator; Mine Controller
+Standard alignment: GMG TUM; GMG Mobile Equipment Open Data; ISA-95 Levels 0–3
+DDVC layer: Raw; Curated (haul_cycle, mobile_equipment, delay_event)</bpmn:documentation>
+      <bpmn:incoming>Flow_L1_2_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_L1_2_3</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:endEvent id="End_L1_2_e" name="Material delivered; ROM ore to Processing">
+      <bpmn:incoming>Flow_L1_2_3</bpmn:incoming>
+      <bpmn:messageEventDefinition id="Msg_L1_2_e"/>
+    </bpmn:endEvent>
+    <bpmn:startEvent id="Start_L1_2_s2" name="Shift start or condition alert">
+      <bpmn:outgoing>Flow_L1_2_4</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:subProcess id="Sub_L1_2_2_3" name="2.3 Mine Services">
+      <bpmn:documentation>L2 Process Area. Ancillary physical operations that maintain conditions necessary for productive extraction and hauling: haul road maintenance, pit dewatering, and slope stability monitoring. Do not directly move ore but their failure halts operations that do.
+ISA-95 level: 0–3
+Actors: Services Supervisor; Mine Controller
+Standard alignment: GMG TUM; ISA-95 Levels 0–3
+DDVC layer: Raw; Curated (service_event, slope_monitoring_reading)</bpmn:documentation>
+      <bpmn:incoming>Flow_L1_2_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_L1_2_5</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:endEvent id="End_L1_2_e2" name="Haul roads, pit and walls kept serviceable">
+      <bpmn:incoming>Flow_L1_2_5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_L1_2_1" sourceRef="Start_L1_2_s" targetRef="Sub_L1_2_2_1"/>
+    <bpmn:sequenceFlow id="Flow_L1_2_2" sourceRef="Sub_L1_2_2_1" targetRef="Sub_L1_2_2_2"/>
+    <bpmn:sequenceFlow id="Flow_L1_2_3" sourceRef="Sub_L1_2_2_2" targetRef="End_L1_2_e"/>
+    <bpmn:sequenceFlow id="Flow_L1_2_4" sourceRef="Start_L1_2_s2" targetRef="Sub_L1_2_2_3"/>
+    <bpmn:sequenceFlow id="Flow_L1_2_5" sourceRef="Sub_L1_2_2_3" targetRef="End_L1_2_e2"/>
+    <bpmn:association id="Assoc_L1_2_6" associationDirection="One" sourceRef="Sub_L1_2_2_3" targetRef="Sub_L1_2_2_2"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_L1_2">
+    <bpmndi:BPMNPlane id="Plane_L1_2" bpmnElement="Collab_L1_2">
+      <bpmndi:BPMNShape id="Pool_L1_2_di" bpmnElement="Pool_L1_2" isHorizontal="true"><dc:Bounds x="20" y="20" width="710" height="510"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L1_2_db_di" bpmnElement="Lane_L1_2_db" isHorizontal="true"><dc:Bounds x="60" y="20" width="670" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L1_2_lh_di" bpmnElement="Lane_L1_2_lh" isHorizontal="true"><dc:Bounds x="60" y="190" width="670" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L1_2_ms_di" bpmnElement="Lane_L1_2_ms" isHorizontal="true"><dc:Bounds x="60" y="360" width="670" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_L1_2_s_di" bpmnElement="Start_L1_2_s"><dc:Bounds x="110" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="88" y="139" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_L1_2_2_1_di" bpmnElement="Sub_L1_2_2_1" isExpanded="false"><dc:Bounds x="202" y="57" width="170" height="96"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_L1_2_2_2_di" bpmnElement="Sub_L1_2_2_2" isExpanded="false"><dc:Bounds x="408" y="227" width="170" height="96"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L1_2_e_di" bpmnElement="End_L1_2_e"><dc:Bounds x="614" y="247" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="592" y="309" width="100" height="56"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_L1_2_s2_di" bpmnElement="Start_L1_2_s2"><dc:Bounds x="259" y="417" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="237" y="479" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_L1_2_2_3_di" bpmnElement="Sub_L1_2_2_3" isExpanded="false"><dc:Bounds x="408" y="397" width="170" height="96"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L1_2_e2_di" bpmnElement="End_L1_2_e2"><dc:Bounds x="614" y="417" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="592" y="479" width="100" height="56"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_L1_2_1_di" bpmnElement="Flow_L1_2_1"><di:waypoint x="166" y="105"/><di:waypoint x="202" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L1_2_2_di" bpmnElement="Flow_L1_2_2"><di:waypoint x="372" y="105"/><di:waypoint x="390" y="105"/><di:waypoint x="390" y="275"/><di:waypoint x="408" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L1_2_3_di" bpmnElement="Flow_L1_2_3"><di:waypoint x="578" y="275"/><di:waypoint x="614" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L1_2_4_di" bpmnElement="Flow_L1_2_4"><di:waypoint x="315" y="445"/><di:waypoint x="408" y="445"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L1_2_5_di" bpmnElement="Flow_L1_2_5"><di:waypoint x="578" y="445"/><di:waypoint x="614" y="445"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_L1_2_6_di" bpmnElement="Assoc_L1_2_6"><di:waypoint x="493" y="397"/><di:waypoint x="493" y="323"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

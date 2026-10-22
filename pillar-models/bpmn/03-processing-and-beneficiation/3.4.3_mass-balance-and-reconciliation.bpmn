@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_L3_3_4_3" targetNamespace="https://teck.example/process-models/pillar-03">
+  <bpmn:collaboration id="Collab_L3_3_4_3">
+    <bpmn:participant id="Pool_L3_3_4_3" name="3.4.3 Mass Balance &amp; Reconciliation" processRef="Process_L3_3_4_3"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_L3_3_4_3" isExecutable="false">
+    <bpmn:documentation>L3 Process Area. Periodic mass balance closure integrates all mass flow measurements (belt weighers, flowmeters, density gauges) and grade measurements (lab assay, OSA) to compute metal produced, metal recovered, metal lost (to tailings), and metal unaccounted for. This is the core deliverable of AMIRA P754 compliance and the primary source of reconciliation data for mine-to-mill and mill-to-port reporting.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_L3_3_4_3">
+      <bpmn:lane id="Lane_L3_3_4_3_met" name="Metallurgist">
+        <bpmn:flowNodeRef>Start_L3_3_4_3_s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Catch_L3_3_4_3_c</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_4_3_3_4_3_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L3_3_4_3_g</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_4_3_n1</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_L3_3_4_3_acc" name="Chief Metallurgist / Metallurgical Accounting Analyst">
+        <bpmn:flowNodeRef>Task_L3_3_4_3_3_4_3_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_4_3_3_4_3_4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_4_3_3_4_3_3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_3_4_3_e</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_L3_3_4_3_s" name="Shift end">
+      <bpmn:outgoing>Flow_L3_3_4_3_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:intermediateCatchEvent id="Catch_L3_3_4_3_c" name="Shift composite assays returned">
+      <bpmn:incoming>Flow_L3_3_4_3_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_4_3_2</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="Msg_L3_3_4_3_c"/>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="Task_L3_3_4_3_3_4_3_1" name="3.4.3.1 Close Shift Mass Balance">
+      <bpmn:documentation>At each shift end, the metallurgist runs the shift mass balance calculation: sum of ore feed mass (belt weigher) × feed grade (assay) = sum of concentrate mass (filter cake belt weigher × moisture correction to dry tonnes) × concentrate grade (shift composite assay) + sum of tailings mass × tailings grade. Balance error (%) = (feed metal − products metal) / feed metal × 100. Acceptable shift balance error is site-specific (typically ±5% for shift; tighter at daily). [P754: ALL measurement types — integrates mass, grade, density, moisture | integrates all instrument types | per shift | ALL 10 Principles | YES — shift mass balance is the formal P754 accounting period closure at the shift level]
+ISA-95 level: 3
+Actors: Metallurgist
+Standard alignment: ISA-95 Level 3; AMIRA P754 Principles 1–10 (synthesis)
+DDVC layer: Curated (shift_mass_balance)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_4_3_2</bpmn:incoming>
+      <bpmn:incoming>Flow_L3_3_4_3_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_4_3_3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_L3_3_4_3_g" name="Balance error within tolerance?" default="Flow_L3_3_4_3_5">
+      <bpmn:incoming>Flow_L3_3_4_3_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_4_3_4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_3_4_3_5</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_L3_3_4_3_n1" name="Investigate instrument data, sample integrity, stockpile changes; escalate">
+      <bpmn:documentation>Derived from the Process Flow Narratives section (not a row in the Process Decomposition).</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_4_3_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_4_3_6</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_L3_3_4_3_3_4_3_2" name="3.4.3.2 Perform Daily and Weekly Reconciliation">
+      <bpmn:documentation>Daily and weekly reconciliations aggregate shift mass balances, apply any laboratory result updates (re-assays, late results), and cross-check against independent measurements (stockpile surveys, weighbridge records from incoming concentrate trucks). Discrepancies beyond tolerance thresholds trigger investigation. The daily reconciliation is the primary operational performance report reviewed by the plant manager.
+ISA-95 level: 3
+Actors: Chief Metallurgist; Metallurgical Accounting Analyst
+Standard alignment: ISA-95 Level 3; AMIRA P754 Principles 2, 3, 7, 8
+DDVC layer: Curated (metallurgical_accounting_report)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_4_3_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_4_3_7</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_L3_3_4_3_3_4_3_4" name="3.4.3.4 Conduct Inventory Adjustment and Stocktake">
+      <bpmn:documentation>Physical stocktake of all in-process inventory (COS, flotation feed bins, concentrate sheds, TSF) is conducted periodically (monthly minimum; quarterly formal) to verify the book inventory against physical inventory. Survey methods: drone volumetric survey (COS and concentrate shed), belt weigher integration (conveyors), filter cake batch records (filter output). Inventory adjustments (book vs. physical variances) are recorded as adjustments in the metallurgical accounting system. [P754: mass (physical inventory vs. book inventory) | physical survey (drone + geodetic) + weighbridge records | monthly (minimum) | Principles 3, 9 | YES — inventory is a component of the check-in / check-out mass balance boundary]
+ISA-95 level: 3
+Actors: Chief Metallurgist; Survey Team; Metallurgical Accounting Analyst
+Standard alignment: ISA-95 Level 3; AMIRA P754 Principles 3, 9
+DDVC layer: Curated (stockpile_inventory — physical reconciliation); Curated (metallurgical_accounting_report — inventory adjustment)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_4_3_7</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_4_3_8</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_L3_3_4_3_3_4_3_3" name="3.4.3.3 Produce Monthly Metal Accounting Report">
+      <bpmn:documentation>The monthly metal accounting report is the definitive financial-period production record. It aggregates all daily reconciliations, applies the final month-end assay certification results (independent third-party umpire assays for commercial concentrate batches), and closes the formal accounting period. The report is submitted to corporate finance, the audit committee, and relevant regulatory authorities. [P754: ALL Principles — the monthly report is the culmination of full P754 compliance | all instrument types + certification lab assay | monthly period close | ALL 10 Principles | YES — the monthly concentrate production figure is the basis for commercial invoicing and revenue recognition]
+ISA-95 level: 3
+Actors: Chief Metallurgist; Finance; Plant Manager
+Standard alignment: ISA-95 Level 4 (business reporting); AMIRA P754 Principles 1–10
+DDVC layer: Curated (metallurgical_accounting_report — monthly); Contextualized (recovered metal by period, recovery %)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_4_3_8</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_4_3_9</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_L3_3_4_3_e" name="Report filed; figures to Finance">
+      <bpmn:incoming>Flow_L3_3_4_3_9</bpmn:incoming>
+      <bpmn:messageEventDefinition id="Msg_L3_3_4_3_e"/>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_L3_3_4_3_1" sourceRef="Start_L3_3_4_3_s" targetRef="Catch_L3_3_4_3_c"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_4_3_2" sourceRef="Catch_L3_3_4_3_c" targetRef="Task_L3_3_4_3_3_4_3_1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_4_3_3" sourceRef="Task_L3_3_4_3_3_4_3_1" targetRef="Gw_L3_3_4_3_g"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_4_3_4" name="Yes" sourceRef="Gw_L3_3_4_3_g" targetRef="Task_L3_3_4_3_3_4_3_2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_4_3_5" name="No" sourceRef="Gw_L3_3_4_3_g" targetRef="Task_L3_3_4_3_n1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_4_3_6" sourceRef="Task_L3_3_4_3_n1" targetRef="Task_L3_3_4_3_3_4_3_1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_4_3_7" sourceRef="Task_L3_3_4_3_3_4_3_2" targetRef="Task_L3_3_4_3_3_4_3_4"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_4_3_8" sourceRef="Task_L3_3_4_3_3_4_3_4" targetRef="Task_L3_3_4_3_3_4_3_3"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_4_3_9" sourceRef="Task_L3_3_4_3_3_4_3_3" targetRef="End_L3_3_4_3_e"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_L3_3_4_3">
+    <bpmndi:BPMNPlane id="Plane_L3_3_4_3" bpmnElement="Collab_L3_3_4_3">
+      <bpmndi:BPMNShape id="Pool_L3_3_4_3_di" bpmnElement="Pool_L3_3_4_3" isHorizontal="true"><dc:Bounds x="20" y="20" width="1420" height="510"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_4_3_met_di" bpmnElement="Lane_L3_3_4_3_met" isHorizontal="true"><dc:Bounds x="60" y="20" width="1380" height="340"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_4_3_acc_di" bpmnElement="Lane_L3_3_4_3_acc" isHorizontal="true"><dc:Bounds x="60" y="360" width="1380" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_L3_3_4_3_s_di" bpmnElement="Start_L3_3_4_3_s"><dc:Bounds x="110" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="88" y="139" width="100" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Catch_L3_3_4_3_c_di" bpmnElement="Catch_L3_3_4_3_c"><dc:Bounds x="202" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="180" y="139" width="100" height="56"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_4_3_3_4_3_1_di" bpmnElement="Task_L3_3_4_3_3_4_3_1"><dc:Bounds x="294" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L3_3_4_3_g_di" bpmnElement="Gw_L3_3_4_3_g" isMarkerVisible="true"><dc:Bounds x="550" y="70" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="535" y="22" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_4_3_n1_di" bpmnElement="Task_L3_3_4_3_n1"><dc:Bounds x="500" y="235" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_4_3_3_4_3_2_di" bpmnElement="Task_L3_3_4_3_3_4_3_2"><dc:Bounds x="706" y="405" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_4_3_3_4_3_4_di" bpmnElement="Task_L3_3_4_3_3_4_3_4"><dc:Bounds x="912" y="405" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_4_3_3_4_3_3_di" bpmnElement="Task_L3_3_4_3_3_4_3_3"><dc:Bounds x="1118" y="405" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_3_4_3_e_di" bpmnElement="End_L3_3_4_3_e"><dc:Bounds x="1324" y="417" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1302" y="479" width="100" height="56"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_L3_3_4_3_1_di" bpmnElement="Flow_L3_3_4_3_1"><di:waypoint x="166" y="105"/><di:waypoint x="202" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_4_3_2_di" bpmnElement="Flow_L3_3_4_3_2"><di:waypoint x="258" y="105"/><di:waypoint x="294" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_4_3_3_di" bpmnElement="Flow_L3_3_4_3_3"><di:waypoint x="464" y="105"/><di:waypoint x="550" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_4_3_4_di" bpmnElement="Flow_L3_3_4_3_4"><di:waypoint x="620" y="105"/><di:waypoint x="688" y="105"/><di:waypoint x="688" y="445"/><di:waypoint x="706" y="445"/><bpmndi:BPMNLabel><dc:Bounds x="624" y="85" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_4_3_5_di" bpmnElement="Flow_L3_3_4_3_5"><di:waypoint x="585" y="140"/><di:waypoint x="585" y="235"/><bpmndi:BPMNLabel><dc:Bounds x="591" y="144" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_4_3_6_di" bpmnElement="Flow_L3_3_4_3_6"><di:waypoint x="500" y="275"/><di:waypoint x="379" y="275"/><di:waypoint x="379" y="145"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_4_3_7_di" bpmnElement="Flow_L3_3_4_3_7"><di:waypoint x="876" y="445"/><di:waypoint x="912" y="445"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_4_3_8_di" bpmnElement="Flow_L3_3_4_3_8"><di:waypoint x="1082" y="445"/><di:waypoint x="1118" y="445"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_4_3_9_di" bpmnElement="Flow_L3_3_4_3_9"><di:waypoint x="1288" y="445"/><di:waypoint x="1324" y="445"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
