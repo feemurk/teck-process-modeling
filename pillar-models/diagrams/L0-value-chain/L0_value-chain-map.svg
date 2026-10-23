@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <title>Open-Pit Mining Value Chain</title>
+  <g id="layer-diagram">
+    <rect id="bg" x="0" y="0" width="1920" height="1080" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0" />
+    <text id="title" x="32" y="63" font-family="Helvetica, Arial, sans-serif" font-size="28" fill="#0F172A" text-anchor="start" font-weight="bold">Open-Pit Mining Value Chain</text>
+    <text id="subtitle" x="32" y="89" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#475569" text-anchor="start">Ore moves through four pillars to cargo; reliability supports all four, safety governs three, and its link to Logistics is still to confirm.</text>
+    <rect id="band_p6" x="32" y="112" width="1856" height="84" fill="#F8FAFC" stroke="#64748B" stroke-width="1.5" rx="14" ry="14" />
+    <text id="band_p6_name" x="56" y="136" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#334155" text-anchor="start" font-weight="bold">6 HEALTH &amp; SAFETY</text>
+    <text id="band_p6_role" x="56" y="155" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#334155" text-anchor="start">Governance: risk controls and permits gate the work; incident investigations draw on data from every pillar</text>
+    <text id="band_p6_areas" x="56" y="176" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="start">6.1 Hazard Identification &amp; Risk Control · 6.2 Permit to Work · 6.3 Incident Management · 6.4 Occupational Health Monitoring · 6.5 Safety Performance &amp; Regulatory Compliance</text>
+    <rect id="band_p5" x="32" y="736" width="1856" height="84" fill="#E2E8F0" stroke="#94A3B8" stroke-width="1.5" rx="14" ry="14" />
+    <text id="band_p5_name" x="56" y="760" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#334155" text-anchor="start" font-weight="bold">5 MAINTENANCE &amp; RELIABILITY</text>
+    <text id="band_p5_role" x="56" y="779" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#334155" text-anchor="start">Asset availability: work orders, downtime windows, instrument calibration</text>
+    <text id="band_p5_areas" x="56" y="800" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="start">5.1 Maintenance Planning &amp; Scheduling · 5.2 Preventive &amp; Predictive Maintenance Execution · 5.3 Corrective / Reactive Maintenance · 5.4 Reliability Engineering &amp; Asset Life Management</text>
+    <rect id="box_p1" x="300" y="360" width="290" height="180" fill="#DCFCE7" stroke="#22C55E" stroke-width="1.5" rx="12" ry="12" />
+    <text id="box_p1_name_0" x="314" y="388" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#166534" text-anchor="start" font-weight="bold">1 Mine Planning &amp; Scheduling</text>
+    <text id="box_p1_area_0" x="314" y="434" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">1.1 Strategic &amp; Long-Term Planning</text>
+    <text id="box_p1_area_1" x="314" y="449" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">1.2 Medium-Term Planning</text>
+    <text id="box_p1_area_2" x="314" y="464" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">1.3 Short-Term Planning</text>
+    <text id="box_p1_area_3" x="314" y="479" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">1.4 Shift Execution &amp; Dispatch</text>
+    <rect id="box_p2" x="700" y="360" width="290" height="180" fill="#DCFCE7" stroke="#22C55E" stroke-width="1.5" rx="12" ry="12" />
+    <text id="box_p2_name_0" x="714" y="388" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#166534" text-anchor="start" font-weight="bold">2 Mining Operations</text>
+    <text id="box_p2_name_1" x="714" y="408" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#166534" text-anchor="start" font-weight="bold">(Extraction)</text>
+    <text id="box_p2_area_0" x="714" y="434" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">2.1 Drill &amp; Blast</text>
+    <text id="box_p2_area_1" x="714" y="449" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">2.2 Load &amp; Haul</text>
+    <text id="box_p2_area_2" x="714" y="464" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">2.3 Mine Services</text>
+    <text id="box_p2_note" x="714" y="520" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#166534" text-anchor="start" font-weight="bold">Internal CTP: mine to ROM stockpile</text>
+    <rect id="box_p3" x="1100" y="360" width="290" height="180" fill="#DCFCE7" stroke="#22C55E" stroke-width="1.5" rx="12" ry="12" />
+    <text id="box_p3_name_0" x="1114" y="388" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#166534" text-anchor="start" font-weight="bold">3 Processing &amp; Beneficiation</text>
+    <text id="box_p3_area_0" x="1114" y="434" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">3.1 Comminution</text>
+    <text id="box_p3_area_1" x="1114" y="449" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">3.2 Concentration (Flotation)</text>
+    <text id="box_p3_area_2" x="1114" y="464" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">3.3 Dewatering &amp; Product Handling</text>
+    <text id="box_p3_area_3" x="1114" y="479" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">3.4 Metallurgical Accounting &amp; Quality</text>
+    <rect id="box_p4" x="1500" y="360" width="290" height="180" fill="#DCFCE7" stroke="#22C55E" stroke-width="1.5" rx="12" ry="12" />
+    <text id="box_p4_name_0" x="1514" y="388" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#166534" text-anchor="start" font-weight="bold">4 Logistics &amp; Outbound</text>
+    <text id="box_p4_name_1" x="1514" y="408" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#166534" text-anchor="start" font-weight="bold">Supply Chain</text>
+    <text id="box_p4_area_0" x="1514" y="434" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">4.1 Concentrate Handling</text>
+    <text id="box_p4_area_1" x="1514" y="449" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">4.2 Inland Transport</text>
+    <text id="box_p4_area_2" x="1514" y="464" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">4.3 Port Operations</text>
+    <text id="box_p4_area_3" x="1514" y="479" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">4.4 Commercial Documentation</text>
+    <text id="box_p4_note" x="1514" y="520" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#166534" text-anchor="start" font-weight="bold">CTP-3 site and CTP-4 port weighbridges</text>
+    <g id="flow_g_p6_p1">
+      <path id="flow_g_p6_p1_line" d="M445,196 L445,351" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" />
+      <path id="flow_g_p6_p1_head_end" d="M445,360 L440.5,351 L449.5,351 Z" fill="#475569" stroke="none" />
+    </g>
+    <g id="flow_g_p6_p2">
+      <path id="flow_g_p6_p2_line" d="M845,205 L845,351" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" />
+      <path id="flow_g_p6_p2_head_end" d="M845,360 L840.5,351 L849.5,351 Z" fill="#475569" stroke="none" />
+      <path id="flow_g_p6_p2_head_start" d="M845,196 L849.5,205 L840.5,205 Z" fill="#475569" stroke="none" />
+    </g>
+    <g id="flow_g_p6_p3">
+      <path id="flow_g_p6_p3_line" d="M1245,205 L1245,351" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" />
+      <path id="flow_g_p6_p3_head_end" d="M1245,360 L1240.5,351 L1249.5,351 Z" fill="#475569" stroke="none" />
+      <path id="flow_g_p6_p3_head_start" d="M1245,196 L1249.5,205 L1240.5,205 Z" fill="#475569" stroke="none" />
+    </g>
+    <g id="flow_g_p6_p4">
+      <path id="flow_g_p6_p4_line" d="M1645,196 L1645,360" fill="none" stroke="#64748B" stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="6,4" />
+    </g>
+    <g id="flow_s_p5_p1">
+      <path id="flow_s_p5_p1_line" d="M445,736 L445,549" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" />
+      <path id="flow_s_p5_p1_head_end" d="M445,540 L449.5,549 L440.5,549 Z" fill="#475569" stroke="none" />
+    </g>
+    <g id="flow_s_p5_p2">
+      <path id="flow_s_p5_p2_line" d="M845,727 L845,549" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" />
+      <path id="flow_s_p5_p2_head_end" d="M845,540 L849.5,549 L840.5,549 Z" fill="#475569" stroke="none" />
+      <path id="flow_s_p5_p2_head_start" d="M845,736 L840.5,727 L849.5,727 Z" fill="#475569" stroke="none" />
+    </g>
+    <g id="flow_s_p5_p3">
+      <path id="flow_s_p5_p3_line" d="M1245,727 L1245,549" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" />
+      <path id="flow_s_p5_p3_head_end" d="M1245,540 L1249.5,549 L1240.5,549 Z" fill="#475569" stroke="none" />
+      <path id="flow_s_p5_p3_head_start" d="M1245,736 L1240.5,727 L1249.5,727 Z" fill="#475569" stroke="none" />
+    </g>
+    <g id="flow_s_p5_p4">
+      <path id="flow_s_p5_p4_line" d="M1645,736 L1645,549" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" />
+      <path id="flow_s_p5_p4_head_end" d="M1645,540 L1649.5,549 L1640.5,549 Z" fill="#475569" stroke="none" />
+    </g>
+    <rect id="tag_g_p6_p1" x="310" y="232" width="270" height="60" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="8" ry="8" />
+    <text id="tag_g_p6_p1_t_0" x="445" y="258" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">Exclusion zones constrain the</text>
+    <text id="tag_g_p6_p1_t_1" x="445" y="273" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">short-term plan</text>
+    <rect id="tag_g_p6_p2" x="710" y="232" width="270" height="60" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="8" ry="8" />
+    <text id="tag_g_p6_p2_t_0" x="845" y="258" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">Blast clearance, slope alerts;</text>
+    <text id="tag_g_p6_p2_t_1" x="845" y="273" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">incident records use FMS history</text>
+    <rect id="tag_g_p6_p3" x="1110" y="232" width="270" height="60" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="8" ry="8" />
+    <text id="tag_g_p6_p3_t_0" x="1245" y="250" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">Confined-space permits, reagent</text>
+    <text id="tag_g_p6_p3_t_1" x="1245" y="265" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">exposure; incidents use PI Historian</text>
+    <text id="tag_g_p6_p3_t_2" x="1245" y="280" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">data</text>
+    <rect id="tag_g_p6_p4" x="1510" y="232" width="270" height="60" fill="#FFFFFF" stroke="#64748B" stroke-width="1.2" rx="8" ry="8" stroke-dasharray="6,4" />
+    <text id="tag_g_p6_p4_t_0" x="1558" y="250" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#64748B" text-anchor="start">To confirm: no Pillar 6 link in</text>
+    <text id="tag_g_p6_p4_t_1" x="1558" y="265" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#64748B" text-anchor="start">source; ICMM vessel-loading and</text>
+    <text id="tag_g_p6_p4_t_2" x="1558" y="280" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#64748B" text-anchor="start">dust controls expected</text>
+    <rect id="tag_s_p5_p1" x="310" y="640" width="270" height="60" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="8" ry="8" />
+    <text id="tag_s_p5_p1_t_0" x="445" y="673" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">Downtime windows, capital replacement</text>
+    <rect id="tag_s_p5_p2" x="710" y="640" width="270" height="60" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="8" ry="8" />
+    <text id="tag_s_p5_p2_t_0" x="845" y="666" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">work_order_id on delay_event;</text>
+    <text id="tag_s_p5_p2_t_1" x="845" y="681" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">operating hours trigger PM</text>
+    <rect id="tag_s_p5_p3" x="1110" y="640" width="270" height="60" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="8" ry="8" />
+    <text id="tag_s_p5_p3_t_0" x="1245" y="666" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">Plant work orders; calibration</text>
+    <text id="tag_s_p5_p3_t_1" x="1245" y="681" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">certificates</text>
+    <rect id="tag_s_p5_p4" x="1510" y="640" width="270" height="60" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="8" ry="8" />
+    <text id="tag_s_p5_p4_t_0" x="1645" y="666" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">Weighbridge calibration (P754</text>
+    <text id="tag_s_p5_p4_t_1" x="1645" y="681" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">Principle 8)</text>
+    <g id="flow_x_p6_p5">
+      <path id="flow_x_p6_p5_line" d="M130,205 L130,727" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" />
+      <path id="flow_x_p6_p5_head_end" d="M130,736 L125.5,727 L134.5,727 Z" fill="#475569" stroke="none" />
+      <path id="flow_x_p6_p5_head_start" d="M130,196 L134.5,205 L125.5,205 Z" fill="#475569" stroke="none" />
+    </g>
+    <rect id="tag_x_p6_p5" x="52" y="418" width="156" height="97" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="8" ry="8" />
+    <text id="tag_x_p6_p5_t_0" x="130" y="440" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">Permit to work gates</text>
+    <text id="tag_x_p6_p5_t_1" x="130" y="455" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">work orders. Defects</text>
+    <text id="tag_x_p6_p5_t_2" x="130" y="470" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">raise work orders;</text>
+    <text id="tag_x_p6_p5_t_3" x="130" y="485" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">incidents link to</text>
+    <text id="tag_x_p6_p5_t_4" x="130" y="500" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">work orders</text>
+    <g id="flow_f_p1_p2">
+      <path id="flow_f_p1_p2_line" d="M590,450 L691,450" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="6,4" />
+      <path id="flow_f_p1_p2_head_end" d="M700,450 L691,454.5 L691,445.5 Z" fill="#475569" stroke="none" />
+    </g>
+    <text id="lbl_f_p1_p2" x="645" y="438" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="middle">Plan, targets</text>
+    <g id="flow_f_p2_p3">
+      <path id="flow_f_p2_p3_line" d="M990,450 L1091,450" fill="none" stroke="#0F172A" stroke-width="2" stroke-linejoin="round" />
+      <path id="flow_f_p2_p3_head_end" d="M1100,450 L1091,454.5 L1091,445.5 Z" fill="#0F172A" stroke="none" />
+    </g>
+    <rect id="pill_ctp1" x="1017" y="439" width="56" height="22" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8" rx="11" ry="11" />
+    <text id="pill_ctp1_t" x="1045" y="453" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="middle" font-weight="bold">CTP-1</text>
+    <text id="detail_ctp1" x="1045" y="476" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="middle">ROM ore</text>
+    <g id="flow_f_p3_p4">
+      <path id="flow_f_p3_p4_line" d="M1390,450 L1491,450" fill="none" stroke="#0F172A" stroke-width="2" stroke-linejoin="round" />
+      <path id="flow_f_p3_p4_head_end" d="M1500,450 L1491,454.5 L1491,445.5 Z" fill="#0F172A" stroke="none" />
+    </g>
+    <rect id="pill_ctp2" x="1417" y="439" width="56" height="22" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8" rx="11" ry="11" />
+    <text id="pill_ctp2_t" x="1445" y="453" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="middle" font-weight="bold">CTP-2</text>
+    <text id="detail_ctp2" x="1445" y="476" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="middle">Filter cake</text>
+    <g id="flow_f_p4_out">
+      <path id="flow_f_p4_out_line" d="M1790,450 L1863,450" fill="none" stroke="#0F172A" stroke-width="2" stroke-linejoin="round" />
+      <path id="flow_f_p4_out_head_end" d="M1872,450 L1863,454.5 L1863,445.5 Z" fill="#0F172A" stroke="none" />
+    </g>
+    <rect id="pill_ctp5" x="1803" y="439" width="56" height="22" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8" rx="11" ry="11" />
+    <text id="pill_ctp5_t" x="1831" y="453" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="middle" font-weight="bold">CTP-5</text>
+    <text id="detail_ctp5_0" x="1831" y="476" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="middle">Revenue</text>
+    <text id="detail_ctp5_1" x="1831" y="490" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="middle">recognized</text>
+    <g id="flow_f_p2_p1">
+      <path id="flow_f_p2_p1_line" d="M760,360 L760,326 L530,326 L530,351" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="6,4" />
+      <path id="flow_f_p2_p1_head_end" d="M530,360 L525.5,351 L534.5,351 Z" fill="#475569" stroke="none" />
+    </g>
+    <text id="lbl_f_p2_p1" x="645" y="316" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="middle">Actuals vs plan</text>
+    <g id="flow_f_p4_p3">
+      <path id="flow_f_p4_p3_line" d="M1560,360 L1560,326 L1330,326 L1330,351" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="6,4" />
+      <path id="flow_f_p4_p3_head_end" d="M1330,360 L1325.5,351 L1334.5,351 Z" fill="#475569" stroke="none" />
+    </g>
+    <text id="lbl_f_p4_p3" x="1445.5" y="316" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="middle">CoA commercial grade</text>
+    <g id="flow_f_p3_p1">
+      <path id="flow_f_p3_p1_line" d="M1160,540 L1160,570 L530,570 L530,549" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="6,4" />
+      <path id="flow_f_p3_p1_head_end" d="M530,540 L534.5,549 L525.5,549 Z" fill="#475569" stroke="none" />
+    </g>
+    <text id="lbl_f_p3_p1" x="1000" y="560" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="middle">Mill actuals, reconciliation</text>
+    <g id="flow_f_p4_p1">
+      <path id="flow_f_p4_p1_line" d="M1560,540 L1560,600 L500,600 L500,549" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="6,4" />
+      <path id="flow_f_p4_p1_head_end" d="M500,540 L504.5,549 L495.5,549 Z" fill="#475569" stroke="none" />
+    </g>
+    <text id="lbl_f_p4_p1" x="1400.5" y="590" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="middle">Concentrate forecast</text>
+    <rect id="keys_card" x="32" y="860" width="1856" height="84" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="8" ry="8" />
+    <text id="keys_title" x="56" y="882" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#64748B" text-anchor="start" font-weight="bold">KEYS SHARED ACROSS PILLARS (PILLAR NUMBERS IN BRACKETS)</text>
+    <rect id="key_0" x="56" y="900" width="183" height="28" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" rx="8" ry="8" />
+    <text id="key_0_t" x="67" y="918" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="start">equipment_id (1, 2, 5, 6)</text>
+    <rect id="key_1" x="253" y="900" width="177" height="28" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" rx="8" ry="8" />
+    <text id="key_1_t" x="264" y="918" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="start">operator_id (1, 2, 5, 6)</text>
+    <rect id="key_2" x="444" y="900" width="157" height="28" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" rx="8" ry="8" />
+    <text id="key_2_t" x="455" y="918" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="start">shift_id (1, 2, 3, 5)</text>
+    <rect id="key_3" x="615" y="900" width="170" height="28" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" rx="8" ry="8" />
+    <text id="key_3_t" x="626" y="918" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="start">work_order_id (2, 5, 6)</text>
+    <rect id="key_4" x="799" y="900" width="144" height="28" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" rx="8" ry="8" />
+    <text id="key_4_t" x="810" y="918" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="start">permit_id (2, 5, 6)</text>
+    <rect id="key_5" x="957" y="900" width="183" height="28" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" rx="8" ry="8" />
+    <text id="key_5_t" x="968" y="918" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="start">hazard_category_id (2, 6)</text>
+    <rect id="key_6" x="1154" y="900" width="247" height="28" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" rx="8" ry="8" />
+    <text id="key_6_t" x="1165" y="918" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="start">P754 measurement point id (3, 4, 5)</text>
+  </g>
+  <g id="layer-status">
+    <g id="status_g_p6_p4">
+      <ellipse id="ring_g_p6_p4" cx="1536" cy="262" rx="11" ry="11" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5" stroke-dasharray="6,4" />
+      <text id="ringq_g_p6_p4" x="1536" y="265" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#64748B" text-anchor="middle" font-weight="bold">?</text>
+    </g>
+  </g>
+  <g id="layer-inflight" />
+  <g id="layer-annotation" />
+  <g id="layer-legend">
+    <rect id="legend_bg" x="32" y="6" width="1856" height="22" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1" rx="4" ry="4" />
+    <text id="legend_key" x="44" y="20" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#64748B" text-anchor="start" font-weight="bold">KEY</text>
+    <g id="legend_material">
+      <path id="legend_material_line" d="M94,17 L115,17" fill="none" stroke="#0F172A" stroke-width="2" stroke-linejoin="round" />
+      <path id="legend_material_head_end" d="M124,17 L115,21.5 L115,12.5 Z" fill="#0F172A" stroke="none" />
+    </g>
+    <text id="legend_material_t" x="134" y="20" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="start">Material flow</text>
+    <g id="legend_information">
+      <path id="legend_information_line" d="M238,17 L259,17" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="6,4" />
+      <path id="legend_information_head_end" d="M268,17 L259,21.5 L259,12.5 Z" fill="#475569" stroke="none" />
+    </g>
+    <text id="legend_information_t" x="278" y="20" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="start">Information flow</text>
+    <rect id="legend_tag" x="401" y="11" width="20" height="12" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="3" ry="3" />
+    <text id="legend_tag_t" x="429" y="20" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="start">Supplied by Pillar 5 or 6</text>
+    <ellipse id="legend_ring" cx="614" cy="17" rx="7" ry="7" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5" stroke-dasharray="6,4" />
+    <text id="legend_to_confirm_t" x="627" y="20" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="start">To confirm</text>
+    <rect id="legend_pill" x="713" y="10" width="34" height="14" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5" rx="7" ry="7" />
+    <text id="legend_pill_t" x="730" y="20" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#0F172A" text-anchor="middle" font-weight="bold">CTP</text>
+    <text id="legend_ctp_t" x="755" y="20" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="start">Custody transfer point</text>
+  </g>
+</svg>
