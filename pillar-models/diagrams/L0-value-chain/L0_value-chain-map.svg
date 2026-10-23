@@ -41,71 +41,74 @@
     <text id="box_p4_area_3" x="1514" y="479" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">4.4 Commercial Documentation</text>
     <text id="box_p4_note" x="1514" y="520" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#166534" text-anchor="start" font-weight="bold">CTP-3 site and CTP-4 port weighbridges</text>
     <g id="flow_g_p6_p1">
-      <path id="flow_g_p6_p1_line" d="M445,196 L445,351" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" />
-      <path id="flow_g_p6_p1_head_end" d="M445,360 L440.5,351 L449.5,351 Z" fill="#475569" stroke="none" />
+      <path id="flow_g_p6_p1_line" d="M445,196 L445,351" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round" />
+      <path id="flow_g_p6_p1_head_end" d="M445,360 L440.5,351 L449.5,351 Z" fill="#F59E0B" stroke="none" />
     </g>
     <g id="flow_g_p6_p2">
-      <path id="flow_g_p6_p2_line" d="M845,205 L845,351" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" />
-      <path id="flow_g_p6_p2_head_end" d="M845,360 L840.5,351 L849.5,351 Z" fill="#475569" stroke="none" />
-      <path id="flow_g_p6_p2_head_start" d="M845,196 L849.5,205 L840.5,205 Z" fill="#475569" stroke="none" />
+      <path id="flow_g_p6_p2_line" d="M845,205 L845,351" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round" />
+      <path id="flow_g_p6_p2_head_end" d="M845,360 L840.5,351 L849.5,351 Z" fill="#F59E0B" stroke="none" />
+      <path id="flow_g_p6_p2_head_start" d="M845,196 L849.5,205 L840.5,205 Z" fill="#F59E0B" stroke="none" />
     </g>
     <g id="flow_g_p6_p3">
-      <path id="flow_g_p6_p3_line" d="M1245,205 L1245,351" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" />
-      <path id="flow_g_p6_p3_head_end" d="M1245,360 L1240.5,351 L1249.5,351 Z" fill="#475569" stroke="none" />
-      <path id="flow_g_p6_p3_head_start" d="M1245,196 L1249.5,205 L1240.5,205 Z" fill="#475569" stroke="none" />
+      <path id="flow_g_p6_p3_line" d="M1245,205 L1245,351" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round" />
+      <path id="flow_g_p6_p3_head_end" d="M1245,360 L1240.5,351 L1249.5,351 Z" fill="#F59E0B" stroke="none" />
+      <path id="flow_g_p6_p3_head_start" d="M1245,196 L1249.5,205 L1240.5,205 Z" fill="#F59E0B" stroke="none" />
     </g>
     <g id="flow_g_p6_p4">
-      <path id="flow_g_p6_p4_line" d="M1645,196 L1645,360" fill="none" stroke="#64748B" stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="6,4" />
+      <path id="flow_g_p6_p4_line" d="M1645,196 L1645,360" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6,4" />
     </g>
     <g id="flow_s_p5_p1">
-      <path id="flow_s_p5_p1_line" d="M445,736 L445,549" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" />
-      <path id="flow_s_p5_p1_head_end" d="M445,540 L449.5,549 L440.5,549 Z" fill="#475569" stroke="none" />
+      <path id="flow_s_p5_p1_line" d="M445,736 L445,549" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linejoin="round" />
+      <path id="flow_s_p5_p1_head_end" d="M445,540 L449.5,549 L440.5,549 Z" fill="#8B5CF6" stroke="none" />
     </g>
     <g id="flow_s_p5_p2">
-      <path id="flow_s_p5_p2_line" d="M845,727 L845,549" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" />
-      <path id="flow_s_p5_p2_head_end" d="M845,540 L849.5,549 L840.5,549 Z" fill="#475569" stroke="none" />
-      <path id="flow_s_p5_p2_head_start" d="M845,736 L840.5,727 L849.5,727 Z" fill="#475569" stroke="none" />
+      <path id="flow_s_p5_p2_line" d="M845,727 L845,549" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linejoin="round" />
+      <path id="flow_s_p5_p2_head_end" d="M845,540 L849.5,549 L840.5,549 Z" fill="#8B5CF6" stroke="none" />
+      <path id="flow_s_p5_p2_head_start" d="M845,736 L840.5,727 L849.5,727 Z" fill="#8B5CF6" stroke="none" />
     </g>
     <g id="flow_s_p5_p3">
-      <path id="flow_s_p5_p3_line" d="M1245,727 L1245,549" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" />
-      <path id="flow_s_p5_p3_head_end" d="M1245,540 L1249.5,549 L1240.5,549 Z" fill="#475569" stroke="none" />
-      <path id="flow_s_p5_p3_head_start" d="M1245,736 L1240.5,727 L1249.5,727 Z" fill="#475569" stroke="none" />
+      <path id="flow_s_p5_p3_line" d="M1245,727 L1245,549" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linejoin="round" />
+      <path id="flow_s_p5_p3_head_end" d="M1245,540 L1249.5,549 L1240.5,549 Z" fill="#8B5CF6" stroke="none" />
+      <path id="flow_s_p5_p3_head_start" d="M1245,736 L1240.5,727 L1249.5,727 Z" fill="#8B5CF6" stroke="none" />
     </g>
     <g id="flow_s_p5_p4">
-      <path id="flow_s_p5_p4_line" d="M1645,736 L1645,549" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" />
-      <path id="flow_s_p5_p4_head_end" d="M1645,540 L1649.5,549 L1640.5,549 Z" fill="#475569" stroke="none" />
+      <path id="flow_s_p5_p4_line" d="M1645,736 L1645,549" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linejoin="round" />
+      <path id="flow_s_p5_p4_head_end" d="M1645,540 L1649.5,549 L1640.5,549 Z" fill="#8B5CF6" stroke="none" />
     </g>
-    <rect id="tag_g_p6_p1" x="310" y="232" width="270" height="60" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="8" ry="8" />
+    <rect id="tag_g_p6_p1" x="310" y="232" width="270" height="60" fill="#FFFFFF" stroke="#F59E0B" stroke-width="1.5" rx="8" ry="8" />
     <text id="tag_g_p6_p1_t_0" x="445" y="258" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">Exclusion zones constrain the</text>
     <text id="tag_g_p6_p1_t_1" x="445" y="273" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">short-term plan</text>
-    <rect id="tag_g_p6_p2" x="710" y="232" width="270" height="60" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="8" ry="8" />
+    <rect id="tag_g_p6_p2" x="710" y="232" width="270" height="60" fill="#FFFFFF" stroke="#F59E0B" stroke-width="1.5" rx="8" ry="8" />
     <text id="tag_g_p6_p2_t_0" x="845" y="258" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">Blast clearance, slope alerts;</text>
     <text id="tag_g_p6_p2_t_1" x="845" y="273" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">incident records use FMS history</text>
-    <rect id="tag_g_p6_p3" x="1110" y="232" width="270" height="60" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="8" ry="8" />
+    <rect id="tag_g_p6_p3" x="1110" y="232" width="270" height="60" fill="#FFFFFF" stroke="#F59E0B" stroke-width="1.5" rx="8" ry="8" />
     <text id="tag_g_p6_p3_t_0" x="1245" y="250" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">Confined-space permits, reagent</text>
     <text id="tag_g_p6_p3_t_1" x="1245" y="265" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">exposure; incidents use PI Historian</text>
     <text id="tag_g_p6_p3_t_2" x="1245" y="280" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">data</text>
-    <rect id="tag_g_p6_p4" x="1510" y="232" width="270" height="60" fill="#FFFFFF" stroke="#64748B" stroke-width="1.2" rx="8" ry="8" stroke-dasharray="6,4" />
+    <rect id="tag_g_p6_p4" x="1510" y="232" width="270" height="60" fill="#FFFFFF" stroke="#F59E0B" stroke-width="1.5" rx="8" ry="8" stroke-dasharray="6,4" />
     <text id="tag_g_p6_p4_t_0" x="1558" y="250" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#64748B" text-anchor="start">To confirm: no Pillar 6 link in</text>
     <text id="tag_g_p6_p4_t_1" x="1558" y="265" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#64748B" text-anchor="start">source; ICMM vessel-loading and</text>
     <text id="tag_g_p6_p4_t_2" x="1558" y="280" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#64748B" text-anchor="start">dust controls expected</text>
-    <rect id="tag_s_p5_p1" x="310" y="640" width="270" height="60" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="8" ry="8" />
+    <rect id="tag_s_p5_p1" x="310" y="640" width="270" height="60" fill="#FFFFFF" stroke="#8B5CF6" stroke-width="1.5" rx="8" ry="8" />
     <text id="tag_s_p5_p1_t_0" x="445" y="673" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">Downtime windows, capital replacement</text>
-    <rect id="tag_s_p5_p2" x="710" y="640" width="270" height="60" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="8" ry="8" />
+    <rect id="tag_s_p5_p2" x="710" y="640" width="270" height="60" fill="#FFFFFF" stroke="#8B5CF6" stroke-width="1.5" rx="8" ry="8" />
     <text id="tag_s_p5_p2_t_0" x="845" y="666" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">work_order_id on delay_event;</text>
     <text id="tag_s_p5_p2_t_1" x="845" y="681" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">operating hours trigger PM</text>
-    <rect id="tag_s_p5_p3" x="1110" y="640" width="270" height="60" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="8" ry="8" />
+    <rect id="tag_s_p5_p3" x="1110" y="640" width="270" height="60" fill="#FFFFFF" stroke="#8B5CF6" stroke-width="1.5" rx="8" ry="8" />
     <text id="tag_s_p5_p3_t_0" x="1245" y="666" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">Plant work orders; calibration</text>
     <text id="tag_s_p5_p3_t_1" x="1245" y="681" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">certificates</text>
-    <rect id="tag_s_p5_p4" x="1510" y="640" width="270" height="60" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="8" ry="8" />
+    <rect id="tag_s_p5_p4" x="1510" y="640" width="270" height="60" fill="#FFFFFF" stroke="#8B5CF6" stroke-width="1.5" rx="8" ry="8" />
     <text id="tag_s_p5_p4_t_0" x="1645" y="666" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">Weighbridge calibration (P754</text>
     <text id="tag_s_p5_p4_t_1" x="1645" y="681" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">Principle 8)</text>
     <g id="flow_x_p6_p5">
-      <path id="flow_x_p6_p5_line" d="M130,205 L130,727" fill="none" stroke="#475569" stroke-width="1.5" stroke-linejoin="round" />
-      <path id="flow_x_p6_p5_head_end" d="M130,736 L125.5,727 L134.5,727 Z" fill="#475569" stroke="none" />
-      <path id="flow_x_p6_p5_head_start" d="M130,196 L134.5,205 L125.5,205 Z" fill="#475569" stroke="none" />
+      <path id="flow_x_p6_p5_line" d="M118,196 L118,727" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round" />
+      <path id="flow_x_p6_p5_head_end" d="M118,736 L113.5,727 L122.5,727 Z" fill="#F59E0B" stroke="none" />
     </g>
-    <rect id="tag_x_p6_p5" x="52" y="418" width="156" height="97" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="8" ry="8" />
+    <g id="flow_x_p6_p5_up">
+      <path id="flow_x_p6_p5_up_line" d="M142,736 L142,205" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linejoin="round" />
+      <path id="flow_x_p6_p5_up_head_end" d="M142,196 L146.5,205 L137.5,205 Z" fill="#8B5CF6" stroke="none" />
+    </g>
+    <rect id="tag_x_p6_p5" x="52" y="418" width="156" height="97" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5" rx="8" ry="8" />
     <text id="tag_x_p6_p5_t_0" x="130" y="440" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">Permit to work gates</text>
     <text id="tag_x_p6_p5_t_1" x="130" y="455" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">work orders. Defects</text>
     <text id="tag_x_p6_p5_t_2" x="130" y="470" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0F172A" text-anchor="middle">raise work orders;</text>
@@ -196,12 +199,20 @@
       <path id="legend_information_head_end" d="M268,17 L259,21.5 L259,12.5 Z" fill="#475569" stroke="none" />
     </g>
     <text id="legend_information_t" x="278" y="20" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="start">Information flow</text>
-    <rect id="legend_tag" x="401" y="11" width="20" height="12" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" rx="3" ry="3" />
-    <text id="legend_tag_t" x="429" y="20" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="start">Supplied by Pillar 5 or 6</text>
-    <ellipse id="legend_ring" cx="614" cy="17" rx="7" ry="7" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5" stroke-dasharray="6,4" />
-    <text id="legend_to_confirm_t" x="627" y="20" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="start">To confirm</text>
-    <rect id="legend_pill" x="713" y="10" width="34" height="14" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5" rx="7" ry="7" />
-    <text id="legend_pill_t" x="730" y="20" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#0F172A" text-anchor="middle" font-weight="bold">CTP</text>
-    <text id="legend_ctp_t" x="755" y="20" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="start">Custody transfer point</text>
+    <g id="legend_p6_link">
+      <path id="legend_p6_link_line" d="M401,17 L422,17" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round" />
+      <path id="legend_p6_link_head_end" d="M431,17 L422,21.5 L422,12.5 Z" fill="#F59E0B" stroke="none" />
+    </g>
+    <text id="legend_p6_link_t" x="441" y="20" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="start">Safety link</text>
+    <g id="legend_p5_link">
+      <path id="legend_p5_link_line" d="M533,17 L554,17" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linejoin="round" />
+      <path id="legend_p5_link_head_end" d="M563,17 L554,21.5 L554,12.5 Z" fill="#8B5CF6" stroke="none" />
+    </g>
+    <text id="legend_p5_link_t" x="573" y="20" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="start">Reliability link</text>
+    <ellipse id="legend_ring" cx="703" cy="17" rx="7" ry="7" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5" stroke-dasharray="6,4" />
+    <text id="legend_to_confirm_t" x="716" y="20" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="start">To confirm</text>
+    <rect id="legend_pill" x="802" y="10" width="34" height="14" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5" rx="7" ry="7" />
+    <text id="legend_pill_t" x="819" y="20" font-family="Helvetica, Arial, sans-serif" font-size="9" fill="#0F172A" text-anchor="middle" font-weight="bold">CTP</text>
+    <text id="legend_ctp_t" x="844" y="20" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#475569" text-anchor="start">Custody transfer point</text>
   </g>
 </svg>

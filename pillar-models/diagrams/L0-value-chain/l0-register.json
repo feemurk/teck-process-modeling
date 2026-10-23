@@ -2,82 +2,414 @@
   "title": "Open-Pit Mining Value Chain",
   "headline": "Ore moves through four pillars to cargo; reliability supports all four, safety governs three, and its link to Logistics is still to confirm.",
   "pillars": [
-    {"id": "p1", "num": 1, "name": "Mine Planning & Scheduling", "kind": "chain",
-     "areas": [["1.1", "Strategic & Long-Term Planning"], ["1.2", "Medium-Term Planning"], ["1.3", "Short-Term Planning"], ["1.4", "Shift Execution & Dispatch"]]},
-    {"id": "p2", "num": 2, "name": "Mining Operations (Extraction)", "kind": "chain",
-     "areas": [["2.1", "Drill & Blast"], ["2.2", "Load & Haul"], ["2.3", "Mine Services"]],
-     "note": "Internal CTP: mine to ROM stockpile"},
-    {"id": "p3", "num": 3, "name": "Processing & Beneficiation", "kind": "chain",
-     "areas": [["3.1", "Comminution"], ["3.2", "Concentration (Flotation)"], ["3.3", "Dewatering & Product Handling"], ["3.4", "Metallurgical Accounting & Quality"]]},
-    {"id": "p4", "num": 4, "name": "Logistics & Outbound Supply Chain", "kind": "chain",
-     "areas": [["4.1", "Concentrate Handling"], ["4.2", "Inland Transport"], ["4.3", "Port Operations"], ["4.4", "Commercial Documentation"]],
-     "note": "CTP-3 site and CTP-4 port weighbridges"},
-    {"id": "p5", "num": 5, "name": "Maintenance & Reliability", "kind": "support",
-     "role": "Asset availability: work orders, downtime windows, instrument calibration",
-     "areas": [["5.1", "Maintenance Planning & Scheduling"], ["5.2", "Preventive & Predictive Maintenance Execution"], ["5.3", "Corrective / Reactive Maintenance"], ["5.4", "Reliability Engineering & Asset Life Management"]]},
-    {"id": "p6", "num": 6, "name": "Health & Safety", "kind": "governance",
-     "role": "Governance: risk controls and permits gate the work; incident investigations draw on data from every pillar",
-     "areas": [["6.1", "Hazard Identification & Risk Control"], ["6.2", "Permit to Work"], ["6.3", "Incident Management"], ["6.4", "Occupational Health Monitoring"], ["6.5", "Safety Performance & Regulatory Compliance"]]}
+    {
+      "id": "p1",
+      "num": 1,
+      "name": "Mine Planning & Scheduling",
+      "kind": "chain",
+      "areas": [
+        [
+          "1.1",
+          "Strategic & Long-Term Planning"
+        ],
+        [
+          "1.2",
+          "Medium-Term Planning"
+        ],
+        [
+          "1.3",
+          "Short-Term Planning"
+        ],
+        [
+          "1.4",
+          "Shift Execution & Dispatch"
+        ]
+      ]
+    },
+    {
+      "id": "p2",
+      "num": 2,
+      "name": "Mining Operations (Extraction)",
+      "kind": "chain",
+      "areas": [
+        [
+          "2.1",
+          "Drill & Blast"
+        ],
+        [
+          "2.2",
+          "Load & Haul"
+        ],
+        [
+          "2.3",
+          "Mine Services"
+        ]
+      ],
+      "note": "Internal CTP: mine to ROM stockpile"
+    },
+    {
+      "id": "p3",
+      "num": 3,
+      "name": "Processing & Beneficiation",
+      "kind": "chain",
+      "areas": [
+        [
+          "3.1",
+          "Comminution"
+        ],
+        [
+          "3.2",
+          "Concentration (Flotation)"
+        ],
+        [
+          "3.3",
+          "Dewatering & Product Handling"
+        ],
+        [
+          "3.4",
+          "Metallurgical Accounting & Quality"
+        ]
+      ]
+    },
+    {
+      "id": "p4",
+      "num": 4,
+      "name": "Logistics & Outbound Supply Chain",
+      "kind": "chain",
+      "areas": [
+        [
+          "4.1",
+          "Concentrate Handling"
+        ],
+        [
+          "4.2",
+          "Inland Transport"
+        ],
+        [
+          "4.3",
+          "Port Operations"
+        ],
+        [
+          "4.4",
+          "Commercial Documentation"
+        ]
+      ],
+      "note": "CTP-3 site and CTP-4 port weighbridges"
+    },
+    {
+      "id": "p5",
+      "num": 5,
+      "name": "Maintenance & Reliability",
+      "kind": "support",
+      "role": "Asset availability: work orders, downtime windows, instrument calibration",
+      "areas": [
+        [
+          "5.1",
+          "Maintenance Planning & Scheduling"
+        ],
+        [
+          "5.2",
+          "Preventive & Predictive Maintenance Execution"
+        ],
+        [
+          "5.3",
+          "Corrective / Reactive Maintenance"
+        ],
+        [
+          "5.4",
+          "Reliability Engineering & Asset Life Management"
+        ]
+      ]
+    },
+    {
+      "id": "p6",
+      "num": 6,
+      "name": "Health & Safety",
+      "kind": "governance",
+      "role": "Governance: risk controls and permits gate the work; incident investigations draw on data from every pillar",
+      "areas": [
+        [
+          "6.1",
+          "Hazard Identification & Risk Control"
+        ],
+        [
+          "6.2",
+          "Permit to Work"
+        ],
+        [
+          "6.3",
+          "Incident Management"
+        ],
+        [
+          "6.4",
+          "Occupational Health Monitoring"
+        ],
+        [
+          "6.5",
+          "Safety Performance & Regulatory Compliance"
+        ]
+      ]
+    }
   ],
   "ctps": [
-    {"id": "ctp1", "label": "CTP-1", "detail": "ROM ore", "flow": "f_p2_p3"},
-    {"id": "ctp2", "label": "CTP-2", "detail": "Filter cake", "flow": "f_p3_p4"},
-    {"id": "ctp5", "label": "CTP-5", "detail": "Revenue recognized", "flow": "f_p4_out"}
+    {
+      "id": "ctp1",
+      "label": "CTP-1",
+      "detail": "ROM ore",
+      "flow": "f_p2_p3"
+    },
+    {
+      "id": "ctp2",
+      "label": "CTP-2",
+      "detail": "Filter cake",
+      "flow": "f_p3_p4"
+    },
+    {
+      "id": "ctp5",
+      "label": "CTP-5",
+      "detail": "Revenue recognized",
+      "flow": "f_p4_out"
+    }
   ],
   "flows": [
-    {"id": "f_p1_p2", "type": "information", "from": "p1", "to": "p2", "label": "Plan, targets",
-     "source": "00 Key Interfaces: dig_polygon, destination_assignment, daily_targets"},
-    {"id": "f_p2_p3", "type": "material", "from": "p2", "to": "p3", "source": "00 CTP-1"},
-    {"id": "f_p3_p4", "type": "material", "from": "p3", "to": "p4", "source": "00 CTP-2"},
-    {"id": "f_p4_out", "type": "material", "from": "p4", "to": "out", "source": "00 CTP-5"},
-    {"id": "f_p2_p1", "type": "information", "from": "p2", "to": "p1", "label": "Actuals vs plan",
-     "source": "00 Key Interfaces: shift_production_report"},
-    {"id": "f_p4_p3", "type": "information", "from": "p4", "to": "p3", "label": "CoA commercial grade",
-     "source": "00 Key Interfaces: CoA for mine-to-vessel grade reconciliation"},
-    {"id": "f_p3_p1", "type": "information", "from": "p3", "to": "p1", "label": "Mill actuals, reconciliation",
-     "source": "03 SIPOC 3.1 and 3.4 customers: Mine Planning"},
-    {"id": "f_p4_p1", "type": "information", "from": "p4", "to": "p1", "label": "Concentrate forecast",
-     "source": "00 Key Interfaces: concentrate production forecast"},
-
-    {"id": "g_p6_p1", "type": "gate", "from": "p6", "to": "p1", "bidirectional": false,
-     "label": "Exclusion zones constrain the short-term plan",
-     "source": "06 Cross-Pillar Interactions: P6 -> P1", "steps": ["2.3.3"]},
-    {"id": "g_p6_p2", "type": "gate", "from": "p6", "to": "p2", "bidirectional": true,
-     "label": "Blast clearance, slope alerts; incident records use FMS history",
-     "source": "06 Cross-Pillar Interactions: P6 -> P2; incident data dependencies", "steps": ["2.1.4.1", "2.1.4.3", "2.3.3"]},
-    {"id": "g_p6_p3", "type": "gate", "from": "p6", "to": "p3", "bidirectional": true,
-     "label": "Confined-space permits, reagent exposure; incidents use PI Historian data",
-     "source": "06 Cross-Pillar Interactions: P6 -> P3; incident data dependencies", "steps": ["3.2.1"]},
-    {"id": "g_p6_p4", "type": "gate", "from": "p6", "to": "p4", "bidirectional": false, "status": "to_confirm",
-     "label": "To confirm: no Pillar 6 link in source; ICMM vessel-loading and dust controls expected",
-     "source": "06 interaction table has no Pillar 4 row; 00 Standard Alignment Matrix lists ICMM as secondary for Pillar 4"},
-
-    {"id": "s_p5_p1", "type": "support", "from": "p5", "to": "p1", "bidirectional": false,
-     "label": "Downtime windows, capital replacement",
-     "source": "05 Cross-Pillar Interactions: P5 -> P1", "steps": ["1.2.2.2", "1.3.3", "1.1.4.2", "5.4.2.2"]},
-    {"id": "s_p5_p2", "type": "support", "from": "p5", "to": "p2", "bidirectional": true,
-     "label": "work_order_id on delay_event; operating hours trigger PM",
-     "source": "05 Cross-Pillar Interactions: P5 -> P2", "steps": ["5.2.1.1", "5.3.1.1"]},
-    {"id": "s_p5_p3", "type": "support", "from": "p5", "to": "p3", "bidirectional": true,
-     "label": "Plant work orders; calibration certificates",
-     "source": "05 Cross-Pillar Interactions: P5 -> P3; 00 Key Interfaces"},
-    {"id": "s_p5_p4", "type": "support", "from": "p5", "to": "p4", "bidirectional": false,
-     "label": "Weighbridge calibration (P754 Principle 8)",
-     "source": "05 Cross-Pillar Interactions: P5 -> P4"},
-
-    {"id": "x_p6_p5", "type": "gate", "from": "p6", "to": "p5", "bidirectional": true,
-     "label": "Permit to work gates work orders. Defects raise work orders; incidents link to work orders",
-     "source": "05 and 06 Cross-Pillar Interactions: P5 <-> P6", "steps": ["5.2.1.1", "5.3.2.1", "5.2.1.3", "5.3.2.3"]}
+    {
+      "id": "f_p1_p2",
+      "type": "information",
+      "from": "p1",
+      "to": "p2",
+      "label": "Plan, targets",
+      "source": "00 Key Interfaces: dig_polygon, destination_assignment, daily_targets"
+    },
+    {
+      "id": "f_p2_p3",
+      "type": "material",
+      "from": "p2",
+      "to": "p3",
+      "source": "00 CTP-1"
+    },
+    {
+      "id": "f_p3_p4",
+      "type": "material",
+      "from": "p3",
+      "to": "p4",
+      "source": "00 CTP-2"
+    },
+    {
+      "id": "f_p4_out",
+      "type": "material",
+      "from": "p4",
+      "to": "out",
+      "source": "00 CTP-5"
+    },
+    {
+      "id": "f_p2_p1",
+      "type": "information",
+      "from": "p2",
+      "to": "p1",
+      "label": "Actuals vs plan",
+      "source": "00 Key Interfaces: shift_production_report"
+    },
+    {
+      "id": "f_p4_p3",
+      "type": "information",
+      "from": "p4",
+      "to": "p3",
+      "label": "CoA commercial grade",
+      "source": "00 Key Interfaces: CoA for mine-to-vessel grade reconciliation"
+    },
+    {
+      "id": "f_p3_p1",
+      "type": "information",
+      "from": "p3",
+      "to": "p1",
+      "label": "Mill actuals, reconciliation",
+      "source": "03 SIPOC 3.1 and 3.4 customers: Mine Planning"
+    },
+    {
+      "id": "f_p4_p1",
+      "type": "information",
+      "from": "p4",
+      "to": "p1",
+      "label": "Concentrate forecast",
+      "source": "00 Key Interfaces: concentrate production forecast"
+    },
+    {
+      "id": "g_p6_p1",
+      "type": "gate",
+      "from": "p6",
+      "to": "p1",
+      "bidirectional": false,
+      "label": "Exclusion zones constrain the short-term plan",
+      "source": "06 Cross-Pillar Interactions: P6 -> P1",
+      "steps": [
+        "2.3.3"
+      ]
+    },
+    {
+      "id": "g_p6_p2",
+      "type": "gate",
+      "from": "p6",
+      "to": "p2",
+      "bidirectional": true,
+      "label": "Blast clearance, slope alerts; incident records use FMS history",
+      "source": "06 Cross-Pillar Interactions: P6 -> P2; incident data dependencies",
+      "steps": [
+        "2.1.4.1",
+        "2.1.4.3",
+        "2.3.3"
+      ]
+    },
+    {
+      "id": "g_p6_p3",
+      "type": "gate",
+      "from": "p6",
+      "to": "p3",
+      "bidirectional": true,
+      "label": "Confined-space permits, reagent exposure; incidents use PI Historian data",
+      "source": "06 Cross-Pillar Interactions: P6 -> P3; incident data dependencies",
+      "steps": [
+        "3.2.1"
+      ]
+    },
+    {
+      "id": "g_p6_p4",
+      "type": "gate",
+      "from": "p6",
+      "to": "p4",
+      "bidirectional": false,
+      "status": "to_confirm",
+      "label": "To confirm: no Pillar 6 link in source; ICMM vessel-loading and dust controls expected",
+      "source": "06 interaction table has no Pillar 4 row; 00 Standard Alignment Matrix lists ICMM as secondary for Pillar 4"
+    },
+    {
+      "id": "s_p5_p1",
+      "type": "support",
+      "from": "p5",
+      "to": "p1",
+      "bidirectional": false,
+      "label": "Downtime windows, capital replacement",
+      "source": "05 Cross-Pillar Interactions: P5 -> P1",
+      "steps": [
+        "1.2.2.2",
+        "1.3.3",
+        "1.1.4.2",
+        "5.4.2.2"
+      ]
+    },
+    {
+      "id": "s_p5_p2",
+      "type": "support",
+      "from": "p5",
+      "to": "p2",
+      "bidirectional": true,
+      "label": "work_order_id on delay_event; operating hours trigger PM",
+      "source": "05 Cross-Pillar Interactions: P5 -> P2",
+      "steps": [
+        "5.2.1.1",
+        "5.3.1.1"
+      ]
+    },
+    {
+      "id": "s_p5_p3",
+      "type": "support",
+      "from": "p5",
+      "to": "p3",
+      "bidirectional": true,
+      "label": "Plant work orders; calibration certificates",
+      "source": "05 Cross-Pillar Interactions: P5 -> P3; 00 Key Interfaces"
+    },
+    {
+      "id": "s_p5_p4",
+      "type": "support",
+      "from": "p5",
+      "to": "p4",
+      "bidirectional": false,
+      "label": "Weighbridge calibration (P754 Principle 8)",
+      "source": "05 Cross-Pillar Interactions: P5 -> P4"
+    },
+    {
+      "id": "x_p6_p5",
+      "type": "gate",
+      "from": "p6",
+      "to": "p5",
+      "bidirectional": true,
+      "label": "Permit to work gates work orders. Defects raise work orders; incidents link to work orders",
+      "source": "05 and 06 Cross-Pillar Interactions: P5 <-> P6",
+      "steps": [
+        "5.2.1.1",
+        "5.3.2.1",
+        "5.2.1.3",
+        "5.3.2.3"
+      ]
+    }
   ],
   "join_keys": [
-    {"key": "equipment_id", "pillars": [1, 2, 5, 6]},
-    {"key": "operator_id", "pillars": [1, 2, 5, 6]},
-    {"key": "shift_id", "pillars": [1, 2, 3, 5]},
-    {"key": "work_order_id", "pillars": [2, 5, 6]},
-    {"key": "permit_id", "pillars": [2, 5, 6]},
-    {"key": "hazard_category_id", "pillars": [2, 6]},
-    {"key": "P754 measurement point id", "pillars": [3, 4, 5]}
+    {
+      "key": "equipment_id",
+      "pillars": [
+        1,
+        2,
+        5,
+        6
+      ]
+    },
+    {
+      "key": "operator_id",
+      "pillars": [
+        1,
+        2,
+        5,
+        6
+      ]
+    },
+    {
+      "key": "shift_id",
+      "pillars": [
+        1,
+        2,
+        3,
+        5
+      ]
+    },
+    {
+      "key": "work_order_id",
+      "pillars": [
+        2,
+        5,
+        6
+      ]
+    },
+    {
+      "key": "permit_id",
+      "pillars": [
+        2,
+        5,
+        6
+      ]
+    },
+    {
+      "key": "hazard_category_id",
+      "pillars": [
+        2,
+        6
+      ]
+    },
+    {
+      "key": "P754 measurement point id",
+      "pillars": [
+        3,
+        4,
+        5
+      ]
+    }
   ],
   "join_keys_title": "Keys shared across pillars (pillar numbers in brackets)",
-  "legend": {"material": "Material flow", "information": "Information flow", "tag": "Supplied by Pillar 5 or 6", "to_confirm": "To confirm", "ctp": "Custody transfer point"}
+  "legend": {
+    "material": "Material flow",
+    "information": "Information flow",
+    "p6_link": "Safety link",
+    "p5_link": "Reliability link",
+    "to_confirm": "To confirm",
+    "ctp": "Custody transfer point"
+  }
 }

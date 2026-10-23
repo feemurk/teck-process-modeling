@@ -175,8 +175,8 @@ def load_drawio():
     raw = open(DIO_P, 'rb').read()
     if raw.startswith(b'\xef\xbb\xbf'):
         err('C drawio: has a BOM')
-    if not raw.startswith(b'<?xml version'):
-        err('C drawio: missing XML declaration')
+    if not raw.startswith(b'<?xml version="1.0" encoding="UTF-8"?>'):
+        err('C drawio: XML declaration is not the standard double-quoted form')
     if re.search(rb'[\x00-\x08\x0b\x0c\x0e-\x1f]', raw):
         err('C drawio: control characters present')
     root = ET.fromstring(raw)
@@ -198,15 +198,15 @@ def load_drawio():
         err('C drawio: first cell is not id 0')
     byid = {c.get('id'): c for c in cells}
     layers = [c.get('id') for c in cells if c.get('parent') == '0']
-    if layers != LAYERS:
-        err('C drawio: layers are %s, expected %s' % (layers, LAYERS))
+    if layers != ['1']:
+        err('C drawio: expected the single layer cell id 1, found %s' % layers)
     model_out = {'rect': {}, 'ellipse': {}, 'text': {}, 'edge': {}}
     for c in cells:
         cid = c.get('id')
         if cid == '0' or c.get('parent') == '0':
             continue
-        if c.get('parent') not in byid:
-            err('C drawio: %s has unknown parent' % cid)
+        if c.get('parent') != '1':
+            err('C drawio: %s is not on the single layer' % cid)
         style = parse_style(c.get('style', ''), cid)
         if c.get('vertex') == '1':
             g = c.find('mxGeometry')
@@ -235,6 +235,10 @@ def load_drawio():
             err('C drawio: cell %s is neither vertex nor edge' % cid)
         if c.get('value') and ('\n' in c.get('value') or '<' in c.get('value')):
             err('C drawio: value of %s has markup or newline' % cid)
+        if c.get('value') and re.search(r'&[A-Za-z#]', c.get('value')):
+            err('C drawio: value of %s has an ampersand an HTML label would misread' % cid)
+        if style.get('html') != '1':
+            err('C drawio: %s is not an html=1 cell' % cid)
     return model_out
 
 
@@ -260,7 +264,7 @@ def drawio_edge_points(e, shapes):
 # ---------------------------------------------------------------- D agreement
 def compare(svg, dio):
     for kind in ('rect', 'ellipse', 'text', 'edge'):
-        a, b = set(svg[kind]), set(dio[kind])
+        a, b = set(svg[kind]) - ({'bg'} if kind == 'rect' else set()), set(dio[kind])
         if a != b:
             err('D agree: %s ids differ. only svg=%s only drawio=%s' % (kind, sorted(a - b)[:6], sorted(b - a)[:6]))
     shapes = dict(dio['rect'])
@@ -371,7 +375,11 @@ def coverage(svg, dio):
                 err('E coverage: to-confirm mark for %s missing or not in the status layer' % f['id'])
             expected['ringq_' + f['id']] = '?'
         ed = svg['edge'].get('flow_' + f['id'])
-        if ed and f['type'] in ('gate', 'support') and bool(f.get('bidirectional')) != ed['start']:
+        if f['id'] == 'x_p6_p5':
+            up = svg['edge'].get('flow_x_p6_p5_up')
+            if not up or not ed or ed['start'] or up['start'] or not (ed['pts'][0][1] < ed['pts'][-1][1] and up['pts'][0][1] > up['pts'][-1][1]):
+                err('E coverage: the Pillar 5 and 6 link must be two opposite single-headed arrows')
+        elif ed and f['type'] in ('gate', 'support') and bool(f.get('bidirectional')) != ed['start']:
             err('E coverage: arrowheads of %s do not match bidirectional=%s' % (f['id'], f.get('bidirectional')))
     for c in REG['ctps']:
         expected['pill_%s_t' % c['id']] = c['label']
@@ -380,7 +388,7 @@ def coverage(svg, dio):
     for n, k in enumerate(REG['join_keys']):
         expected['key_%d_t' % n] = '%s (%s)' % (k['key'], ', '.join(str(p) for p in k['pillars']))
     L = REG['legend']
-    for k in ('material', 'information', 'tag', 'to_confirm'):
+    for k in ('material', 'information', 'p6_link', 'p5_link', 'to_confirm'):
         expected['legend_%s_t' % k] = L[k]
     expected['legend_ctp_t'] = L['ctp']
     expected['legend_pill_t'] = 'CTP'
@@ -404,6 +412,42 @@ def coverage(svg, dio):
     # the register's own claims about the diagram
     if sum(1 for f in REG['flows'] if f.get('status') == 'to_confirm') != 1:
         INFO.append('note: to-confirm count is not 1')
+
+
+# ---------------------------------------------------------------- colour classes
+INK, MUTED, AMBER, VIOLET = '#0F172A', '#475569', '#F59E0B', '#8B5CF6'
+
+
+def check_classes(svg):
+    """Solid ink is material flow only; dashed grey is information; amber is Pillar 6; violet is Pillar 5."""
+    E = svg['edge']
+    for f in REG['flows']:
+        e = E.get('flow_' + f['id'])
+        if not e:
+            continue
+        t = f['type']
+        want = {'material': (INK, False), 'information': (MUTED, True),
+                'gate': (AMBER, f.get('status') == 'to_confirm'), 'support': (VIOLET, False)}[t]
+        if (e['color'], e['dash']) != want:
+            err('F classes: %s is %s dash=%s but a %s link must be %s dash=%s' % (f['id'], e['color'], e['dash'], t, want[0], want[1]))
+        if (f['id'].startswith('g_') and f['from'] != 'p6') or (f['id'].startswith('s_') and f['from'] != 'p5'):
+            err('F classes: %s starts at the wrong pillar' % f['id'])
+        tg = svg['rect'].get('tag_' + f['id'])
+        if tg and t in ('gate', 'support') and f['id'] != 'x_p6_p5' and tg['stroke'] != want[0]:
+            err('F classes: tag of %s is not in the link colour' % f['id'])
+    up = E.get('flow_x_p6_p5_up')
+    if up and (up['color'], up['dash']) != (VIOLET, False):
+        err('F classes: the upward Pillar 5 arrow must be solid violet')
+    for i, e in E.items():
+        if not e['dash'] and e['color'] == INK and not (i.startswith('flow_f_p') or i == 'legend_material'):
+            err('F classes: %s is solid ink but is not a material flow' % i)
+        if not e['dash'] and e['color'] in (AMBER, VIOLET) and i.startswith('flow_f_'):
+            err('F classes: %s is a chain flow drawn in a Pillar 5 or 6 colour' % i)
+    for i, want in (('legend_material', (INK, False)), ('legend_information', (MUTED, True)),
+                    ('legend_p6_link', (AMBER, False)), ('legend_p5_link', (VIOLET, False))):
+        e = E.get(i)
+        if not e or (e['color'], e['dash']) != want or not e['end']:
+            err('F classes: legend sample %s is missing or does not match the diagram' % i)
 
 
 # ---------------------------------------------------------------- F layout
@@ -443,6 +487,7 @@ def layout(svg):
     owner = {}
     for f in REG['flows']:
         owner['flow_' + f['id']] = {'tag_' + f['id']}
+    owner['flow_x_p6_p5_up'] = {'tag_x_p6_p5'}
     for c in REG['ctps']:
         owner['flow_' + c['flow']].add('pill_' + c['id'])
     for i, e in svg['edge'].items():
@@ -545,6 +590,7 @@ def main():
     if dio:
         compare(svg, dio)
         coverage(svg, dio)
+    check_classes(svg)
     layout(svg)
     check_png(svg)
     for line in INFO:

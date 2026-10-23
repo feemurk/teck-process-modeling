@@ -20,6 +20,7 @@ VALUE = ('#DCFCE7', '#22C55E', '#166534')
 FOUND = ('#E2E8F0', '#94A3B8', '#334155')
 GOVERN = ('#F8FAFC', '#64748B', '#334155')
 CARD_BORDER, CELL_BORDER = '#94A3B8', '#CBD5E1'
+LINK = {'p6': '#F59E0B', 'p5': '#8B5CF6'}  # skill palette: amber (Capture) for safety, violet (Contextualize) for reliability
 RIBBON = '#F1F5F9'
 HEAD = 9
 
@@ -105,9 +106,9 @@ for pid in ('p1', 'p2', 'p3', 'p4'):
         text('box_%s_note' % pid, x + 14, BY + BH - 30, BW - 28, p['note'], 11, VALUE[2], True)
 
 # ---- flows
-def tag(fid, cx, ty, label, confirm=False):
+def tag(fid, cx, ty, label, confirm=False, color=CARD_BORDER):
     x = cx - TAGW // 2
-    rect('tag_' + fid, x, ty, TAGW, TAGH, '#FFFFFF', CARD_BORDER if not confirm else FAINT, 1.2, 8, dash=confirm)
+    rect('tag_' + fid, x, ty, TAGW, TAGH, '#FFFFFF', color, 1.5, 8, dash=confirm)
     if confirm:
         ellipse('ring_' + fid, x + 26, ty + TAGH // 2, 11, '#FFFFFF', FAINT, 1.5, True, 'status', 'status_' + fid)
         text('ringq_' + fid, x + 26 - 8, ty + TAGH // 2 - 9, 16, '?', 13, FAINT, True, 'middle', 'status', 'status_' + fid)
@@ -143,21 +144,24 @@ for f in REG['flows']:
             src, dst = 'band_p5', 'box_' + tgt
             ty = T5Y
         confirm = f.get('status') == 'to_confirm'
-        edge('flow_' + fid, pts, FAINT if confirm else MUTED, 1.5, confirm, not confirm, head_flag(f), src, dst)
+        col = LINK['p6'] if fid.startswith('g_') else LINK['p5']
+        edge('flow_' + fid, pts, col, 2, confirm, not confirm, head_flag(f), src, dst)
 for f in REG['flows']:
     fid = f['id']
     if fid.startswith('g_') or fid.startswith('s_'):
         cx = CX[f['to']]
-        tag(fid, cx, T6Y if fid.startswith('g_') else T5Y, f['label'], f.get('status') == 'to_confirm')
+        tag(fid, cx, T6Y if fid.startswith('g_') else T5Y, f['label'], f.get('status') == 'to_confirm',
+            LINK['p6'] if fid.startswith('g_') else LINK['p5'])
 
 # left card: Pillar 6 <-> Pillar 5
 f = F['x_p6_p5']
 LX = 130
-edge('flow_x_p6_p5', [(LX, B6Y + BANDH), (LX, B5Y)], MUTED, 1.5, False, True, True, 'band_p6', 'band_p5')
+edge('flow_x_p6_p5', [(LX - 12, B6Y + BANDH), (LX - 12, B5Y)], LINK['p6'], 2, False, True, False, 'band_p6', 'band_p5')
+edge('flow_x_p6_p5_up', [(LX + 12, B5Y), (LX + 12, B6Y + BANDH)], LINK['p5'], 2, False, True, False, 'band_p5', 'band_p6')
 cl = wrap(f['label'], 134, 11.5)
 ch = len(cl) * 15 + 22
 cy0 = (B6Y + BANDH + B5Y) // 2 - ch // 2
-rect('tag_x_p6_p5', LX - 78, cy0, 156, ch, '#FFFFFF', CARD_BORDER, 1.2, 8)
+rect('tag_x_p6_p5', LX - 78, cy0, 156, ch, '#FFFFFF', CARD_BORDER, 1.5, 8)
 lines_block('tag_x_p6_p5_t', LX - 67, cy0 + 11, 134, cl, 11.5, INK, False, 'middle', step=15)
 
 # chain arrows
@@ -229,9 +233,12 @@ lx += 40 + round(tw(L['material'], 11)) + 24
 edge('legend_information', [(lx, 17), (lx + 30, 17)], MUTED, 1.5, True, True, False, None, None, 'legend')
 text('legend_information_t', lx + 40, 10, 150, L['information'], 11, MUTED, layer='legend')
 lx += 40 + round(tw(L['information'], 11)) + 24
-rect('legend_tag', lx, 11, 20, 12, '#FFFFFF', CARD_BORDER, 1.2, 3, layer='legend')
-text('legend_tag_t', lx + 28, 10, 220, L['tag'], 11, MUTED, layer='legend')
-lx += 28 + round(tw(L['tag'], 11)) + 24
+edge('legend_p6_link', [(lx, 17), (lx + 30, 17)], LINK['p6'], 2, False, True, False, None, None, 'legend')
+text('legend_p6_link_t', lx + 40, 10, 220, L['p6_link'], 11, MUTED, layer='legend')
+lx += 40 + round(tw(L['p6_link'], 11)) + 24
+edge('legend_p5_link', [(lx, 17), (lx + 30, 17)], LINK['p5'], 2, False, True, False, None, None, 'legend')
+text('legend_p5_link_t', lx + 40, 10, 220, L['p5_link'], 11, MUTED, layer='legend')
+lx += 40 + round(tw(L['p5_link'], 11)) + 24
 ellipse('legend_ring', lx + 7, 17, 7, '#FFFFFF', FAINT, 1.5, True, 'legend')
 text('legend_to_confirm_t', lx + 20, 10, 120, L['to_confirm'], 11, MUTED, layer='legend')
 lx += 20 + round(tw(L['to_confirm'], 11)) + 24
@@ -356,15 +363,15 @@ def drawio_style(parts):
 
 
 def build_drawio():
-    mxfile = ET.Element('mxfile', {'host': 'app.diagrams.net', 'agent': 'build_l0.py', 'version': '24.0.0', 'type': 'device'})
+    mxfile = ET.Element('mxfile', {'host': 'app.diagrams.net', 'modified': '2026-10-22T00:00:00.000Z', 'agent': 'build_l0.py',
+                                   'version': '24.0.0', 'type': 'device'})
     dia = ET.SubElement(mxfile, 'diagram', {'id': 'l0-value-chain-map', 'name': 'L0 Value Chain Map'})
     model = ET.SubElement(dia, 'mxGraphModel', {'dx': str(W), 'dy': str(H), 'grid': '0', 'gridSize': '10', 'guides': '1', 'tooltips': '1',
                                                   'connect': '1', 'arrows': '1', 'fold': '1', 'page': '1', 'pageScale': '1',
                                                   'pageWidth': str(W), 'pageHeight': str(H), 'math': '0', 'shadow': '0', 'background': '#FFFFFF'})
     root = ET.SubElement(model, 'root')
     ET.SubElement(root, 'mxCell', {'id': '0'})
-    for ly in LAYERS:
-        ET.SubElement(root, 'mxCell', {'id': 'layer-' + ly, 'value': ly, 'parent': '0'})
+    ET.SubElement(root, 'mxCell', {'id': '1', 'parent': '0'})
 
     shapes = {e['id']: e for e in EL if e['t'] in ('rect', 'ellipse')}
 
@@ -372,9 +379,11 @@ def build_drawio():
         return e['id']
 
     for e in EL:
-        parent = 'layer-' + e['layer']
+        if e['id'] == 'bg':
+            continue  # the page background colour covers it; a full-canvas shape would be selected by every click
+        parent = '1'
         if e['t'] in ('rect', 'ellipse'):
-            st = ['ellipse' if e['t'] == 'ellipse' else ('rounded=1' if e['rx'] else 'rounded=0'), 'whiteSpace=wrap', 'html=0',
+            st = ['ellipse' if e['t'] == 'ellipse' else ('rounded=1' if e['rx'] else 'rounded=0'), 'whiteSpace=wrap', 'html=1',
                   'fillColor=' + e['fill'], 'strokeColor=' + e['stroke'], 'strokeWidth=' + fmt(e['sw'])]
             if e['t'] == 'rect' and e['rx']:
                 st += ['absoluteArcSize=1', 'arcSize=' + fmt(e['rx'])]
@@ -384,14 +393,14 @@ def build_drawio():
             ET.SubElement(c, 'mxGeometry', {'x': fmt(e['x']), 'y': fmt(e['y']), 'width': fmt(e['w']), 'height': fmt(e['h']), 'as': 'geometry'})
         elif e['t'] == 'text':
             al = {'start': 'left', 'middle': 'center', 'end': 'right'}[e['anchor']]
-            st = ['text', 'html=0', 'whiteSpace=nowrap', 'strokeColor=none', 'fillColor=none', 'align=' + al, 'verticalAlign=top',
+            st = ['text', 'html=1', 'whiteSpace=nowrap', 'strokeColor=none', 'fillColor=none', 'align=' + al, 'verticalAlign=top',
                   'spacing=0', 'spacingTop=0', 'spacingLeft=0', 'spacingRight=0', 'spacingBottom=0', 'fontFamily=Helvetica',
                   'fontSize=' + fmt(e['size']), 'fontColor=' + e['color'], 'fontStyle=' + ('1' if e['bold'] else '0')]
             c = ET.SubElement(root, 'mxCell', {'id': e['id'], 'value': e['s'], 'style': drawio_style(st), 'vertex': '1', 'parent': parent})
             ET.SubElement(c, 'mxGeometry', {'x': fmt(e['x']), 'y': fmt(e['y']), 'width': fmt(e['w']), 'height': fmt(e['h']), 'as': 'geometry'})
         elif e['t'] == 'edge':
             pts = e['pts']
-            st = ['html=0', 'rounded=0', 'strokeColor=' + e['color'], 'strokeWidth=' + fmt(e['sw']),
+            st = ['html=1', 'rounded=0', 'strokeColor=' + e['color'], 'strokeWidth=' + fmt(e['sw']),
                   'endArrow=' + ('block' if e['end'] else 'none'), 'endFill=1', 'endSize=5',
                   'startArrow=' + ('block' if e['start'] else 'none'), 'startFill=1', 'startSize=5']
             if e['dash']:
@@ -422,7 +431,12 @@ def build_drawio():
                 for p in pts[1:-1]:
                     ET.SubElement(arr, 'mxPoint', {'x': fmt(p[0]), 'y': fmt(p[1])})
     indent(mxfile)
-    return ET.ElementTree(mxfile)
+    return mxfile
+
+
+def write_drawio(mxfile, path):
+    decl = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    open(path, 'w', encoding='utf-8', newline='\n').write(decl + ET.tostring(mxfile, encoding='unicode') + '\n')
 
 
 def main():
@@ -431,8 +445,7 @@ def main():
     png_path = os.path.join(HERE, STEM + '.png')
     t = build_svg()
     t.write(svg_path, encoding='utf-8', xml_declaration=True)
-    t = build_drawio()
-    t.write(dio_path, encoding='utf-8', xml_declaration=True)
+    write_drawio(build_drawio(), dio_path)
     edge_exe = r'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'
     if os.path.exists(edge_exe):
         uri = 'file:///' + svg_path.replace('\\', '/')
