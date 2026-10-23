@@ -4,6 +4,8 @@ Companion to [03-processing-and-beneficiation.md](../../03-processing-and-benefi
 
 Same method and naming standard as [Pillar 2](../02-mining-operations-extraction/README.md): `bpmn-style-guide` layout rules, L2 shows L3 as collapsed sub-processes, each L3 diagram carries its L4 steps as tasks with the row detail (ISA-95 level, actors, standards, DDVC layer, P754 annotation) in the task `documentation`. All 17 files pass `check_bpmn_layout.py`.
 
+PNG copies of every diagram are in [png/](png/), for document management. They are generated from the `.bpmn` files by [tools/bpmn_to_png.py](../tools/bpmn_to_png.py), so regenerate them after any diagram change: `python ../tools/bpmn_to_png.py . png` (needs Microsoft Edge).
+
 ## Diagram index
 
 | Level | Diagram | L4 handling |
