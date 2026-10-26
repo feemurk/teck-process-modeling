@@ -32,11 +32,13 @@
     <text id="box_p3_area_1" x="1114" y="449" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">3.2 Concentration (Flotation)</text>
     <text id="box_p3_area_2" x="1114" y="464" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">3.3 Dewatering &amp; Product Handling</text>
     <text id="box_p3_area_3" x="1114" y="479" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">3.4 Metallurgical Accounting &amp; Quality</text>
+    <text id="box_p3_area_4" x="1114" y="494" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">3.5 Tailings Management</text>
+    <text id="box_p3_area_5" x="1114" y="509" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">3.6 Water Management</text>
     <rect id="box_p4" x="1500" y="360" width="290" height="180" fill="#DCFCE7" stroke="#22C55E" stroke-width="1.5" rx="12" ry="12" />
     <text id="box_p4_name_0" x="1514" y="388" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#166534" text-anchor="start" font-weight="bold">4 Logistics &amp; Outbound</text>
     <text id="box_p4_name_1" x="1514" y="408" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#166534" text-anchor="start" font-weight="bold">Supply Chain</text>
     <text id="box_p4_area_0" x="1514" y="434" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">4.1 Concentrate Handling</text>
-    <text id="box_p4_area_1" x="1514" y="449" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">4.2 Inland Transport</text>
+    <text id="box_p4_area_1" x="1514" y="449" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">4.2 Concentrate Transport</text>
     <text id="box_p4_area_2" x="1514" y="464" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">4.3 Port Operations</text>
     <text id="box_p4_area_3" x="1514" y="479" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0F172A" text-anchor="start">4.4 Commercial Documentation</text>
     <text id="box_p4_note" x="1514" y="520" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#166534" text-anchor="start" font-weight="bold">CTP-3 site and CTP-4 port weighbridges</text>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_L3_3_5_3" targetNamespace="https://teck.example/process-models/pillar-03">
+  <bpmn:collaboration id="Collab_L3_3_5_3">
+    <bpmn:participant id="Pool_L3_3_5_3" name="3.5.3 Tailings Deposition" processRef="Process_L3_3_5_3"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_L3_3_5_3" isExecutable="false">
+    <bpmn:documentation>L0/L2/L3 Process. Places tailings — or classification fines, or rejected sand — in the impoundment by the configured deposition method, and rotates discharge so that the beach and pond stay where the design requires.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_L3_3_5_3">
+      <bpmn:lane id="Lane_L3_3_5_3_tail" name="Tailings Operator / Tailings Facility Engineer">
+        <bpmn:flowNodeRef>Start_L3_3_5_3_s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_5_3_3_5_3_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_5_3_3_5_3_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L3_3_5_3_g</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_3_5_3_e</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_5_3_n</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_3_5_3_e2</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_L3_3_5_3_s" name="Tailings at discharge point">
+      <bpmn:outgoing>Flow_L3_3_5_3_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_L3_3_5_3_3_5_3_1" name="3.5.3.1 Deposit Tailings in Impoundment">
+      <bpmn:documentation>Tailings slurry is discharged through spigots or open-ended lines on the embankment crest, the beach or within cells. Deposition records (location, volume or mass, density) are kept for the facility mass balance. [P754: volume and mass (deposited) | flow integration + density, or survey | continuous flow / periodic survey | Principles 1, 7 | PARTIAL — the TSF is the final sink of the plant-side mass balance; TP-05]
+ISA-95 level: 0 / 2
+Actors: Tailings Operator; DCS / SCADA
+Standard alignment: ISA-95 Levels 0, 2; AMIRA P754 Principles 1, 7
+DDVC layer: Raw; Curated (tailings_deposition_record)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_5_3_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_5_3_2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_L3_3_5_3_3_5_3_2" name="3.5.3.2 Manage Beach and Pond Position">
+      <bpmn:documentation>Discharge points are rotated to build the beach, keep the pond within its design area and away from the embankment, and maintain the minimum beach width. Beach width and pond position are checked by survey or remote sensing against the operating criteria.
+ISA-95 level: 2 / 3
+Actors: Tailings Operator; Tailings Facility Engineer
+Standard alignment: ISA-95 Levels 2, 3; GISTM
+DDVC layer: Curated (tailings_deposition_record — location attribute)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_5_3_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_5_3_3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_L3_3_5_3_g" name="Beach width below minimum?" default="Flow_L3_3_5_3_4">
+      <bpmn:incoming>Flow_L3_3_5_3_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_5_3_4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_3_5_3_5</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_L3_3_5_3_e" name="Tailings deposited">
+      <bpmn:incoming>Flow_L3_3_5_3_4</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="Task_L3_3_5_3_n" name="Relocate discharge to restore beach">
+      <bpmn:documentation>Derived from the Process Flow Narratives section (not a row in the Process Decomposition). Beach width response; no L4 row.</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_5_3_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_5_3_6</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_L3_3_5_3_e2" name="Discharge relocated">
+      <bpmn:incoming>Flow_L3_3_5_3_6</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_L3_3_5_3_1" sourceRef="Start_L3_3_5_3_s" targetRef="Task_L3_3_5_3_3_5_3_1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_5_3_2" sourceRef="Task_L3_3_5_3_3_5_3_1" targetRef="Task_L3_3_5_3_3_5_3_2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_5_3_3" sourceRef="Task_L3_3_5_3_3_5_3_2" targetRef="Gw_L3_3_5_3_g"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_5_3_4" name="No" sourceRef="Gw_L3_3_5_3_g" targetRef="End_L3_3_5_3_e"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_5_3_5" name="Yes" sourceRef="Gw_L3_3_5_3_g" targetRef="Task_L3_3_5_3_n"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_5_3_6" sourceRef="Task_L3_3_5_3_n" targetRef="End_L3_3_5_3_e2"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_L3_3_5_3">
+    <bpmndi:BPMNPlane id="Plane_L3_3_5_3" bpmnElement="Collab_L3_3_5_3">
+      <bpmndi:BPMNShape id="Pool_L3_3_5_3_di" bpmnElement="Pool_L3_3_5_3" isHorizontal="true"><dc:Bounds x="20" y="20" width="1024" height="340"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_5_3_tail_di" bpmnElement="Lane_L3_3_5_3_tail" isHorizontal="true"><dc:Bounds x="60" y="20" width="984" height="340"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_L3_3_5_3_s_di" bpmnElement="Start_L3_3_5_3_s"><dc:Bounds x="142" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="110" y="139" width="120" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_5_3_3_5_3_1_di" bpmnElement="Task_L3_3_5_3_3_5_3_1"><dc:Bounds x="266" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_5_3_3_5_3_2_di" bpmnElement="Task_L3_3_5_3_3_5_3_2"><dc:Bounds x="472" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L3_3_5_3_g_di" bpmnElement="Gw_L3_3_5_3_g" isMarkerVisible="true"><dc:Bounds x="728" y="70" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="657" y="34" width="100" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_3_5_3_e_di" bpmnElement="End_L3_3_5_3_e"><dc:Bounds x="916" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="884" y="139" width="120" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_5_3_n_di" bpmnElement="Task_L3_3_5_3_n"><dc:Bounds x="678" y="235" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_3_5_3_e2_di" bpmnElement="End_L3_3_5_3_e2"><dc:Bounds x="916" y="247" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="884" y="309" width="120" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_L3_3_5_3_1_di" bpmnElement="Flow_L3_3_5_3_1"><di:waypoint x="198" y="105"/><di:waypoint x="266" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_5_3_2_di" bpmnElement="Flow_L3_3_5_3_2"><di:waypoint x="436" y="105"/><di:waypoint x="472" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_5_3_3_di" bpmnElement="Flow_L3_3_5_3_3"><di:waypoint x="642" y="105"/><di:waypoint x="728" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_5_3_4_di" bpmnElement="Flow_L3_3_5_3_4"><di:waypoint x="798" y="105"/><di:waypoint x="916" y="105"/><bpmndi:BPMNLabel><dc:Bounds x="802" y="85" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_5_3_5_di" bpmnElement="Flow_L3_3_5_3_5"><di:waypoint x="763" y="140"/><di:waypoint x="763" y="235"/><bpmndi:BPMNLabel><dc:Bounds x="769" y="144" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_5_3_6_di" bpmnElement="Flow_L3_3_5_3_6"><di:waypoint x="848" y="275"/><di:waypoint x="916" y="275"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

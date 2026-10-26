@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_L3_3_6_3" targetNamespace="https://teck.example/process-models/pillar-03">
+  <bpmn:collaboration id="Collab_L3_3_6_3">
+    <bpmn:participant id="Pool_L3_3_6_3" name="3.6.3 Seepage &amp; Drainage Collection" processRef="Process_L3_3_6_3"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_L3_3_6_3" isExecutable="false">
+    <bpmn:documentation>L0/L1/L2 Process. Collects water that seeps through tailings, the embankment or its foundation, and drainage from placed construction material, in drains, sumps and ponds, and pumps it to its configured destination — the impoundment, reclaim, a classification station, or treatment and discharge. Drainage of freshly placed sand is distinct from seepage.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_L3_3_6_3">
+      <bpmn:lane id="Lane_L3_3_6_3_tail" name="Tailings Operator">
+        <bpmn:flowNodeRef>Start_L3_3_6_3_s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_6_3_3_6_3_1</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_L3_3_6_3_dcs" name="DCS / SCADA">
+        <bpmn:flowNodeRef>Task_L3_3_6_3_3_6_3_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L3_3_6_3_g</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_6_3_3_6_3_3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_3_6_3_e1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_3_6_3_e2</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_L3_3_6_3_s" name="Seepage and drainage flowing">
+      <bpmn:outgoing>Flow_L3_3_6_3_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_L3_3_6_3_3_6_3_1" name="3.6.3.1 Collect Seepage and Drainage">
+      <bpmn:documentation>Seepage and drainage are intercepted by underdrains, toe drains, cut-offs and sumps and collected in seepage ponds. Collection points are designed with the facility; additions are construction changes.
+ISA-95 level: 0 / 1
+Actors: Tailings Operator
+Standard alignment: ISA-95 Levels 0, 1; GISTM
+DDVC layer: Raw</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_6_3_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_6_3_2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_L3_3_6_3_3_6_3_2" name="3.6.3.2 Monitor Collection Ponds and Pumps">
+      <bpmn:documentation>Pond levels and pump states are monitored continuously, with alarms on high level. Seepage flow rates are a surveillance input to Pillar 6; pump run and fault records feed reliability (Pillar 5). [WATER: level and flow | level sensors + pump flow meters | continuous | MCA WAF | NO]
+ISA-95 level: 1 / 2
+Actors: DCS / SCADA; Tailings Operator
+Standard alignment: ISA-95 Levels 1, 2; MCA WAF
+DDVC layer: Raw (time-series: pond_level_telemetry)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_6_3_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_6_3_3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_L3_3_6_3_g" name="Pond above pump-start level?" default="Flow_L3_3_6_3_4">
+      <bpmn:incoming>Flow_L3_3_6_3_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_6_3_4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_3_6_3_5</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_L3_3_6_3_3_6_3_3" name="3.6.3.3 Pump Recovered Water to Destination">
+      <bpmn:documentation>Recovery pumps return collected water to its configured destination — the impoundment, the reclaim system, a classification station, or treatment and discharge. Volumes are recorded by destination, because each destination is a different water-balance boundary. [WATER: volume (recovered, per destination) | pump flow meters | continuous | MCA WAF | NO — WP-09]
+ISA-95 level: 1 / 2
+Actors: DCS / SCADA; Tailings Operator
+Standard alignment: ISA-95 Levels 1, 2; MCA WAF
+DDVC layer: Raw (time-series: water_flow_telemetry); Curated (water_transfer_record)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_6_3_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_6_3_6</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_L3_3_6_3_e1" name="Recovered water at destination">
+      <bpmn:incoming>Flow_L3_3_6_3_6</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_L3_3_6_3_e2" name="Water held in pond">
+      <bpmn:incoming>Flow_L3_3_6_3_5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_L3_3_6_3_1" sourceRef="Start_L3_3_6_3_s" targetRef="Task_L3_3_6_3_3_6_3_1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_6_3_2" sourceRef="Task_L3_3_6_3_3_6_3_1" targetRef="Task_L3_3_6_3_3_6_3_2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_6_3_3" sourceRef="Task_L3_3_6_3_3_6_3_2" targetRef="Gw_L3_3_6_3_g"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_6_3_4" name="Yes" sourceRef="Gw_L3_3_6_3_g" targetRef="Task_L3_3_6_3_3_6_3_3"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_6_3_5" name="No" sourceRef="Gw_L3_3_6_3_g" targetRef="End_L3_3_6_3_e2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_6_3_6" sourceRef="Task_L3_3_6_3_3_6_3_3" targetRef="End_L3_3_6_3_e1"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_L3_3_6_3">
+    <bpmndi:BPMNPlane id="Plane_L3_3_6_3" bpmnElement="Collab_L3_3_6_3">
+      <bpmndi:BPMNShape id="Pool_L3_3_6_3_di" bpmnElement="Pool_L3_3_6_3" isHorizontal="true"><dc:Bounds x="20" y="20" width="1200" height="510"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_6_3_tail_di" bpmnElement="Lane_L3_3_6_3_tail" isHorizontal="true"><dc:Bounds x="60" y="20" width="1160" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_6_3_dcs_di" bpmnElement="Lane_L3_3_6_3_dcs" isHorizontal="true"><dc:Bounds x="60" y="190" width="1160" height="340"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_L3_3_6_3_s_di" bpmnElement="Start_L3_3_6_3_s"><dc:Bounds x="142" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="110" y="139" width="120" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_6_3_3_6_3_1_di" bpmnElement="Task_L3_3_6_3_3_6_3_1"><dc:Bounds x="266" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_6_3_3_6_3_2_di" bpmnElement="Task_L3_3_6_3_3_6_3_2"><dc:Bounds x="472" y="235" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L3_3_6_3_g_di" bpmnElement="Gw_L3_3_6_3_g" isMarkerVisible="true"><dc:Bounds x="713" y="240" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="642" y="190" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_6_3_3_6_3_3_di" bpmnElement="Task_L3_3_6_3_3_6_3_3"><dc:Bounds x="854" y="235" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_3_6_3_e1_di" bpmnElement="End_L3_3_6_3_e1"><dc:Bounds x="1092" y="247" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1060" y="309" width="120" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_3_6_3_e2_di" bpmnElement="End_L3_3_6_3_e2"><dc:Bounds x="720" y="417" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="688" y="479" width="120" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_L3_3_6_3_1_di" bpmnElement="Flow_L3_3_6_3_1"><di:waypoint x="198" y="105"/><di:waypoint x="266" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_6_3_2_di" bpmnElement="Flow_L3_3_6_3_2"><di:waypoint x="436" y="105"/><di:waypoint x="454" y="105"/><di:waypoint x="454" y="275"/><di:waypoint x="472" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_6_3_3_di" bpmnElement="Flow_L3_3_6_3_3"><di:waypoint x="642" y="275"/><di:waypoint x="713" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_6_3_4_di" bpmnElement="Flow_L3_3_6_3_4"><di:waypoint x="783" y="275"/><di:waypoint x="854" y="275"/><bpmndi:BPMNLabel><dc:Bounds x="787" y="255" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_6_3_5_di" bpmnElement="Flow_L3_3_6_3_5"><di:waypoint x="748" y="310"/><di:waypoint x="748" y="417"/><bpmndi:BPMNLabel><dc:Bounds x="754" y="314" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_6_3_6_di" bpmnElement="Flow_L3_3_6_3_6"><di:waypoint x="1024" y="275"/><di:waypoint x="1092" y="275"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

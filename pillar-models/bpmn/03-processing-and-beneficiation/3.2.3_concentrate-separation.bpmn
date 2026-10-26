@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_L3_3_2_3" targetNamespace="https://teck.example/process-models/pillar-03">
+  <bpmn:collaboration id="Collab_L3_3_2_3">
+    <bpmn:participant id="Pool_L3_3_2_3" name="3.2.3 Concentrate Separation" processRef="Process_L3_3_2_3"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_L3_3_2_3" isExecutable="false">
+    <bpmn:documentation>L0/L1/L2 Process. Reusable pattern; conditional — runs only where a Flotation Circuit produces a bulk concentrate. Splits the bulk concentrate into two concentrates by differential flotation: one mineral is depressed and reports to the separation tailings (the sink product), the other is floated (the float product). Both products are saleable concentrates and go to their own dewatering trains (3.3). Examples: copper-molybdenum separation (molybdenite floated, copper minerals depressed — the copper concentrate is the sink product); copper-lead separation.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_L3_3_2_3">
+      <bpmn:lane id="Lane_L3_3_2_3_dcs" name="DCS Auto-control">
+        <bpmn:flowNodeRef>Start_L3_3_2_3_s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_2_3_3_2_3_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_2_3_c</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_2_3_3_2_3_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Par_L3_3_2_3_f</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_2_3_3_2_3_3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L3_3_2_3_g</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_3_2_3_e1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_3_2_3_e2</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_L3_3_2_3_met" name="Metallurgist">
+        <bpmn:flowNodeRef>Task_L3_3_2_3_n</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_L3_3_2_3_s" name="Bulk concentrate from flotation circuit">
+      <bpmn:outgoing>Flow_L3_3_2_3_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_L3_3_2_3_3_2_3_1" name="3.2.3.1 Prepare Bulk Concentrate for Separation">
+      <bpmn:documentation>The bulk concentrate is thickened (an instance of 3.3.1 Thickening) to raise pulp density, recover water and shed residual reagents from the bulk circuit. Some plants also regrind, heat, oxidise or apply a nitrogen atmosphere to reduce reagent consumption. The prepared pulp is then conditioned for the separation through 3.2.1 (for example, a copper depressant such as sodium hydrosulphide in a copper-molybdenum separation). [P754: mass flow + density (bulk concentrate) | flowmeter + density gauge | continuous (1-min) | Principles 1, 7 | NO — MP-08]
+ISA-95 level: 0 / 2
+Actors: DCS Auto-control; Metallurgist
+Standard alignment: ISA-95 Levels 0, 2; AMIRA P754 Principles 1, 7
+DDVC layer: Raw (time-series: thickener_telemetry, reagent_dosing_telemetry)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_2_3_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_3_2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_L3_3_2_3_c" name="Condition pulp for separation (3.2.1)">
+      <bpmn:documentation>Derived from the Process Flow Narratives section (not a row in the Process Decomposition). Invokes the Reagent Management &amp; Pulp Conditioning pattern (3.2.1) for the separation, e.g. a copper depressant in a copper-molybdenum separation. All reagent conditioning sits in 3.2.1.</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_2_3_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_3_3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_L3_3_2_3_3_2_3_2" name="3.2.3.2 Operate Separation Rougher Flotation">
+      <bpmn:documentation>The float mineral is floated from the conditioned bulk concentrate while the sink mineral is depressed. The separation rougher tailings are the sink product — a saleable concentrate that goes to its dewatering train. Float and sink grades are monitored by OSA or shift composite. [P754: grade (float and sink elements) + mass flow | on-stream XRF or shift composite + flow and density | continuous / shift | Principles 1, 2, 5, 6, 7 | YES for the sink product — MP-10]
+ISA-95 level: 0 / 2
+Actors: DCS Auto-control; Metallurgist
+Standard alignment: ISA-95 Levels 0, 2; AMIRA P754 Principles 1, 2, 5, 6, 7
+DDVC layer: Raw (time-series: flotation_cell_telemetry); Curated (concentrate_production_record)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_2_3_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_3_4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:parallelGateway id="Par_L3_3_2_3_f">
+      <bpmn:incoming>Flow_L3_3_2_3_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_3_5</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_3_2_3_6</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:task id="Task_L3_3_2_3_3_2_3_3" name="3.2.3.3 Operate Separation Cleaner Flotation">
+      <bpmn:documentation>The separation rougher concentrate is upgraded through several cleaner stages (often with regrind and column cells) to the float product specification. Cleaner tails recycle within the separation circuit. The final cleaner concentrate is the float product and goes to its dewatering train; a shift composite sample is collected. [P754: grade (float element and impurities) + mass flow | shift composite + flow and density | shift | Principles 1, 2, 5, 6, 7 | YES — float product to dewatering, MP-09]
+ISA-95 level: 0 / 2
+Actors: DCS Auto-control; Metallurgist
+Standard alignment: ISA-95 Levels 0, 2; AMIRA P754 Principles 1, 2, 5, 6, 7
+DDVC layer: Raw; Curated (concentrate_production_record)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_2_3_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_3_7</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_L3_3_2_3_g" name="Float product below spec?" default="Flow_L3_3_2_3_8">
+      <bpmn:incoming>Flow_L3_3_2_3_7</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_3_8</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_3_2_3_9</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_L3_3_2_3_e1" name="Float concentrate to dewatering">
+      <bpmn:incoming>Flow_L3_3_2_3_8</bpmn:incoming>
+      <bpmn:incoming>Flow_L3_3_2_3_10</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_L3_3_2_3_e2" name="Sink concentrate to dewatering">
+      <bpmn:incoming>Flow_L3_3_2_3_6</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="Task_L3_3_2_3_n" name="Adjust depressant dose or cleaning; log change">
+      <bpmn:documentation>Derived from the Process Flow Narratives section (not a row in the Process Decomposition). Separation product quality response; no L4 row.</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_2_3_9</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_3_10</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_3_1" sourceRef="Start_L3_3_2_3_s" targetRef="Task_L3_3_2_3_3_2_3_1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_3_2" sourceRef="Task_L3_3_2_3_3_2_3_1" targetRef="Task_L3_3_2_3_c"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_3_3" sourceRef="Task_L3_3_2_3_c" targetRef="Task_L3_3_2_3_3_2_3_2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_3_4" sourceRef="Task_L3_3_2_3_3_2_3_2" targetRef="Par_L3_3_2_3_f"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_3_5" sourceRef="Par_L3_3_2_3_f" targetRef="Task_L3_3_2_3_3_2_3_3"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_3_6" sourceRef="Par_L3_3_2_3_f" targetRef="End_L3_3_2_3_e2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_3_7" sourceRef="Task_L3_3_2_3_3_2_3_3" targetRef="Gw_L3_3_2_3_g"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_3_8" name="No" sourceRef="Gw_L3_3_2_3_g" targetRef="End_L3_3_2_3_e1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_3_9" name="Yes" sourceRef="Gw_L3_3_2_3_g" targetRef="Task_L3_3_2_3_n"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_3_10" sourceRef="Task_L3_3_2_3_n" targetRef="End_L3_3_2_3_e1"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_L3_3_2_3">
+    <bpmndi:BPMNPlane id="Plane_L3_3_2_3" bpmnElement="Collab_L3_3_2_3">
+      <bpmndi:BPMNShape id="Pool_L3_3_2_3_di" bpmnElement="Pool_L3_3_2_3" isHorizontal="true"><dc:Bounds x="20" y="20" width="1612" height="510"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_2_3_dcs_di" bpmnElement="Lane_L3_3_2_3_dcs" isHorizontal="true"><dc:Bounds x="60" y="20" width="1572" height="340"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_2_3_met_di" bpmnElement="Lane_L3_3_2_3_met" isHorizontal="true"><dc:Bounds x="60" y="360" width="1572" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_L3_3_2_3_s_di" bpmnElement="Start_L3_3_2_3_s"><dc:Bounds x="142" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="110" y="139" width="120" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_2_3_3_2_3_1_di" bpmnElement="Task_L3_3_2_3_3_2_3_1"><dc:Bounds x="266" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_2_3_c_di" bpmnElement="Task_L3_3_2_3_c"><dc:Bounds x="472" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_2_3_3_2_3_2_di" bpmnElement="Task_L3_3_2_3_3_2_3_2"><dc:Bounds x="678" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Par_L3_3_2_3_f_di" bpmnElement="Par_L3_3_2_3_f"><dc:Bounds x="919" y="70" width="70" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_2_3_3_2_3_3_di" bpmnElement="Task_L3_3_2_3_3_2_3_3"><dc:Bounds x="1060" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L3_3_2_3_g_di" bpmnElement="Gw_L3_3_2_3_g" isMarkerVisible="true"><dc:Bounds x="1316" y="70" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="1245" y="34" width="100" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_3_2_3_e1_di" bpmnElement="End_L3_3_2_3_e1"><dc:Bounds x="1504" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1472" y="43" width="120" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_3_2_3_e2_di" bpmnElement="End_L3_3_2_3_e2"><dc:Bounds x="1117" y="247" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1085" y="309" width="120" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_2_3_n_di" bpmnElement="Task_L3_3_2_3_n"><dc:Bounds x="1266" y="405" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_3_1_di" bpmnElement="Flow_L3_3_2_3_1"><di:waypoint x="198" y="105"/><di:waypoint x="266" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_3_2_di" bpmnElement="Flow_L3_3_2_3_2"><di:waypoint x="436" y="105"/><di:waypoint x="472" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_3_3_di" bpmnElement="Flow_L3_3_2_3_3"><di:waypoint x="642" y="105"/><di:waypoint x="678" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_3_4_di" bpmnElement="Flow_L3_3_2_3_4"><di:waypoint x="848" y="105"/><di:waypoint x="919" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_3_5_di" bpmnElement="Flow_L3_3_2_3_5"><di:waypoint x="989" y="105"/><di:waypoint x="1060" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_3_6_di" bpmnElement="Flow_L3_3_2_3_6"><di:waypoint x="954" y="140"/><di:waypoint x="954" y="275"/><di:waypoint x="1117" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_3_7_di" bpmnElement="Flow_L3_3_2_3_7"><di:waypoint x="1230" y="105"/><di:waypoint x="1316" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_3_8_di" bpmnElement="Flow_L3_3_2_3_8"><di:waypoint x="1386" y="105"/><di:waypoint x="1504" y="105"/><bpmndi:BPMNLabel><dc:Bounds x="1390" y="85" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_3_9_di" bpmnElement="Flow_L3_3_2_3_9"><di:waypoint x="1351" y="140"/><di:waypoint x="1351" y="405"/><bpmndi:BPMNLabel><dc:Bounds x="1357" y="144" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_3_10_di" bpmnElement="Flow_L3_3_2_3_10"><di:waypoint x="1436" y="445"/><di:waypoint x="1532" y="445"/><di:waypoint x="1532" y="133"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

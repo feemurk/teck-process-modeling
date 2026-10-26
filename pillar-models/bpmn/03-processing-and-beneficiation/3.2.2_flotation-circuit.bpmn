@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_L3_3_2_2" targetNamespace="https://teck.example/process-models/pillar-03">
+  <bpmn:collaboration id="Collab_L3_3_2_2">
+    <bpmn:participant id="Pool_L3_3_2_2" name="3.2.2 Flotation Circuit" processRef="Process_L3_3_2_2"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_L3_3_2_2" isExecutable="false">
+    <bpmn:documentation>L0/L1/L2 Process. Reusable pattern, run once per configured circuit (`flotation_circuit`). Recovers a target mineral — or several together as a bulk concentrate — from the circuit feed by rougher, scavenger and cleaner flotation, with optional regrinding before cleaning. The first circuit is fed by the mill circuit product; each later circuit in a sequence is fed by the scavenger tailings of the previous circuit, re-conditioned in 3.2.1. The final concentrate goes to dewatering (3.3) when it is a saleable product, to Concentrate Separation (3.2.3) when it is a bulk concentrate, or to tailings management (3.3.1 tailings duty, separate deposition) when it is a waste concentrate (e.g., pyrite). Scavenger tailings go to the next circuit or, from the last circuit, to final tailings. Instances may also run in parallel on split feeds (e.g., coarse and fine fractions), and the active set may change by ore-type campaign — both are configuration (`flotation_circuit.feed_source`, `operating_mode`). Example circuits: Cu (chalcopyrite, bornite); Zn (sphalerite, after CuSO₄ activation); Pb (galena); bulk Cu-Mo; bulk Cu-Pb.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_L3_3_2_2">
+      <bpmn:lane id="Lane_L3_3_2_2_dcs" name="DCS Auto-control">
+        <bpmn:flowNodeRef>Start_L3_3_2_2_s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_2_2_3_2_2_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L3_3_2_2_g1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_2_2_3_2_2_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L3_3_2_2_g2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Service_L3_3_2_2_3_2_2_3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_2_2_3_2_2_4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L3_3_2_2_g3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_3_2_2_e</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_L3_3_2_2_met" name="Metallurgist">
+        <bpmn:flowNodeRef>Task_L3_3_2_2_n1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_2_2_n2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_2_2_n3</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_L3_3_2_2_s" name="Conditioned circuit feed">
+      <bpmn:outgoing>Flow_L3_3_2_2_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_L3_3_2_2_3_2_2_1" name="3.2.2.1 Operate Rougher Flotation">
+      <bpmn:documentation>The rougher bank(s) process the full circuit feed and produce a rougher concentrate from the froth overflow. Maximum recovery is the primary objective of the rougher — grade is sacrificed for recovery. Each cell is equipped with a froth crowder or launder; air rate, froth depth, and impeller speed are controlled by DCS per cell. On-stream analysis (XRF) measures feed, concentrate, and tail grades of the target and penalty elements at 2–4 minute intervals. [P754: grade (target and key gangue elements) | on-stream XRF analyzer | continuous (2–4 min scan interval) | Principles 1, 2, 6, 7 | NO — internal process stream; MP-02 / MP-03 for this circuit]
+ISA-95 level: 0 / 2
+Actors: DCS Auto-control; Metallurgist
+Standard alignment: ISA-95 Levels 0, 2; AMIRA P754 Principles 1, 2, 6, 7
+DDVC layer: Raw (time-series: flotation_cell_telemetry, osa_grade_telemetry)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_2_2_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_2_2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_L3_3_2_2_g1" name="Rougher tail grade above threshold?" default="Flow_L3_3_2_2_3">
+      <bpmn:incoming>Flow_L3_3_2_2_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_2_3</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_3_2_2_4</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_L3_3_2_2_3_2_2_2" name="3.2.2.2 Operate Scavenger Flotation">
+      <bpmn:documentation>Scavenger bank(s) recover residual target mineral from the rougher tailings (and, in some circuit designs, from the cleaner tailings — a cleaner-scavenger). Scavenger concentrate is recycled to the rougher or to regrind. Scavenger tailings are the circuit tailings: they feed the next circuit in the sequence, or report to final tailings from the last circuit. The target-mineral grade in the scavenger tailings is the circuit's key recovery loss measurement. [P754: grade (target element in scavenger tailings — key loss measurement) | on-stream XRF + periodic grab sample | continuous OSA / shift composite | Principles 1, 2, 6, 7 | PARTIAL — the last circuit's scavenger tailings are the final loss stream (P754 Principle 7); MP-04 for this circuit]
+ISA-95 level: 0 / 2
+Actors: DCS Auto-control; Metallurgist
+Standard alignment: ISA-95 Levels 0, 2; AMIRA P754 Principles 1, 2, 6, 7
+DDVC layer: Raw (time-series)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_2_2_3</bpmn:incoming>
+      <bpmn:incoming>Flow_L3_3_2_2_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_2_6</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_L3_3_2_2_g2" name="Scavenger tail grade above limit?" default="Flow_L3_3_2_2_7">
+      <bpmn:incoming>Flow_L3_3_2_2_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_2_7</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_3_2_2_8</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Service_L3_3_2_2_3_2_2_3" name="3.2.2.3 Operate Regrind Mill">
+      <bpmn:documentation>Where rougher or scavenger concentrate needs further liberation before cleaning, a regrind mill (stirred media mill, HIG mill, or ball mill) grinds it to a finer P80 (typically 20–40 µm). Conditional: depends on ore mineralogy and whether a regrind mill is installed in the circuit.
+ISA-95 level: 0 / 2
+Actors: DCS Auto-control
+Standard alignment: ISA-95 Levels 0, 2
+DDVC layer: Raw (time-series: regrind_mill_telemetry)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_2_2_7</bpmn:incoming>
+      <bpmn:incoming>Flow_L3_3_2_2_9</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_2_10</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:task id="Task_L3_3_2_2_3_2_2_4" name="3.2.2.4 Operate Cleaner Flotation">
+      <bpmn:documentation>Cleaner bank(s) upgrade the (reground) rougher concentrate to the circuit's final concentrate grade. One to three cleaner stages are common (column cells are often used in final cleaning). Cleaner tails are recycled to the rougher, regrind or a cleaner-scavenger. The final cleaner concentrate is the circuit's product stream: a saleable concentrate (to dewatering, 3.3), a bulk concentrate (to separation, 3.2.3) or a waste concentrate (to tailings management, e.g., pyrite). Its grade and mass flow are the primary production measurement of the circuit; a shift composite sample is collected. [P754: grade (target and penalty elements; precious metals where payable) + mass flow | on-stream XRF + shift composite sample (lab assay) | continuous OSA + shift composite | Principles 1, 2, 5, 6, 7 | YES when the product is saleable (custody transfer to dewatering); NO for a bulk or waste concentrate — MP-05 for this circuit]
+ISA-95 level: 0 / 2
+Actors: DCS Auto-control; Metallurgist
+Standard alignment: ISA-95 Levels 0, 2; AMIRA P754 Principles 1, 2, 5, 6, 7
+DDVC layer: Raw; Curated (concentrate_production_record)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_2_2_10</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_2_11</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_L3_3_2_2_g3" name="Concentrate grade below specification?" default="Flow_L3_3_2_2_12">
+      <bpmn:incoming>Flow_L3_3_2_2_11</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_2_12</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_3_2_2_13</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_L3_3_2_2_e" name="Concentrate and tailings leave circuit">
+      <bpmn:incoming>Flow_L3_3_2_2_12</bpmn:incoming>
+      <bpmn:incoming>Flow_L3_3_2_2_14</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="Task_L3_3_2_2_n1" name="Raise collector dose or cut air rate; log change">
+      <bpmn:documentation>Derived from the Process Flow Narratives section (not a row in the Process Decomposition). OSA-driven process change; no L4 row.</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_2_2_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_2_5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_L3_3_2_2_n2" name="Investigate feed, reagent or OSA fault; escalate">
+      <bpmn:documentation>Derived from the Process Flow Narratives section (not a row in the Process Decomposition). Scavenger tail exceedance response; no L4 row.</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_2_2_8</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_2_9</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_L3_3_2_2_n3" name="Adjust froth depth or cleaning; log change">
+      <bpmn:documentation>Derived from the Process Flow Narratives section (not a row in the Process Decomposition). Concentrate grade response; no L4 row.</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_2_2_13</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_2_2_14</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_2_1" sourceRef="Start_L3_3_2_2_s" targetRef="Task_L3_3_2_2_3_2_2_1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_2_2" sourceRef="Task_L3_3_2_2_3_2_2_1" targetRef="Gw_L3_3_2_2_g1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_2_3" name="No" sourceRef="Gw_L3_3_2_2_g1" targetRef="Task_L3_3_2_2_3_2_2_2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_2_4" name="Yes" sourceRef="Gw_L3_3_2_2_g1" targetRef="Task_L3_3_2_2_n1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_2_5" sourceRef="Task_L3_3_2_2_n1" targetRef="Task_L3_3_2_2_3_2_2_2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_2_6" sourceRef="Task_L3_3_2_2_3_2_2_2" targetRef="Gw_L3_3_2_2_g2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_2_7" name="No" sourceRef="Gw_L3_3_2_2_g2" targetRef="Service_L3_3_2_2_3_2_2_3"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_2_8" name="Yes" sourceRef="Gw_L3_3_2_2_g2" targetRef="Task_L3_3_2_2_n2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_2_9" sourceRef="Task_L3_3_2_2_n2" targetRef="Service_L3_3_2_2_3_2_2_3"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_2_10" sourceRef="Service_L3_3_2_2_3_2_2_3" targetRef="Task_L3_3_2_2_3_2_2_4"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_2_11" sourceRef="Task_L3_3_2_2_3_2_2_4" targetRef="Gw_L3_3_2_2_g3"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_2_12" name="No" sourceRef="Gw_L3_3_2_2_g3" targetRef="End_L3_3_2_2_e"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_2_13" name="Yes" sourceRef="Gw_L3_3_2_2_g3" targetRef="Task_L3_3_2_2_n3"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_2_2_14" sourceRef="Task_L3_3_2_2_n3" targetRef="End_L3_3_2_2_e"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_L3_3_2_2">
+    <bpmndi:BPMNPlane id="Plane_L3_3_2_2" bpmnElement="Collab_L3_3_2_2">
+      <bpmndi:BPMNShape id="Pool_L3_3_2_2_di" bpmnElement="Pool_L3_3_2_2" isHorizontal="true"><dc:Bounds x="20" y="20" width="1848" height="340"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_2_2_dcs_di" bpmnElement="Lane_L3_3_2_2_dcs" isHorizontal="true"><dc:Bounds x="60" y="20" width="1808" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_2_2_met_di" bpmnElement="Lane_L3_3_2_2_met" isHorizontal="true"><dc:Bounds x="60" y="190" width="1808" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_L3_3_2_2_s_di" bpmnElement="Start_L3_3_2_2_s"><dc:Bounds x="142" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="110" y="139" width="120" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_2_2_3_2_2_1_di" bpmnElement="Task_L3_3_2_2_3_2_2_1"><dc:Bounds x="266" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L3_3_2_2_g1_di" bpmnElement="Gw_L3_3_2_2_g1" isMarkerVisible="true"><dc:Bounds x="522" y="70" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="451" y="20" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_2_2_3_2_2_2_di" bpmnElement="Task_L3_3_2_2_3_2_2_2"><dc:Bounds x="678" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L3_3_2_2_g2_di" bpmnElement="Gw_L3_3_2_2_g2" isMarkerVisible="true"><dc:Bounds x="934" y="70" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="863" y="20" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Service_L3_3_2_2_3_2_2_3_di" bpmnElement="Service_L3_3_2_2_3_2_2_3"><dc:Bounds x="1090" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_2_2_3_2_2_4_di" bpmnElement="Task_L3_3_2_2_3_2_2_4"><dc:Bounds x="1296" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L3_3_2_2_g3_di" bpmnElement="Gw_L3_3_2_2_g3" isMarkerVisible="true"><dc:Bounds x="1552" y="70" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="1481" y="20" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_3_2_2_e_di" bpmnElement="End_L3_3_2_2_e"><dc:Bounds x="1740" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1708" y="29" width="120" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_2_2_n1_di" bpmnElement="Task_L3_3_2_2_n1"><dc:Bounds x="472" y="235" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_2_2_n2_di" bpmnElement="Task_L3_3_2_2_n2"><dc:Bounds x="884" y="235" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_2_2_n3_di" bpmnElement="Task_L3_3_2_2_n3"><dc:Bounds x="1502" y="235" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_2_1_di" bpmnElement="Flow_L3_3_2_2_1"><di:waypoint x="198" y="105"/><di:waypoint x="266" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_2_2_di" bpmnElement="Flow_L3_3_2_2_2"><di:waypoint x="436" y="105"/><di:waypoint x="522" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_2_3_di" bpmnElement="Flow_L3_3_2_2_3"><di:waypoint x="592" y="105"/><di:waypoint x="678" y="105"/><bpmndi:BPMNLabel><dc:Bounds x="596" y="85" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_2_4_di" bpmnElement="Flow_L3_3_2_2_4"><di:waypoint x="557" y="140"/><di:waypoint x="557" y="235"/><bpmndi:BPMNLabel><dc:Bounds x="563" y="144" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_2_5_di" bpmnElement="Flow_L3_3_2_2_5"><di:waypoint x="642" y="275"/><di:waypoint x="763" y="275"/><di:waypoint x="763" y="145"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_2_6_di" bpmnElement="Flow_L3_3_2_2_6"><di:waypoint x="848" y="105"/><di:waypoint x="934" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_2_7_di" bpmnElement="Flow_L3_3_2_2_7"><di:waypoint x="1004" y="105"/><di:waypoint x="1090" y="105"/><bpmndi:BPMNLabel><dc:Bounds x="1008" y="85" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_2_8_di" bpmnElement="Flow_L3_3_2_2_8"><di:waypoint x="969" y="140"/><di:waypoint x="969" y="235"/><bpmndi:BPMNLabel><dc:Bounds x="975" y="144" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_2_9_di" bpmnElement="Flow_L3_3_2_2_9"><di:waypoint x="1054" y="275"/><di:waypoint x="1175" y="275"/><di:waypoint x="1175" y="145"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_2_10_di" bpmnElement="Flow_L3_3_2_2_10"><di:waypoint x="1260" y="105"/><di:waypoint x="1296" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_2_11_di" bpmnElement="Flow_L3_3_2_2_11"><di:waypoint x="1466" y="105"/><di:waypoint x="1552" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_2_12_di" bpmnElement="Flow_L3_3_2_2_12"><di:waypoint x="1622" y="105"/><di:waypoint x="1740" y="105"/><bpmndi:BPMNLabel><dc:Bounds x="1626" y="85" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_2_13_di" bpmnElement="Flow_L3_3_2_2_13"><di:waypoint x="1587" y="140"/><di:waypoint x="1587" y="235"/><bpmndi:BPMNLabel><dc:Bounds x="1593" y="144" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_2_2_14_di" bpmnElement="Flow_L3_3_2_2_14"><di:waypoint x="1672" y="275"/><di:waypoint x="1768" y="275"/><di:waypoint x="1768" y="133"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

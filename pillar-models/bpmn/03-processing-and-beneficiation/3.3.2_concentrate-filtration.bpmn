@@ -4,18 +4,21 @@
     <bpmn:participant id="Pool_L3_3_3_2" name="3.3.2 Concentrate Filtration" processRef="Process_L3_3_3_2"/>
   </bpmn:collaboration>
   <bpmn:process id="Process_L3_3_3_2" isExecutable="false">
-    <bpmn:documentation>L0/L1/L2 Process. The filter (disc filter, pressure filter, or belt filter depending on site) removes the majority of remaining process water from the thickened concentrate slurry, producing a filter cake at the target moisture specification. Moisture content verification of the filter cake is mandatory — it is a commercial product specification and a P754 mass measurement requirement. Separate filters run per concentrate type.</bpmn:documentation>
+    <bpmn:documentation>L0/L1/L2 Process. The filter (disc filter, pressure filter, or belt filter depending on site) removes the majority of remaining process water from the thickened concentrate slurry, producing a filter cake at the target moisture specification. Moisture content verification of the filter cake is mandatory — it is a commercial product specification and a P754 mass measurement requirement. Separate filters run per concentrate type. Filtrate and wash water are recovered (3.3.2.4).</bpmn:documentation>
     <bpmn:laneSet id="LaneSet_L3_3_3_2">
       <bpmn:lane id="Lane_L3_3_3_2_dcs" name="DCS Auto-control">
         <bpmn:flowNodeRef>Start_L3_3_3_2_s</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Service_L3_3_3_2_3_3_2_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Par_L3_3_3_2_f</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Service_L3_3_3_2_3_3_2_4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_3_3_2_e2</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_L3_3_3_2_plt" name="Plant Operator">
+      <bpmn:lane id="Lane_L3_3_3_2_opr" name="Plant Operator">
         <bpmn:flowNodeRef>Task_L3_3_3_2_3_3_2_2</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_L3_3_3_2_n2</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>End_L3_3_3_2_e</bpmn:flowNodeRef>
       </bpmn:lane>
-      <bpmn:lane id="Lane_L3_3_3_2_lab" name="Process Technician / Metallurgist">
+      <bpmn:lane id="Lane_L3_3_3_2_tch" name="Process Technician / Metallurgist">
         <bpmn:flowNodeRef>Task_L3_3_3_2_3_3_2_3</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gw_L3_3_3_2_g</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_L3_3_3_2_n1</bpmn:flowNodeRef>
@@ -31,77 +34,103 @@ Actors: DCS Auto-control
 Standard alignment: ISA-95 Levels 0, 2; AMIRA P754 Principles 1, 7
 DDVC layer: Raw (time-series: filter_telemetry)</bpmn:documentation>
       <bpmn:incoming>Flow_L3_3_3_2_1</bpmn:incoming>
-      <bpmn:incoming>Flow_L3_3_3_2_7</bpmn:incoming>
+      <bpmn:incoming>Flow_L3_3_3_2_10</bpmn:incoming>
       <bpmn:outgoing>Flow_L3_3_3_2_2</bpmn:outgoing>
     </bpmn:serviceTask>
+    <bpmn:parallelGateway id="Par_L3_3_3_2_f">
+      <bpmn:incoming>Flow_L3_3_3_2_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_3_2_3</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_3_3_2_5</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:serviceTask id="Service_L3_3_3_2_3_3_2_4" name="3.3.2.4 Recover Filtrate Water">
+      <bpmn:documentation>Filtrate and filter wash water pass to a filtrate tank or clarifier. Clarified water returns to process water storage, or — where filtration is remote from the concentrator (e.g., at a port after a slurry pipeline) — to that location's own water system; clarifier underflow returns to the filter feed. [WATER: volume (filtrate recovered) | flow meter | continuous (1-min) | MCA WAF | NO — internal recycle, or a separate water-system boundary where filtration is remote; WP-06]
+ISA-95 level: 1 / 2
+Actors: DCS Auto-control
+Standard alignment: ISA-95 Levels 1, 2; MCA Water Accounting Framework
+DDVC layer: Raw (time-series: water_flow_telemetry)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_3_2_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_3_2_4</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_L3_3_3_2_e2" name="Recovered water to process water (3.6.4)">
+      <bpmn:incoming>Flow_L3_3_3_2_4</bpmn:incoming>
+    </bpmn:endEvent>
     <bpmn:task id="Task_L3_3_3_2_3_3_2_2" name="3.3.2.2 Discharge Filter Cake">
       <bpmn:documentation>Filter cake is discharged from the filter onto a conveyor belt or into a transport container (at operations using containers for concentrate export). Discharge event initiates tracking of the filter cake batch as a physical product entity. At some operations, filter cake is weighed on a conveyor belt scale or bin scale at discharge — this is the primary dry tonnes measurement for the final product. [P754: mass (dry tonnes — key commercial measurement) | belt weigher on cake discharge conveyor or bin scale | per batch / continuous | Principles 1, 5, 7, 8 | YES — filter cake discharge is the primary internal dry tonnes measurement of the concentrate product before stockpiling]
 ISA-95 level: 1 / 0
 Actors: Plant Operator; DCS
 Standard alignment: ISA-95 Levels 0, 1; AMIRA P754 Principles 1, 5, 7, 8
 DDVC layer: Raw; Curated (concentrate_production_record — batch mass)</bpmn:documentation>
-      <bpmn:incoming>Flow_L3_3_3_2_2</bpmn:incoming>
-      <bpmn:outgoing>Flow_L3_3_3_2_3</bpmn:outgoing>
+      <bpmn:incoming>Flow_L3_3_3_2_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_3_2_6</bpmn:outgoing>
     </bpmn:task>
+    <bpmn:task id="Task_L3_3_3_2_n2" name="Transfer filter cake to concentrate shed">
+      <bpmn:documentation>Derived from the Process Flow Narratives section (not a row in the Process Decomposition). The transfer creates the production record, the CTP-2 opening entry; no L4 row.</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_3_2_8</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_3_2_11</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_L3_3_3_2_e" name="Filter cake to shed (CTP-2)">
+      <bpmn:incoming>Flow_L3_3_3_2_11</bpmn:incoming>
+      <bpmn:messageEventDefinition id="Msg_L3_3_3_2_e"/>
+    </bpmn:endEvent>
     <bpmn:task id="Task_L3_3_3_2_3_3_2_3" name="3.3.2.3 Verify Moisture Content">
       <bpmn:documentation>Moisture content of the filter cake is measured against the commercial specification and metallurgical accounting requirement. Method: grab sample taken from the conveyor discharge at defined frequency (typically each filter cycle or each hour), weighed wet and dry (oven dried at 105°C for 4 hours). Moisture % = (wet mass − dry mass) / wet mass × 100. Result is entered into LIMS and compared to smelter contract moisture specification. If out of specification, metallurgist assesses cause and adjusts filter operating parameters. [P754: moisture % (critical commercial parameter) | oven drying (gravimetric) or infrared moisture analyser | per filter cycle (every 1–4 hours) | Principles 1, 5, 7, 8 | YES — moisture % is an essential parameter in the dry tonnes calculation for commercial invoice; P754 Principle 5 (mass measurement at custody transfer)]
 ISA-95 level: 3
 Actors: Process Technician; Metallurgist
 Standard alignment: ISA-95 Level 3 (quality management); AMIRA P754 Principles 1, 5, 7, 8
 DDVC layer: Raw; Curated (concentrate_production_record — moisture %)</bpmn:documentation>
-      <bpmn:incoming>Flow_L3_3_3_2_3</bpmn:incoming>
-      <bpmn:outgoing>Flow_L3_3_3_2_4</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:exclusiveGateway id="Gw_L3_3_3_2_g" name="Moisture within specification?" default="Flow_L3_3_3_2_6">
-      <bpmn:incoming>Flow_L3_3_3_2_4</bpmn:incoming>
-      <bpmn:outgoing>Flow_L3_3_3_2_5</bpmn:outgoing>
-      <bpmn:outgoing>Flow_L3_3_3_2_6</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:task id="Task_L3_3_3_2_n1" name="Adjust filter cycle, wash water or air; check underflow density">
-      <bpmn:documentation>Derived from the Process Flow Narratives section (not a row in the Process Decomposition).</bpmn:documentation>
       <bpmn:incoming>Flow_L3_3_3_2_6</bpmn:incoming>
       <bpmn:outgoing>Flow_L3_3_3_2_7</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Task_L3_3_3_2_n2" name="Transfer filter cake to concentrate shed">
-      <bpmn:documentation>Derived from the Process Flow Narratives section (not a row in the Process Decomposition). Conveyor or FEL; production record created in the metallurgical accounting system.</bpmn:documentation>
-      <bpmn:incoming>Flow_L3_3_3_2_5</bpmn:incoming>
+    <bpmn:exclusiveGateway id="Gw_L3_3_3_2_g" name="Moisture within specification?" default="Flow_L3_3_3_2_8">
+      <bpmn:incoming>Flow_L3_3_3_2_7</bpmn:incoming>
       <bpmn:outgoing>Flow_L3_3_3_2_8</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_3_3_2_9</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_L3_3_3_2_n1" name="Adjust filter cycle, wash water or air; check underflow density">
+      <bpmn:documentation>Derived from the Process Flow Narratives section (not a row in the Process Decomposition). Moisture exceedance response; the cake is re-filtered; no L4 row.</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_3_2_9</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_3_2_10</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:endEvent id="End_L3_3_3_2_e" name="Filter cake to shed (CTP-2)">
-      <bpmn:incoming>Flow_L3_3_3_2_8</bpmn:incoming>
-      <bpmn:messageEventDefinition id="Msg_L3_3_3_2_e"/>
-    </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_L3_3_3_2_1" sourceRef="Start_L3_3_3_2_s" targetRef="Service_L3_3_3_2_3_3_2_1"/>
-    <bpmn:sequenceFlow id="Flow_L3_3_3_2_2" sourceRef="Service_L3_3_3_2_3_3_2_1" targetRef="Task_L3_3_3_2_3_3_2_2"/>
-    <bpmn:sequenceFlow id="Flow_L3_3_3_2_3" sourceRef="Task_L3_3_3_2_3_3_2_2" targetRef="Task_L3_3_3_2_3_3_2_3"/>
-    <bpmn:sequenceFlow id="Flow_L3_3_3_2_4" sourceRef="Task_L3_3_3_2_3_3_2_3" targetRef="Gw_L3_3_3_2_g"/>
-    <bpmn:sequenceFlow id="Flow_L3_3_3_2_5" name="Yes" sourceRef="Gw_L3_3_3_2_g" targetRef="Task_L3_3_3_2_n2"/>
-    <bpmn:sequenceFlow id="Flow_L3_3_3_2_6" name="No" sourceRef="Gw_L3_3_3_2_g" targetRef="Task_L3_3_3_2_n1"/>
-    <bpmn:sequenceFlow id="Flow_L3_3_3_2_7" sourceRef="Task_L3_3_3_2_n1" targetRef="Service_L3_3_3_2_3_3_2_1"/>
-    <bpmn:sequenceFlow id="Flow_L3_3_3_2_8" sourceRef="Task_L3_3_3_2_n2" targetRef="End_L3_3_3_2_e"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_2_2" sourceRef="Service_L3_3_3_2_3_3_2_1" targetRef="Par_L3_3_3_2_f"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_2_3" sourceRef="Par_L3_3_3_2_f" targetRef="Service_L3_3_3_2_3_3_2_4"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_2_4" sourceRef="Service_L3_3_3_2_3_3_2_4" targetRef="End_L3_3_3_2_e2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_2_5" sourceRef="Par_L3_3_3_2_f" targetRef="Task_L3_3_3_2_3_3_2_2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_2_6" sourceRef="Task_L3_3_3_2_3_3_2_2" targetRef="Task_L3_3_3_2_3_3_2_3"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_2_7" sourceRef="Task_L3_3_3_2_3_3_2_3" targetRef="Gw_L3_3_3_2_g"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_2_8" name="Yes" sourceRef="Gw_L3_3_3_2_g" targetRef="Task_L3_3_3_2_n2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_2_9" name="No" sourceRef="Gw_L3_3_3_2_g" targetRef="Task_L3_3_3_2_n1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_2_10" sourceRef="Task_L3_3_3_2_n1" targetRef="Service_L3_3_3_2_3_3_2_1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_2_11" sourceRef="Task_L3_3_3_2_n2" targetRef="End_L3_3_3_2_e"/>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="Diagram_L3_3_3_2">
     <bpmndi:BPMNPlane id="Plane_L3_3_3_2" bpmnElement="Collab_L3_3_3_2">
-      <bpmndi:BPMNShape id="Pool_L3_3_3_2_di" bpmnElement="Pool_L3_3_3_2" isHorizontal="true"><dc:Bounds x="20" y="20" width="1328" height="680"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_L3_3_3_2_dcs_di" bpmnElement="Lane_L3_3_3_2_dcs" isHorizontal="true"><dc:Bounds x="60" y="20" width="1288" height="170"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_L3_3_3_2_plt_di" bpmnElement="Lane_L3_3_3_2_plt" isHorizontal="true"><dc:Bounds x="60" y="190" width="1288" height="170"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_L3_3_3_2_lab_di" bpmnElement="Lane_L3_3_3_2_lab" isHorizontal="true"><dc:Bounds x="60" y="360" width="1288" height="340"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Start_L3_3_3_2_s_di" bpmnElement="Start_L3_3_3_2_s"><dc:Bounds x="110" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="88" y="139" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Service_L3_3_3_2_3_3_2_1_di" bpmnElement="Service_L3_3_3_2_3_3_2_1"><dc:Bounds x="202" y="65" width="170" height="80"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_L3_3_3_2_3_3_2_2_di" bpmnElement="Task_L3_3_3_2_3_3_2_2"><dc:Bounds x="408" y="235" width="170" height="80"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_L3_3_3_2_3_3_2_3_di" bpmnElement="Task_L3_3_3_2_3_3_2_3"><dc:Bounds x="614" y="405" width="170" height="80"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gw_L3_3_3_2_g_di" bpmnElement="Gw_L3_3_3_2_g" isMarkerVisible="true"><dc:Bounds x="870" y="410" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="799" y="362" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_L3_3_3_2_n1_di" bpmnElement="Task_L3_3_3_2_n1"><dc:Bounds x="820" y="575" width="170" height="80"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Task_L3_3_3_2_n2_di" bpmnElement="Task_L3_3_3_2_n2"><dc:Bounds x="1026" y="235" width="170" height="80"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_L3_3_3_2_e_di" bpmnElement="End_L3_3_3_2_e"><dc:Bounds x="1232" y="247" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1210" y="309" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_1_di" bpmnElement="Flow_L3_3_3_2_1"><di:waypoint x="166" y="105"/><di:waypoint x="202" y="105"/></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_2_di" bpmnElement="Flow_L3_3_3_2_2"><di:waypoint x="372" y="105"/><di:waypoint x="390" y="105"/><di:waypoint x="390" y="275"/><di:waypoint x="408" y="275"/></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_3_di" bpmnElement="Flow_L3_3_3_2_3"><di:waypoint x="578" y="275"/><di:waypoint x="596" y="275"/><di:waypoint x="596" y="445"/><di:waypoint x="614" y="445"/></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_4_di" bpmnElement="Flow_L3_3_3_2_4"><di:waypoint x="784" y="445"/><di:waypoint x="870" y="445"/></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_5_di" bpmnElement="Flow_L3_3_3_2_5"><di:waypoint x="905" y="410"/><di:waypoint x="905" y="275"/><di:waypoint x="1026" y="275"/><bpmndi:BPMNLabel><dc:Bounds x="911" y="392" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_6_di" bpmnElement="Flow_L3_3_3_2_6"><di:waypoint x="905" y="480"/><di:waypoint x="905" y="575"/><bpmndi:BPMNLabel><dc:Bounds x="911" y="484" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_7_di" bpmnElement="Flow_L3_3_3_2_7"><di:waypoint x="820" y="615"/><di:waypoint x="287" y="615"/><di:waypoint x="287" y="145"/></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_8_di" bpmnElement="Flow_L3_3_3_2_8"><di:waypoint x="1196" y="275"/><di:waypoint x="1232" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Pool_L3_3_3_2_di" bpmnElement="Pool_L3_3_3_2" isHorizontal="true"><dc:Bounds x="20" y="20" width="1406" height="850"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_3_2_dcs_di" bpmnElement="Lane_L3_3_3_2_dcs" isHorizontal="true"><dc:Bounds x="60" y="20" width="1366" height="340"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_3_2_opr_di" bpmnElement="Lane_L3_3_3_2_opr" isHorizontal="true"><dc:Bounds x="60" y="360" width="1366" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_3_2_tch_di" bpmnElement="Lane_L3_3_3_2_tch" isHorizontal="true"><dc:Bounds x="60" y="530" width="1366" height="340"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_L3_3_3_2_s_di" bpmnElement="Start_L3_3_3_2_s"><dc:Bounds x="142" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="110" y="139" width="120" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Service_L3_3_3_2_3_3_2_1_di" bpmnElement="Service_L3_3_3_2_3_3_2_1"><dc:Bounds x="266" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Par_L3_3_3_2_f_di" bpmnElement="Par_L3_3_3_2_f"><dc:Bounds x="507" y="70" width="70" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Service_L3_3_3_2_3_3_2_4_di" bpmnElement="Service_L3_3_3_2_3_3_2_4"><dc:Bounds x="648" y="235" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_3_3_2_e2_di" bpmnElement="End_L3_3_3_2_e2"><dc:Bounds x="911" y="247" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="879" y="309" width="120" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_3_2_3_3_2_2_di" bpmnElement="Task_L3_3_3_2_3_3_2_2"><dc:Bounds x="648" y="405" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_3_2_n2_di" bpmnElement="Task_L3_3_3_2_n2"><dc:Bounds x="1060" y="405" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_3_3_2_e_di" bpmnElement="End_L3_3_3_2_e"><dc:Bounds x="1298" y="417" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1266" y="479" width="120" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_3_2_3_3_2_3_di" bpmnElement="Task_L3_3_3_2_3_3_2_3"><dc:Bounds x="854" y="575" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L3_3_3_2_g_di" bpmnElement="Gw_L3_3_3_2_g" isMarkerVisible="true"><dc:Bounds x="1110" y="580" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="1039" y="530" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_3_2_n1_di" bpmnElement="Task_L3_3_3_2_n1"><dc:Bounds x="1060" y="745" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_1_di" bpmnElement="Flow_L3_3_3_2_1"><di:waypoint x="198" y="105"/><di:waypoint x="266" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_2_di" bpmnElement="Flow_L3_3_3_2_2"><di:waypoint x="436" y="105"/><di:waypoint x="507" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_3_di" bpmnElement="Flow_L3_3_3_2_3"><di:waypoint x="577" y="105"/><di:waypoint x="630" y="105"/><di:waypoint x="630" y="275"/><di:waypoint x="648" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_4_di" bpmnElement="Flow_L3_3_3_2_4"><di:waypoint x="818" y="275"/><di:waypoint x="911" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_5_di" bpmnElement="Flow_L3_3_3_2_5"><di:waypoint x="542" y="140"/><di:waypoint x="542" y="445"/><di:waypoint x="648" y="445"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_6_di" bpmnElement="Flow_L3_3_3_2_6"><di:waypoint x="818" y="445"/><di:waypoint x="836" y="445"/><di:waypoint x="836" y="615"/><di:waypoint x="854" y="615"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_7_di" bpmnElement="Flow_L3_3_3_2_7"><di:waypoint x="1024" y="615"/><di:waypoint x="1110" y="615"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_8_di" bpmnElement="Flow_L3_3_3_2_8"><di:waypoint x="1145" y="580"/><di:waypoint x="1145" y="485"/><bpmndi:BPMNLabel><dc:Bounds x="1151" y="562" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_9_di" bpmnElement="Flow_L3_3_3_2_9"><di:waypoint x="1145" y="650"/><di:waypoint x="1145" y="745"/><bpmndi:BPMNLabel><dc:Bounds x="1151" y="654" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_10_di" bpmnElement="Flow_L3_3_3_2_10"><di:waypoint x="1145" y="825"/><di:waypoint x="1145" y="886"/><di:waypoint x="351" y="886"/><di:waypoint x="351" y="145"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_2_11_di" bpmnElement="Flow_L3_3_3_2_11"><di:waypoint x="1230" y="445"/><di:waypoint x="1298" y="445"/></bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

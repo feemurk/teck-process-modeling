@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_L2_3_5" targetNamespace="https://teck.example/process-models/pillar-03">
+  <bpmn:collaboration id="Collab_L2_3_5">
+    <bpmn:participant id="Pool_L2_3_5" name="3.5 Tailings Management (L2)" processRef="Process_L2_3_5"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_L2_3_5" isExecutable="false">
+    <bpmn:documentation>L2 Process Area. Transports thickened tailings from the plant to the Tailings Storage Facility (TSF), classifies them into sand and fines where the embankment is built with tailings sand, deposits tailings in the impoundment, builds and raises the embankment, and monitors storage and safety margins. The TSF is the final sink of the plant mass balance and the main store of reclaim water (3.6.2). A TSF receives material for the whole mine life, so its inventory, water and geometry change continuously.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_L2_3_5">
+      <bpmn:lane id="Lane_L2_3_5_tail" name="Tailings Operator / DCS / SCADA">
+        <bpmn:flowNodeRef>Start_L2_3_5_s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Sub_L2_3_5_3_5_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L2_3_5_g</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Sub_L2_3_5_3_5_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Par_L2_3_5_f</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Sub_L2_3_5_3_5_3</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_L2_3_5_con" name="Construction Supervisor / Surveyor">
+        <bpmn:flowNodeRef>Sub_L2_3_5_3_5_4</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_L2_3_5_eng" name="Tailings Facility Engineer">
+        <bpmn:flowNodeRef>Sub_L2_3_5_3_5_5</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L2_3_5_e</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_L2_3_5_s" name="Thickened tailings from 3.3.1">
+      <bpmn:outgoing>Flow_L2_3_5_1</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="Msg_L2_3_5_s"/>
+    </bpmn:startEvent>
+    <bpmn:subProcess id="Sub_L2_3_5_3_5_1" name="3.5.1 Tailings Transport &amp; Distribution">
+      <bpmn:documentation>L0/L1/L2 Process. Moves thickened tailings from the plant to the facility by pumped or gravity pipeline and routes them to the active discharge point — the classification station, a deposition line or cell, or an emergency discharge — according to the deposition plan.
+ISA-95 level: 1–2
+Actors: DCS / SCADA; Tailings Operator
+Standard alignment: ISA-95 Levels 1, 2; AMIRA P754 Principles 1, 5
+DDVC layer: Raw (time-series: tailings_telemetry)</bpmn:documentation>
+      <bpmn:incoming>Flow_L2_3_5_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_L2_3_5_2</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:exclusiveGateway id="Gw_L2_3_5_g" name="Classification fitted?" default="Flow_L2_3_5_4">
+      <bpmn:incoming>Flow_L2_3_5_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_L2_3_5_3</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L2_3_5_4</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:subProcess id="Sub_L2_3_5_3_5_2" name="3.5.2 Tailings Classification">
+      <bpmn:documentation>L0/L1/L2 Process. Conditional — applies where the embankment is built with sand classified from the tailings (e.g., cyclone sand dams). Hydrocyclones split the tailings into a coarse, free-draining sand (underflow) for construction and a fine slurry (overflow) for deposition. Classification overflow is fine tailings slurry, not clarified water.
+ISA-95 level: 0–2
+Actors: DCS / SCADA; Tailings Operator
+Standard alignment: ISA-95 Levels 0–2; GISTM; AMIRA P754 Principles 1, 7
+DDVC layer: Raw (time-series: classification_telemetry)</bpmn:documentation>
+      <bpmn:incoming>Flow_L2_3_5_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_L2_3_5_5</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:parallelGateway id="Par_L2_3_5_f">
+      <bpmn:incoming>Flow_L2_3_5_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_L2_3_5_6</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L2_3_5_7</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:subProcess id="Sub_L2_3_5_3_5_3" name="3.5.3 Tailings Deposition">
+      <bpmn:documentation>L0/L2/L3 Process. Places tailings — or classification fines, or rejected sand — in the impoundment by the configured deposition method, and rotates discharge so that the beach and pond stay where the design requires.
+ISA-95 level: 0–3
+Actors: Tailings Operator
+Standard alignment: ISA-95 Levels 0–3; GISTM; AMIRA P754 Principles 1, 7
+DDVC layer: Raw; Curated (tailings_deposition_record)</bpmn:documentation>
+      <bpmn:incoming>Flow_L2_3_5_4</bpmn:incoming>
+      <bpmn:incoming>Flow_L2_3_5_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_L2_3_5_8</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:subProcess id="Sub_L2_3_5_3_5_4" name="3.5.4 Embankment Construction">
+      <bpmn:documentation>L0/L3 Process. Builds and raises the embankment with the configured construction materials and method — classified sand placed in cells or paddocks, mine waste or rockfill, or borrow — to the construction plan, and surveys the facility geometry.
+ISA-95 level: 0–3
+Actors: Construction Supervisor / Surveyor; Tailings Operator
+Standard alignment: ISA-95 Levels 0, 3; GISTM
+DDVC layer: Raw; Curated (construction_placement_record, facility_survey_record)</bpmn:documentation>
+      <bpmn:incoming>Flow_L2_3_5_7</bpmn:incoming>
+      <bpmn:outgoing>Flow_L2_3_5_9</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:subProcess id="Sub_L2_3_5_3_5_5" name="3.5.5 Facility Storage &amp; Safety Monitoring">
+      <bpmn:documentation>L1/L3 Process. Monitors pond level and freeboard, assesses storage capacity against the construction and deposition plans, and issues operating constraints when the facility is outside its operating criteria. This is the operational interface to geotechnical surveillance and emergency preparedness, which Pillar 6 governs.
+ISA-95 level: 1–3
+Actors: Tailings Facility Engineer; Tailings Operator
+Standard alignment: GISTM; ICMM Fatal Hazard Control
+DDVC layer: Raw; Curated (tsf_inventory_record, facility_operating_constraint)</bpmn:documentation>
+      <bpmn:incoming>Flow_L2_3_5_8</bpmn:incoming>
+      <bpmn:incoming>Flow_L2_3_5_9</bpmn:incoming>
+      <bpmn:outgoing>Flow_L2_3_5_10</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:endEvent id="End_L2_3_5_e" name="Facility status reported">
+      <bpmn:incoming>Flow_L2_3_5_10</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_L2_3_5_1" sourceRef="Start_L2_3_5_s" targetRef="Sub_L2_3_5_3_5_1"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_5_2" sourceRef="Sub_L2_3_5_3_5_1" targetRef="Gw_L2_3_5_g"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_5_3" name="Yes" sourceRef="Gw_L2_3_5_g" targetRef="Sub_L2_3_5_3_5_2"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_5_4" name="No" sourceRef="Gw_L2_3_5_g" targetRef="Sub_L2_3_5_3_5_3"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_5_5" sourceRef="Sub_L2_3_5_3_5_2" targetRef="Par_L2_3_5_f"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_5_6" sourceRef="Par_L2_3_5_f" targetRef="Sub_L2_3_5_3_5_3"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_5_7" sourceRef="Par_L2_3_5_f" targetRef="Sub_L2_3_5_3_5_4"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_5_8" sourceRef="Sub_L2_3_5_3_5_3" targetRef="Sub_L2_3_5_3_5_5"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_5_9" sourceRef="Sub_L2_3_5_3_5_4" targetRef="Sub_L2_3_5_3_5_5"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_5_10" sourceRef="Sub_L2_3_5_3_5_5" targetRef="End_L2_3_5_e"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_L2_3_5">
+    <bpmndi:BPMNPlane id="Plane_L2_3_5" bpmnElement="Collab_L2_3_5">
+      <bpmndi:BPMNShape id="Pool_L2_3_5_di" bpmnElement="Pool_L2_3_5" isHorizontal="true"><dc:Bounds x="20" y="20" width="1582" height="510"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L2_3_5_tail_di" bpmnElement="Lane_L2_3_5_tail" isHorizontal="true"><dc:Bounds x="60" y="20" width="1542" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L2_3_5_con_di" bpmnElement="Lane_L2_3_5_con" isHorizontal="true"><dc:Bounds x="60" y="190" width="1542" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L2_3_5_eng_di" bpmnElement="Lane_L2_3_5_eng" isHorizontal="true"><dc:Bounds x="60" y="360" width="1542" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_L2_3_5_s_di" bpmnElement="Start_L2_3_5_s"><dc:Bounds x="142" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="110" y="139" width="120" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_L2_3_5_3_5_1_di" bpmnElement="Sub_L2_3_5_3_5_1" isExpanded="false"><dc:Bounds x="266" y="57" width="170" height="96"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L2_3_5_g_di" bpmnElement="Gw_L2_3_5_g" isMarkerVisible="true"><dc:Bounds x="507" y="70" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="436" y="34" width="100" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_L2_3_5_3_5_2_di" bpmnElement="Sub_L2_3_5_3_5_2" isExpanded="false"><dc:Bounds x="648" y="57" width="170" height="96"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Par_L2_3_5_f_di" bpmnElement="Par_L2_3_5_f"><dc:Bounds x="889" y="70" width="70" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_L2_3_5_3_5_3_di" bpmnElement="Sub_L2_3_5_3_5_3" isExpanded="false"><dc:Bounds x="1030" y="57" width="170" height="96"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_L2_3_5_3_5_4_di" bpmnElement="Sub_L2_3_5_3_5_4" isExpanded="false"><dc:Bounds x="1030" y="227" width="170" height="96"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_L2_3_5_3_5_5_di" bpmnElement="Sub_L2_3_5_3_5_5" isExpanded="false"><dc:Bounds x="1236" y="397" width="170" height="96"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L2_3_5_e_di" bpmnElement="End_L2_3_5_e"><dc:Bounds x="1474" y="417" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1442" y="479" width="120" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_L2_3_5_1_di" bpmnElement="Flow_L2_3_5_1"><di:waypoint x="198" y="105"/><di:waypoint x="266" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_5_2_di" bpmnElement="Flow_L2_3_5_2"><di:waypoint x="436" y="105"/><di:waypoint x="507" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_5_3_di" bpmnElement="Flow_L2_3_5_3"><di:waypoint x="577" y="105"/><di:waypoint x="648" y="105"/><bpmndi:BPMNLabel><dc:Bounds x="581" y="85" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_5_4_di" bpmnElement="Flow_L2_3_5_4"><di:waypoint x="542" y="70"/><di:waypoint x="542" y="40"/><di:waypoint x="1115" y="40"/><di:waypoint x="1115" y="57"/><bpmndi:BPMNLabel><dc:Bounds x="548" y="52" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_5_5_di" bpmnElement="Flow_L2_3_5_5"><di:waypoint x="818" y="105"/><di:waypoint x="889" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_5_6_di" bpmnElement="Flow_L2_3_5_6"><di:waypoint x="959" y="105"/><di:waypoint x="1030" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_5_7_di" bpmnElement="Flow_L2_3_5_7"><di:waypoint x="924" y="140"/><di:waypoint x="924" y="275"/><di:waypoint x="1030" y="275"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_5_8_di" bpmnElement="Flow_L2_3_5_8"><di:waypoint x="1200" y="105"/><di:waypoint x="1321" y="105"/><di:waypoint x="1321" y="397"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_5_9_di" bpmnElement="Flow_L2_3_5_9"><di:waypoint x="1200" y="275"/><di:waypoint x="1218" y="275"/><di:waypoint x="1218" y="445"/><di:waypoint x="1236" y="445"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_5_10_di" bpmnElement="Flow_L2_3_5_10"><di:waypoint x="1406" y="445"/><di:waypoint x="1474" y="445"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

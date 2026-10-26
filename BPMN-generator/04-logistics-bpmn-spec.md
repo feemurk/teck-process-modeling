@@ -26,7 +26,7 @@ See the Verification Gate section of `00-bpmn-prompt-template.md` for the full p
 | Diagram ID | Level | Title | L3 Sub-diagrams |
 |------------|-------|-------|-----------------|
 | P4_L2_CHD | L2 | Concentrate Handling | P4_L3_STG, P4_L3_RCL |
-| P4_L2_TRP | L2 | Inland Transport | P4_L3_WBG, P4_L3_HDL |
+| P4_L2_TRP | L2 | Concentrate Transport | P4_L3_DSP, P4_L3_LEG (pattern) |
 | P4_L2_PRT | L2 | Port Operations | P4_L3_RCP, P4_L3_VLD |
 | P4_L2_COM | L2 | Commercial Documentation | P4_L3_COA, P4_L3_BOL, P4_L3_INV |
 
@@ -67,37 +67,38 @@ End: Dispatch lot loaded; inventory decremented in ERP
 
 ---
 
-## P4_L2_TRP — Inland Transport (L2)
+## P4_L2_TRP — Concentrate Transport (L2)
 
-### Pool & Lanes: Weighbridge Operator LN_WBG | Logistics Coordinator LN_LOG | Transport Carrier LN_TRP | ERP LN_ERP
+> **Revised 2026-10-26 (LL-018).** Transport is mode-agnostic. A route is one or more legs (`transport_leg`), each with a mode — road, rail, slurry pipeline or sea — a carrier and a measurement method. The steps are the same for every mode; the mode changes the instruments.
+
+### Pool & Lanes: Weighbridge / Dispatch Operator LN_DSP | Logistics Coordinator LN_LOG | Transport Carrier / Pipeline Operator LN_TRP | ERP LN_ERP
 
 | ID | Type | Name | Lane | Notes |
 |----|------|------|------|-------|
-| P4_L2_TRP_SE | startEvent | Vehicle loaded; ready for weighbridge | P4_L2_TRP_LN_LOG | |
-| P4_L2_TRP_SP01 | subProcess (collapsed) | Weighbridge Operations (4.2.1) | P4_L2_TRP_LN_WBG | Ref P4_L3_WBG; P754 CTP-3 |
-| P4_L2_TRP_T01 | serviceTask | Generate Bill of Lading in ERP (4.2.1.4) | P4_L2_TRP_LN_ERP | |
-| P4_L2_TRP_SP02 | subProcess (collapsed) | Road/Rail Transport (4.2.2) | P4_L2_TRP_LN_TRP | Ref P4_L3_HDL |
-| P4_L2_TRP_XGW01 | exclusiveGateway | More vehicles in dispatch lot? | P4_L2_TRP_LN_LOG | |
-| P4_L2_TRP_EE01 | endEvent | All vehicles dispatched; BoL issued; in transit | P4_L2_TRP_LN_LOG | |
+| P4_L2_TRP_SE | startEvent | Dispatch lot ready at leg origin | P4_L2_TRP_LN_LOG | |
+| P4_L2_TRP_SP01 | subProcess (collapsed) | Dispatch Measurement & Documentation (4.2.1) | P4_L2_TRP_LN_DSP | Ref P4_L3_DSP; P754 CTP-3 on the first leg |
+| P4_L2_TRP_SP02 | subProcess (collapsed) | Transport Leg (4.2.2) | P4_L2_TRP_LN_TRP | Ref P4_L3_LEG; one instance per leg |
+| P4_L2_TRP_XGW01 | exclusiveGateway | Further leg on route? | P4_L2_TRP_LN_LOG | Configuration (`transport_leg`) |
+| P4_L2_TRP_EE01 | endEvent | Dispatch lot at port | P4_L2_TRP_LN_LOG | |
 
-Flows: SE→SP01→XGW01 | XGW01→SP01[Yes — next vehicle in lot] | XGW01→T01[No — lot complete]
-T01→SP02→EE01
+Flows: SE→SP01→SP02→XGW01 | XGW01→SP01[Yes — next leg, measured at the transfer point] | XGW01→EE01[No]
 
-### P4_L3_WBG — Weighbridge Operations (Lanes: Weighbridge Op, Logistics Coordinator, ERP)
+### P4_L3_DSP — Dispatch Measurement & Documentation (Lanes: Weighbridge / Dispatch Operator, Logistics Coordinator, ERP)
 | ID | Type | Name | P754 |
 |----|------|------|------|
-| P4_L3_WBG_T01 | task | Weigh Vehicle Tare (4.2.1.1) | CTP-3 component |
-| P4_L3_WBG_T02 | task | Load Concentrate to Transport Vehicle (4.2.1.2) | |
-| P4_L3_WBG_T03 | task | Weigh Loaded Vehicle Gross; Calculate Net Wet Tonnes (4.2.1.3) | CTP-3 — primary mass |
-| P4_L3_WBG_T04 | serviceTask | Record Weighbridge Ticket in System; Update ERP Inventory | |
-| P4_L3_WBG_EE01 | endEvent | Net wet tonnes confirmed; weighbridge ticket issued | |
+| P4_L3_DSP_XGW01 | exclusiveGateway | Discrete transport units? [Yes: truck, wagon, barge; No: pipeline] | |
+| P4_L3_DSP_T01 | task | Record Transport Unit Empty Weight (4.2.1.1) [conditional] | CTP-3 component |
+| P4_L3_DSP_T02 | task | Load Concentrate to Transport Unit (4.2.1.2) | |
+| P4_L3_DSP_T03 | task | Measure Dispatched Quantity (4.2.1.3) [weighbridge, pipeline meter or draft survey] | CTP-3 — primary mass |
+| P4_L3_DSP_T04 | serviceTask | Generate Bill of Lading (4.2.1.4) | |
+| P4_L3_DSP_XGW02 | exclusiveGateway | More units or batches in lot? [Yes → T01/T02] | |
 
-### P4_L3_HDL — Road/Rail Transport (Lanes: Logistics Coordinator, Transport Carrier, GPS/Telematics)
-T01: Dispatch Vehicle; Issue Transport Documents (4.2.2.1) [dangerous goods declaration]
-T02: Track In-Transit Shipment via GPS/Rail Tracking (4.2.2.2) [continuous until arrival]
+### P4_L3_LEG — Transport Leg [pattern] (Lanes: Logistics Coordinator, Transport Carrier / Pipeline Operator)
+T01: Dispatch Transport Unit and Issue Transport Documents (4.2.2.1) [dangerous goods declaration]
+T02: Track In-Transit Shipment (4.2.2.2) [GPS, rail tracking, pipeline SCADA or AIS]
 XGW01: ETA deviation? [Yes → notify port/vessel scheduling] [No → continue]
-T03: Vehicle Arrives at Port → triggers P4_L2_PRT Port Reception
-T04: Calculate Transit Loss — port weighbridge vs. site BoL (4.2.2.3)
+T03: Transfer Between Transport Modes (4.2.2.3) [conditional — multi-leg routes]
+T04: Monitor for Transit Loss (4.2.2.4) [dispatched vs received, per leg]
 
 ---
 
@@ -119,7 +120,7 @@ Flows: SE→PGW01 | PGW01→SP01[P1 reception stream] | PGW01→T01[P2 vessel pr
 SP01→PGW02 | T01→PGW02 | PGW02→SP02→EE01
 
 ### P4_L3_RCP — Port Reception (Lanes: Port Weighbridge Op, Port Logistics Manager, ERP)
-T01: Weigh Arriving Vehicles at Port Weighbridge (4.3.1.1) P754 CTP-4
+T01: Measure Received Quantity at Port (4.3.1.1) [weighbridge, pipeline terminal meter or draft survey] P754 CTP-4
 T02: Calculate Transit Loss vs. BoL | T03: Log Port Receipt; Update Port Inventory (4.3.1.2)
 T04: Assign Port Shed Zone; Manage Port Stockpile (4.3.1.3)
 XGW01: More vehicles to receive? [Yes → T01 loop] [No → EE]

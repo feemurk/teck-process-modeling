@@ -4,90 +4,104 @@
     <bpmn:participant id="Pool_L2_3_3" name="3.3 Dewatering &amp; Product Handling (L2)" processRef="Process_L2_3_3"/>
   </bpmn:collaboration>
   <bpmn:process id="Process_L2_3_3" isExecutable="false">
-    <bpmn:documentation>L2 Process Area. Reduces moisture content of flotation concentrate from slurry (~40–60% solids w/w) to filter cake suitable for transport (typically 8–12% moisture for Cu; 6–10% for Zn/Pb depending on smelter specification). Separate dewatering trains run per concentrate type. Tailings are thickened and pumped to the TSF with process water recovered.</bpmn:documentation>
+    <bpmn:documentation>L2 Process Area. Removes water from flotation products. Saleable concentrates are thickened, filtered to the commercial moisture specification (typically 8–12% for copper and 6–10% for zinc or lead concentrate, by contract) and, where specified, dried and packed. The final tailings are thickened to the density the deposition method needs and handed to Tailings Management (3.5). Water recovered by thickening and filtration is handed to Water Management (3.6).</bpmn:documentation>
     <bpmn:laneSet id="LaneSet_L2_3_3">
-      <bpmn:lane id="Lane_L2_3_3_conc" name="DCS Auto-control / Control Room Operator">
+      <bpmn:lane id="Lane_L2_3_3_ops" name="DCS Auto-control / Control Room Operator">
         <bpmn:flowNodeRef>Start_L2_3_3_s</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Par_L2_3_3_f</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Sub_L2_3_3_3_3_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L2_3_3_g1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Sub_L2_3_3_3_3_2</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Par_L2_3_3_j</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>End_L2_3_3_e</bpmn:flowNodeRef>
-      </bpmn:lane>
-      <bpmn:lane id="Lane_L2_3_3_tail" name="Environmental Officer / DCS">
+        <bpmn:flowNodeRef>Gw_L2_3_3_g2</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Sub_L2_3_3_3_3_3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L2_3_3_m</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L2_3_3_e1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L2_3_3_e2</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:startEvent id="Start_L2_3_3_s" name="Concentrate and tailings available">
+    <bpmn:startEvent id="Start_L2_3_3_s" name="Concentrate or tailings stream available">
       <bpmn:outgoing>Flow_L2_3_3_1</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:parallelGateway id="Par_L2_3_3_f" name="Fork">
-      <bpmn:incoming>Flow_L2_3_3_1</bpmn:incoming>
-      <bpmn:outgoing>Flow_L2_3_3_2</bpmn:outgoing>
-      <bpmn:outgoing>Flow_L2_3_3_5</bpmn:outgoing>
-    </bpmn:parallelGateway>
-    <bpmn:subProcess id="Sub_L2_3_3_3_3_1" name="3.3.1 Concentrate Thickening">
-      <bpmn:documentation>L0/L1/L2 Process. Concentrate thickener(s) settle and compact the dilute flotation concentrate slurry by gravity sedimentation, aided by flocculant addition. Thickener underflow (high-density slurry, typically 55–70% solids) is pumped to the filter. Thickener overflow (clarified process water) is returned to the process water circuit. Separate thickeners are operated per concentrate type at polymetallic operations.
+    <bpmn:subProcess id="Sub_L2_3_3_3_3_1" name="3.3.1 Thickening">
+      <bpmn:documentation>L0/L1/L2 Process. Reusable pattern, run once per thickener duty: each saleable concentrate stream, a bulk concentrate before separation (3.2.3.1), and the final tailings. Thickeners settle and compact slurry by gravity sedimentation, aided by flocculant. The underflow goes to its configured destination — filter feed, a concentrate pipeline, separation, or tailings transport (3.5.1) — and the overflow is recovered process water. Target underflow density depends on the duty (typically 55–70% solids for concentrate; for tailings it is set by the deposition method).
 ISA-95 level: 0–2
 Actors: DCS Auto-control; Control Room Operator
 Standard alignment: ISA-95 Levels 0–2; AMIRA P754 Principles 1, 7
 DDVC layer: Raw (time-series: thickener_telemetry)</bpmn:documentation>
+      <bpmn:incoming>Flow_L2_3_3_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_L2_3_3_2</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:exclusiveGateway id="Gw_L2_3_3_g1" name="Tailings stream?" default="Flow_L2_3_3_3">
       <bpmn:incoming>Flow_L2_3_3_2</bpmn:incoming>
       <bpmn:outgoing>Flow_L2_3_3_3</bpmn:outgoing>
-    </bpmn:subProcess>
+      <bpmn:outgoing>Flow_L2_3_3_4</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
     <bpmn:subProcess id="Sub_L2_3_3_3_3_2" name="3.3.2 Concentrate Filtration">
-      <bpmn:documentation>L0/L1/L2 Process. The filter (disc filter, pressure filter, or belt filter depending on site) removes the majority of remaining process water from the thickened concentrate slurry, producing a filter cake at the target moisture specification. Moisture content verification of the filter cake is mandatory — it is a commercial product specification and a P754 mass measurement requirement. Separate filters run per concentrate type.
+      <bpmn:documentation>L0/L1/L2 Process. The filter (disc filter, pressure filter, or belt filter depending on site) removes the majority of remaining process water from the thickened concentrate slurry, producing a filter cake at the target moisture specification. Moisture content verification of the filter cake is mandatory — it is a commercial product specification and a P754 mass measurement requirement. Separate filters run per concentrate type. Filtrate and wash water are recovered (3.3.2.4).
 ISA-95 level: 0–2
 Actors: DCS Auto-control; Control Room Operator
 Standard alignment: ISA-95 Levels 0–2; AMIRA P754 Principles 1, 5, 7, 8
 DDVC layer: Raw; Curated (concentrate_production_record — moisture attribute)</bpmn:documentation>
       <bpmn:incoming>Flow_L2_3_3_3</bpmn:incoming>
-      <bpmn:outgoing>Flow_L2_3_3_4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L2_3_3_5</bpmn:outgoing>
     </bpmn:subProcess>
-    <bpmn:subProcess id="Sub_L2_3_3_3_3_3" name="3.3.3 Tailings Management">
-      <bpmn:documentation>L0/L1/L2 Process. Flotation tailings (the mineral and gangue fraction not recovered as concentrate) are thickened, pumped, and deposited in the Tailings Storage Facility (TSF). Process water is recovered from the TSF and returned to the plant water circuit. Tailings represent the major waste stream of the plant and the closure of the plant-side mass balance.
-ISA-95 level: 0–2
-Actors: Control Room Operator; DCS; Environmental Officer
-Standard alignment: ISA-95 Levels 0–2; AMIRA P754 Principles 1, 5, 7
-DDVC layer: Raw (time-series: tailings_telemetry)</bpmn:documentation>
+    <bpmn:exclusiveGateway id="Gw_L2_3_3_g2" name="Drying or packaging required?" default="Flow_L2_3_3_7">
       <bpmn:incoming>Flow_L2_3_3_5</bpmn:incoming>
       <bpmn:outgoing>Flow_L2_3_3_6</bpmn:outgoing>
-    </bpmn:subProcess>
-    <bpmn:parallelGateway id="Par_L2_3_3_j" name="Join">
-      <bpmn:incoming>Flow_L2_3_3_4</bpmn:incoming>
-      <bpmn:incoming>Flow_L2_3_3_6</bpmn:incoming>
       <bpmn:outgoing>Flow_L2_3_3_7</bpmn:outgoing>
-    </bpmn:parallelGateway>
-    <bpmn:endEvent id="End_L2_3_3_e" name="Filter cake in shed; tailings to TSF">
+    </bpmn:exclusiveGateway>
+    <bpmn:subProcess id="Sub_L2_3_3_3_3_3" name="3.3.3 Concentrate Drying &amp; Packaging">
+      <bpmn:documentation>L0/L1/L3 Process. Conditional — applies where the product specification or the dispatch method requires the filtered concentrate to be dried or packed: for example, molybdenum concentrate dried and bagged, or concentrate packed in bags or containers for shipment. Follows 3.3.2 in that concentrate's dewatering train. Bulk-shipped filter cake bypasses it.
+ISA-95 level: 0–3
+Actors: Plant Operator; Process Technician; DCS
+Standard alignment: ISA-95 Levels 0–3; AMIRA P754 Principles 1, 5, 7, 8
+DDVC layer: Raw; Curated (concentrate_production_record — packaged mass)</bpmn:documentation>
+      <bpmn:incoming>Flow_L2_3_3_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_L2_3_3_8</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:exclusiveGateway id="Gw_L2_3_3_m">
       <bpmn:incoming>Flow_L2_3_3_7</bpmn:incoming>
+      <bpmn:incoming>Flow_L2_3_3_8</bpmn:incoming>
+      <bpmn:outgoing>Flow_L2_3_3_9</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_L2_3_3_e1" name="Concentrate products handled">
+      <bpmn:incoming>Flow_L2_3_3_9</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_L2_3_3_1" sourceRef="Start_L2_3_3_s" targetRef="Par_L2_3_3_f"/>
-    <bpmn:sequenceFlow id="Flow_L2_3_3_2" sourceRef="Par_L2_3_3_f" targetRef="Sub_L2_3_3_3_3_1"/>
-    <bpmn:sequenceFlow id="Flow_L2_3_3_3" sourceRef="Sub_L2_3_3_3_3_1" targetRef="Sub_L2_3_3_3_3_2"/>
-    <bpmn:sequenceFlow id="Flow_L2_3_3_4" sourceRef="Sub_L2_3_3_3_3_2" targetRef="Par_L2_3_3_j"/>
-    <bpmn:sequenceFlow id="Flow_L2_3_3_5" sourceRef="Par_L2_3_3_f" targetRef="Sub_L2_3_3_3_3_3"/>
-    <bpmn:sequenceFlow id="Flow_L2_3_3_6" sourceRef="Sub_L2_3_3_3_3_3" targetRef="Par_L2_3_3_j"/>
-    <bpmn:sequenceFlow id="Flow_L2_3_3_7" sourceRef="Par_L2_3_3_j" targetRef="End_L2_3_3_e"/>
+    <bpmn:endEvent id="End_L2_3_3_e2" name="Thickened tailings to 3.5">
+      <bpmn:incoming>Flow_L2_3_3_4</bpmn:incoming>
+      <bpmn:messageEventDefinition id="Msg_L2_3_3_e2"/>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_L2_3_3_1" sourceRef="Start_L2_3_3_s" targetRef="Sub_L2_3_3_3_3_1"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_3_2" sourceRef="Sub_L2_3_3_3_3_1" targetRef="Gw_L2_3_3_g1"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_3_3" name="No" sourceRef="Gw_L2_3_3_g1" targetRef="Sub_L2_3_3_3_3_2"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_3_4" name="Yes" sourceRef="Gw_L2_3_3_g1" targetRef="End_L2_3_3_e2"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_3_5" sourceRef="Sub_L2_3_3_3_3_2" targetRef="Gw_L2_3_3_g2"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_3_6" name="Yes" sourceRef="Gw_L2_3_3_g2" targetRef="Sub_L2_3_3_3_3_3"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_3_7" name="No" sourceRef="Gw_L2_3_3_g2" targetRef="Gw_L2_3_3_m"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_3_8" sourceRef="Sub_L2_3_3_3_3_3" targetRef="Gw_L2_3_3_m"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_3_9" sourceRef="Gw_L2_3_3_m" targetRef="End_L2_3_3_e1"/>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="Diagram_L2_3_3">
     <bpmndi:BPMNPlane id="Plane_L2_3_3" bpmnElement="Collab_L2_3_3">
-      <bpmndi:BPMNShape id="Pool_L2_3_3_di" bpmnElement="Pool_L2_3_3" isHorizontal="true"><dc:Bounds x="20" y="20" width="922" height="340"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_L2_3_3_conc_di" bpmnElement="Lane_L2_3_3_conc" isHorizontal="true"><dc:Bounds x="60" y="20" width="882" height="170"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_L2_3_3_tail_di" bpmnElement="Lane_L2_3_3_tail" isHorizontal="true"><dc:Bounds x="60" y="190" width="882" height="170"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Start_L2_3_3_s_di" bpmnElement="Start_L2_3_3_s"><dc:Bounds x="110" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="88" y="139" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Par_L2_3_3_f_di" bpmnElement="Par_L2_3_3_f"><dc:Bounds x="202" y="70" width="70" height="70"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Sub_L2_3_3_3_3_1_di" bpmnElement="Sub_L2_3_3_3_3_1" isExpanded="false"><dc:Bounds x="308" y="57" width="170" height="96"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Sub_L2_3_3_3_3_2_di" bpmnElement="Sub_L2_3_3_3_3_2" isExpanded="false"><dc:Bounds x="514" y="57" width="170" height="96"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Sub_L2_3_3_3_3_3_di" bpmnElement="Sub_L2_3_3_3_3_3" isExpanded="false"><dc:Bounds x="514" y="227" width="170" height="96"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Par_L2_3_3_j_di" bpmnElement="Par_L2_3_3_j"><dc:Bounds x="720" y="70" width="70" height="70"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_L2_3_3_e_di" bpmnElement="End_L2_3_3_e"><dc:Bounds x="826" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="804" y="139" width="100" height="56"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_L2_3_3_1_di" bpmnElement="Flow_L2_3_3_1"><di:waypoint x="166" y="105"/><di:waypoint x="202" y="105"/></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L2_3_3_2_di" bpmnElement="Flow_L2_3_3_2"><di:waypoint x="272" y="105"/><di:waypoint x="308" y="105"/></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L2_3_3_3_di" bpmnElement="Flow_L2_3_3_3"><di:waypoint x="478" y="105"/><di:waypoint x="514" y="105"/></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L2_3_3_4_di" bpmnElement="Flow_L2_3_3_4"><di:waypoint x="684" y="105"/><di:waypoint x="720" y="105"/></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L2_3_3_5_di" bpmnElement="Flow_L2_3_3_5"><di:waypoint x="237" y="140"/><di:waypoint x="237" y="275"/><di:waypoint x="514" y="275"/></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L2_3_3_6_di" bpmnElement="Flow_L2_3_3_6"><di:waypoint x="684" y="275"/><di:waypoint x="755" y="275"/><di:waypoint x="755" y="140"/></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L2_3_3_7_di" bpmnElement="Flow_L2_3_3_7"><di:waypoint x="790" y="105"/><di:waypoint x="826" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Pool_L2_3_3_di" bpmnElement="Pool_L2_3_3" isHorizontal="true"><dc:Bounds x="20" y="20" width="1552" height="340"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L2_3_3_ops_di" bpmnElement="Lane_L2_3_3_ops" isHorizontal="true"><dc:Bounds x="60" y="20" width="1512" height="340"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_L2_3_3_s_di" bpmnElement="Start_L2_3_3_s"><dc:Bounds x="142" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="110" y="139" width="120" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_L2_3_3_3_3_1_di" bpmnElement="Sub_L2_3_3_3_3_1" isExpanded="false"><dc:Bounds x="266" y="57" width="170" height="96"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L2_3_3_g1_di" bpmnElement="Gw_L2_3_3_g1" isMarkerVisible="true"><dc:Bounds x="507" y="70" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="436" y="34" width="100" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_L2_3_3_3_3_2_di" bpmnElement="Sub_L2_3_3_3_3_2" isExpanded="false"><dc:Bounds x="648" y="57" width="170" height="96"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L2_3_3_g2_di" bpmnElement="Gw_L2_3_3_g2" isMarkerVisible="true"><dc:Bounds x="889" y="70" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="818" y="20" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_L2_3_3_3_3_3_di" bpmnElement="Sub_L2_3_3_3_3_3" isExpanded="false"><dc:Bounds x="1030" y="57" width="170" height="96"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L2_3_3_m_di" bpmnElement="Gw_L2_3_3_m" isMarkerVisible="true"><dc:Bounds x="1271" y="70" width="70" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L2_3_3_e1_di" bpmnElement="End_L2_3_3_e1"><dc:Bounds x="1444" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1412" y="139" width="120" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L2_3_3_e2_di" bpmnElement="End_L2_3_3_e2"><dc:Bounds x="705" y="247" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="673" y="309" width="120" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_L2_3_3_1_di" bpmnElement="Flow_L2_3_3_1"><di:waypoint x="198" y="105"/><di:waypoint x="266" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_3_2_di" bpmnElement="Flow_L2_3_3_2"><di:waypoint x="436" y="105"/><di:waypoint x="507" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_3_3_di" bpmnElement="Flow_L2_3_3_3"><di:waypoint x="577" y="105"/><di:waypoint x="648" y="105"/><bpmndi:BPMNLabel><dc:Bounds x="581" y="85" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_3_4_di" bpmnElement="Flow_L2_3_3_4"><di:waypoint x="542" y="140"/><di:waypoint x="542" y="275"/><di:waypoint x="705" y="275"/><bpmndi:BPMNLabel><dc:Bounds x="548" y="144" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_3_5_di" bpmnElement="Flow_L2_3_3_5"><di:waypoint x="818" y="105"/><di:waypoint x="889" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_3_6_di" bpmnElement="Flow_L2_3_3_6"><di:waypoint x="959" y="105"/><di:waypoint x="1030" y="105"/><bpmndi:BPMNLabel><dc:Bounds x="963" y="85" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_3_7_di" bpmnElement="Flow_L2_3_3_7"><di:waypoint x="924" y="70"/><di:waypoint x="924" y="40"/><di:waypoint x="1306" y="40"/><di:waypoint x="1306" y="70"/><bpmndi:BPMNLabel><dc:Bounds x="930" y="52" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_3_8_di" bpmnElement="Flow_L2_3_3_8"><di:waypoint x="1200" y="105"/><di:waypoint x="1271" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_3_9_di" bpmnElement="Flow_L2_3_3_9"><di:waypoint x="1341" y="105"/><di:waypoint x="1444" y="105"/></bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

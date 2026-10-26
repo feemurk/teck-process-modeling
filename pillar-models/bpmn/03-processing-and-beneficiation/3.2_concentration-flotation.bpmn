@@ -4,33 +4,36 @@
     <bpmn:participant id="Pool_L2_3_2" name="3.2 Concentration (Flotation) (L2)" processRef="Process_L2_3_2"/>
   </bpmn:collaboration>
   <bpmn:process id="Process_L2_3_2" isExecutable="false">
-    <bpmn:documentation>L2 Process Area. Selective separation of valuable minerals (chalcopyrite, sphalerite, galena, molybdenite) from gangue using froth flotation. Air bubbles attach to hydrophobic mineral surfaces made selective by reagents; the loaded froth overflows to concentrate while depressed gangue reports to tailings. This is the primary value-creation process in the plant — metal recovery and concentrate grade are the defining performance variables. Circuit architecture varies by commodity.</bpmn:documentation>
+    <bpmn:documentation>L2 Process Area. Selective separation of valuable sulphide minerals (e.g., chalcopyrite, sphalerite, galena, molybdenite) from gangue using froth flotation. Air bubbles attach to mineral surfaces made hydrophobic by reagents; the loaded froth overflows as concentrate while depressed minerals report to tailings. This is the primary value-creation process in the plant — metal recovery and concentrate grade are the defining performance variables. The area combines two patterns: one or more Flotation Circuits (3.2.2), in sequence (each fed by the previous circuit's tailings) or in parallel on split feeds, and an optional Concentrate Separation (3.2.3) of a bulk concentrate. Each circuit's concentrate is saleable, a bulk concentrate for separation, or a waste concentrate (e.g., pyrite removed to make low-sulphur tailings). The circuit set, order, destinations and reagent scheme are configuration, not separate processes, and may change by ore-type campaign.</bpmn:documentation>
     <bpmn:laneSet id="LaneSet_L2_3_2">
-      <bpmn:lane id="Lane_L2_3_2_ops" name="Control Room Operator / Metallurgist / DCS">
+      <bpmn:lane id="Lane_L2_3_2_ops" name="Control Room Operator / DCS Auto-control / Metallurgist">
         <bpmn:flowNodeRef>Start_L2_3_2_s</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Sub_L2_3_2_3_2_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Sub_L2_3_2_3_2_2</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Gw_L2_3_2_gz</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Par_L2_3_2_f</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L2_3_2_g1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Sub_L2_3_2_3_2_3</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Gw_L2_3_2_gp</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Sub_L2_3_2_3_2_4</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>End_L2_3_2_e</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L2_3_2_e1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L2_3_2_e3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L2_3_2_g2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L2_3_2_e2</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:startEvent id="Start_L2_3_2_s" name="Cyclone overflow at flotation feed sump">
+    <bpmn:startEvent id="Start_L2_3_2_s" name="Cyclone overflow at flotation feed">
       <bpmn:outgoing>Flow_L2_3_2_1</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:subProcess id="Sub_L2_3_2_3_2_1" name="3.2.1 Reagent Management">
-      <bpmn:documentation>L3/L0 Process. Chemical reagents are the primary selectivity control mechanism in flotation. Collectors attach to target mineral surfaces; frothers stabilise bubble-particle aggregates in the froth; depressants prevent non-target minerals from floating; pH modifiers (lime) control pulp chemistry to enable selective activation and depression.
+    <bpmn:subProcess id="Sub_L2_3_2_3_2_1" name="3.2.1 Reagent Management &amp; Pulp Conditioning">
+      <bpmn:documentation>L3/L0 Process. Chemical reagents are the primary selectivity control mechanism in flotation. Before each circuit, the pulp is conditioned so that only the circuit's target mineral floats: pH is set, activators make a naturally depressed target mineral floatable, depressants hold back non-target minerals, then collectors and frothers are dosed. Conditioning runs again for each circuit in a sequence and before a Concentrate Separation, because the target mineral changes. All reagent conditioning sits here; the other patterns refer to it.
 ISA-95 level: 0–3
 Actors: Metallurgist; Control Room Operator; DCS
 Standard alignment: ISA-95 Levels 0–3; AMIRA P754 Principles 1, 2
 DDVC layer: Raw; Curated (reagent_addition_record)</bpmn:documentation>
       <bpmn:incoming>Flow_L2_3_2_1</bpmn:incoming>
+      <bpmn:incoming>Flow_L2_3_2_10</bpmn:incoming>
       <bpmn:outgoing>Flow_L2_3_2_2</bpmn:outgoing>
     </bpmn:subProcess>
-    <bpmn:subProcess id="Sub_L2_3_2_3_2_2" name="3.2.2 Copper Flotation Circuit">
-      <bpmn:documentation>[COPPER-SPECIFIC] Applies to: QB, HVC, Antamina (Cu circuit first), CdA. L0/L1/L2 Process. The Cu flotation circuit selectively recovers chalcopyrite (CuFeS₂) and bornite (Cu₅FeS₄) from the ground slurry into a high-grade Cu concentrate. The circuit typically comprises rougher, scavenger, and cleaner stages in a standard rougher-scavenger-cleaner (RSC) configuration, with regrinding of cleaner tails or scavenger concentrate where liberation is insufficient.
+    <bpmn:subProcess id="Sub_L2_3_2_3_2_2" name="3.2.2 Flotation Circuit">
+      <bpmn:documentation>L0/L1/L2 Process. Reusable pattern, run once per configured circuit (`flotation_circuit`). Recovers a target mineral — or several together as a bulk concentrate — from the circuit feed by rougher, scavenger and cleaner flotation, with optional regrinding before cleaning. The first circuit is fed by the mill circuit product; each later circuit in a sequence is fed by the scavenger tailings of the previous circuit, re-conditioned in 3.2.1. The final concentrate goes to dewatering (3.3) when it is a saleable product, to Concentrate Separation (3.2.3) when it is a bulk concentrate, or to tailings management (3.3.1 tailings duty, separate deposition) when it is a waste concentrate (e.g., pyrite). Scavenger tailings go to the next circuit or, from the last circuit, to final tailings. Instances may also run in parallel on split feeds (e.g., coarse and fine fractions), and the active set may change by ore-type campaign — both are configuration (`flotation_circuit.feed_source`, `operating_mode`). Example circuits: Cu (chalcopyrite, bornite); Zn (sphalerite, after CuSO₄ activation); Pb (galena); bulk Cu-Mo; bulk Cu-Pb.
 ISA-95 level: 0–2
 Actors: Control Room Operator; Metallurgist; DCS
 Standard alignment: ISA-95 Levels 0–2; AMIRA P754 Principles 1, 2, 5, 6, 7
@@ -38,70 +41,78 @@ DDVC layer: Raw (time-series); Curated (concentrate_production_record)</bpmn:doc
       <bpmn:incoming>Flow_L2_3_2_2</bpmn:incoming>
       <bpmn:outgoing>Flow_L2_3_2_3</bpmn:outgoing>
     </bpmn:subProcess>
-    <bpmn:exclusiveGateway id="Gw_L2_3_2_gz" name="Zn circuit fitted?" default="Flow_L2_3_2_5">
+    <bpmn:parallelGateway id="Par_L2_3_2_f">
       <bpmn:incoming>Flow_L2_3_2_3</bpmn:incoming>
       <bpmn:outgoing>Flow_L2_3_2_4</bpmn:outgoing>
       <bpmn:outgoing>Flow_L2_3_2_5</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:subProcess id="Sub_L2_3_2_3_2_3" name="3.2.3 Zinc Flotation Circuit">
-      <bpmn:documentation>[ZINC-SPECIFIC — where applicable] Applies to: Antamina (sequential after Cu), Red Dog (primary Zn circuit). L0/L1/L2 Process. At polymetallic operations, the Cu flotation tailings (or primary mill product at Red Dog) feed the Zn flotation circuit. Sphalerite (ZnS) must first be activated with copper sulphate (CuSO₄) before it becomes floatable — it is naturally depressed in the Cu circuit. The Zn circuit follows the same RSC architecture as the Cu circuit.
-ISA-95 level: 0–2
-Actors: Control Room Operator; Metallurgist; DCS
-Standard alignment: ISA-95 Levels 0–2; AMIRA P754 Principles 1, 2, 5, 6, 7
-DDVC layer: Raw (time-series); Curated (concentrate_production_record — Zn)</bpmn:documentation>
+    </bpmn:parallelGateway>
+    <bpmn:exclusiveGateway id="Gw_L2_3_2_g1" name="Concentrate destination?" default="Flow_L2_3_2_8">
       <bpmn:incoming>Flow_L2_3_2_4</bpmn:incoming>
       <bpmn:outgoing>Flow_L2_3_2_6</bpmn:outgoing>
-    </bpmn:subProcess>
-    <bpmn:exclusiveGateway id="Gw_L2_3_2_gp" name="Pb circuit active?" default="Flow_L2_3_2_8">
-      <bpmn:incoming>Flow_L2_3_2_5</bpmn:incoming>
-      <bpmn:incoming>Flow_L2_3_2_6</bpmn:incoming>
-      <bpmn:outgoing>Flow_L2_3_2_7</bpmn:outgoing>
       <bpmn:outgoing>Flow_L2_3_2_8</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L2_3_2_9</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:subProcess id="Sub_L2_3_2_3_2_4" name="3.2.4 Lead Flotation Circuit">
-      <bpmn:documentation>[LEAD-SPECIFIC — where applicable] Applies to: Antamina (where Pb circuit is activated), Red Dog. L0/L1/L2 Process. At polymetallic operations with galena (PbS), a lead flotation circuit follows the Zn circuit (or in some designs, precedes it in a Cu-Pb-Zn sequential circuit). At Red Dog, Pb and Zn are separated by differential flotation — Pb is floated first at low pH (Pb selectivity over sphalerite), then Zn is activated and floated.
+    <bpmn:subProcess id="Sub_L2_3_2_3_2_3" name="3.2.3 Concentrate Separation">
+      <bpmn:documentation>L0/L1/L2 Process. Reusable pattern; conditional — runs only where a Flotation Circuit produces a bulk concentrate. Splits the bulk concentrate into two concentrates by differential flotation: one mineral is depressed and reports to the separation tailings (the sink product), the other is floated (the float product). Both products are saleable concentrates and go to their own dewatering trains (3.3). Examples: copper-molybdenum separation (molybdenite floated, copper minerals depressed — the copper concentrate is the sink product); copper-lead separation.
 ISA-95 level: 0–2
 Actors: Control Room Operator; Metallurgist; DCS
 Standard alignment: ISA-95 Levels 0–2; AMIRA P754 Principles 1, 2, 5, 6, 7
-DDVC layer: Raw; Curated (concentrate_production_record — Pb)</bpmn:documentation>
-      <bpmn:incoming>Flow_L2_3_2_7</bpmn:incoming>
-      <bpmn:outgoing>Flow_L2_3_2_9</bpmn:outgoing>
+DDVC layer: Raw (time-series); Curated (concentrate_production_record)</bpmn:documentation>
+      <bpmn:incoming>Flow_L2_3_2_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_L2_3_2_7</bpmn:outgoing>
     </bpmn:subProcess>
-    <bpmn:endEvent id="End_L2_3_2_e" name="Composites to LIMS; concentrate to thickeners">
+    <bpmn:endEvent id="End_L2_3_2_e1" name="Saleable concentrates to dewatering">
+      <bpmn:incoming>Flow_L2_3_2_7</bpmn:incoming>
       <bpmn:incoming>Flow_L2_3_2_8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_L2_3_2_e3" name="Waste concentrate to tailings management">
       <bpmn:incoming>Flow_L2_3_2_9</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gw_L2_3_2_g2" name="Another target mineral in tailings?" default="Flow_L2_3_2_11">
+      <bpmn:incoming>Flow_L2_3_2_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_L2_3_2_10</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L2_3_2_11</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_L2_3_2_e2" name="Final tailings to tailings management">
+      <bpmn:incoming>Flow_L2_3_2_11</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_L2_3_2_1" sourceRef="Start_L2_3_2_s" targetRef="Sub_L2_3_2_3_2_1"/>
     <bpmn:sequenceFlow id="Flow_L2_3_2_2" sourceRef="Sub_L2_3_2_3_2_1" targetRef="Sub_L2_3_2_3_2_2"/>
-    <bpmn:sequenceFlow id="Flow_L2_3_2_3" sourceRef="Sub_L2_3_2_3_2_2" targetRef="Gw_L2_3_2_gz"/>
-    <bpmn:sequenceFlow id="Flow_L2_3_2_4" name="Yes" sourceRef="Gw_L2_3_2_gz" targetRef="Sub_L2_3_2_3_2_3"/>
-    <bpmn:sequenceFlow id="Flow_L2_3_2_5" name="No" sourceRef="Gw_L2_3_2_gz" targetRef="Gw_L2_3_2_gp"/>
-    <bpmn:sequenceFlow id="Flow_L2_3_2_6" sourceRef="Sub_L2_3_2_3_2_3" targetRef="Gw_L2_3_2_gp"/>
-    <bpmn:sequenceFlow id="Flow_L2_3_2_7" name="Yes" sourceRef="Gw_L2_3_2_gp" targetRef="Sub_L2_3_2_3_2_4"/>
-    <bpmn:sequenceFlow id="Flow_L2_3_2_8" name="No" sourceRef="Gw_L2_3_2_gp" targetRef="End_L2_3_2_e"/>
-    <bpmn:sequenceFlow id="Flow_L2_3_2_9" sourceRef="Sub_L2_3_2_3_2_4" targetRef="End_L2_3_2_e"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_2_3" sourceRef="Sub_L2_3_2_3_2_2" targetRef="Par_L2_3_2_f"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_2_4" sourceRef="Par_L2_3_2_f" targetRef="Gw_L2_3_2_g1"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_2_5" sourceRef="Par_L2_3_2_f" targetRef="Gw_L2_3_2_g2"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_2_6" name="Bulk" sourceRef="Gw_L2_3_2_g1" targetRef="Sub_L2_3_2_3_2_3"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_2_7" sourceRef="Sub_L2_3_2_3_2_3" targetRef="End_L2_3_2_e1"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_2_8" name="Saleable" sourceRef="Gw_L2_3_2_g1" targetRef="End_L2_3_2_e1"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_2_9" name="Waste" sourceRef="Gw_L2_3_2_g1" targetRef="End_L2_3_2_e3"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_2_10" name="Yes" sourceRef="Gw_L2_3_2_g2" targetRef="Sub_L2_3_2_3_2_1"/>
+    <bpmn:sequenceFlow id="Flow_L2_3_2_11" name="No" sourceRef="Gw_L2_3_2_g2" targetRef="End_L2_3_2_e2"/>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="Diagram_L2_3_2">
     <bpmndi:BPMNPlane id="Plane_L2_3_2" bpmnElement="Collab_L2_3_2">
-      <bpmndi:BPMNShape id="Pool_L2_3_2_di" bpmnElement="Pool_L2_3_2" isHorizontal="true"><dc:Bounds x="20" y="20" width="1334" height="510"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_L2_3_2_ops_di" bpmnElement="Lane_L2_3_2_ops" isHorizontal="true"><dc:Bounds x="60" y="20" width="1294" height="510"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Start_L2_3_2_s_di" bpmnElement="Start_L2_3_2_s"><dc:Bounds x="110" y="247" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="88" y="309" width="100" height="56"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Sub_L2_3_2_3_2_1_di" bpmnElement="Sub_L2_3_2_3_2_1" isExpanded="false"><dc:Bounds x="202" y="227" width="170" height="96"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Sub_L2_3_2_3_2_2_di" bpmnElement="Sub_L2_3_2_3_2_2" isExpanded="false"><dc:Bounds x="408" y="227" width="170" height="96"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gw_L2_3_2_gz_di" bpmnElement="Gw_L2_3_2_gz" isMarkerVisible="true"><dc:Bounds x="614" y="240" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="599" y="206" width="100" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Sub_L2_3_2_3_2_3_di" bpmnElement="Sub_L2_3_2_3_2_3" isExpanded="false"><dc:Bounds x="720" y="397" width="170" height="96"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gw_L2_3_2_gp_di" bpmnElement="Gw_L2_3_2_gp" isMarkerVisible="true"><dc:Bounds x="926" y="240" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="855" y="206" width="100" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Sub_L2_3_2_3_2_4_di" bpmnElement="Sub_L2_3_2_3_2_4" isExpanded="false"><dc:Bounds x="1032" y="57" width="170" height="96"/></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="End_L2_3_2_e_di" bpmnElement="End_L2_3_2_e"><dc:Bounds x="1238" y="247" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1216" y="309" width="100" height="70"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_L2_3_2_1_di" bpmnElement="Flow_L2_3_2_1"><di:waypoint x="166" y="275"/><di:waypoint x="202" y="275"/></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L2_3_2_2_di" bpmnElement="Flow_L2_3_2_2"><di:waypoint x="372" y="275"/><di:waypoint x="408" y="275"/></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L2_3_2_3_di" bpmnElement="Flow_L2_3_2_3"><di:waypoint x="578" y="275"/><di:waypoint x="614" y="275"/></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L2_3_2_4_di" bpmnElement="Flow_L2_3_2_4"><di:waypoint x="649" y="310"/><di:waypoint x="649" y="445"/><di:waypoint x="720" y="445"/><bpmndi:BPMNLabel><dc:Bounds x="655" y="314" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L2_3_2_5_di" bpmnElement="Flow_L2_3_2_5"><di:waypoint x="684" y="275"/><di:waypoint x="926" y="275"/><bpmndi:BPMNLabel><dc:Bounds x="688" y="255" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L2_3_2_6_di" bpmnElement="Flow_L2_3_2_6"><di:waypoint x="890" y="445"/><di:waypoint x="961" y="445"/><di:waypoint x="961" y="310"/></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L2_3_2_7_di" bpmnElement="Flow_L2_3_2_7"><di:waypoint x="961" y="240"/><di:waypoint x="961" y="105"/><di:waypoint x="1032" y="105"/><bpmndi:BPMNLabel><dc:Bounds x="967" y="222" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L2_3_2_8_di" bpmnElement="Flow_L2_3_2_8"><di:waypoint x="996" y="275"/><di:waypoint x="1238" y="275"/><bpmndi:BPMNLabel><dc:Bounds x="1000" y="255" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_L2_3_2_9_di" bpmnElement="Flow_L2_3_2_9"><di:waypoint x="1202" y="105"/><di:waypoint x="1266" y="105"/><di:waypoint x="1266" y="247"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Pool_L2_3_2_di" bpmnElement="Pool_L2_3_2" isHorizontal="true"><dc:Bounds x="20" y="20" width="1376" height="510"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L2_3_2_ops_di" bpmnElement="Lane_L2_3_2_ops" isHorizontal="true"><dc:Bounds x="60" y="20" width="1336" height="510"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_L2_3_2_s_di" bpmnElement="Start_L2_3_2_s"><dc:Bounds x="142" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="110" y="139" width="120" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_L2_3_2_3_2_1_di" bpmnElement="Sub_L2_3_2_3_2_1" isExpanded="false"><dc:Bounds x="266" y="57" width="170" height="96"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_L2_3_2_3_2_2_di" bpmnElement="Sub_L2_3_2_3_2_2" isExpanded="false"><dc:Bounds x="472" y="57" width="170" height="96"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Par_L2_3_2_f_di" bpmnElement="Par_L2_3_2_f"><dc:Bounds x="713" y="70" width="70" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L2_3_2_g1_di" bpmnElement="Gw_L2_3_2_g1" isMarkerVisible="true"><dc:Bounds x="889" y="70" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="818" y="34" width="100" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_L2_3_2_3_2_3_di" bpmnElement="Sub_L2_3_2_3_2_3" isExpanded="false"><dc:Bounds x="1030" y="57" width="170" height="96"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L2_3_2_e1_di" bpmnElement="End_L2_3_2_e1"><dc:Bounds x="1268" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1236" y="139" width="120" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L2_3_2_e3_di" bpmnElement="End_L2_3_2_e3"><dc:Bounds x="1087" y="247" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1055" y="309" width="120" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L2_3_2_g2_di" bpmnElement="Gw_L2_3_2_g2" isMarkerVisible="true"><dc:Bounds x="889" y="410" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="818" y="360" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L2_3_2_e2_di" bpmnElement="End_L2_3_2_e2"><dc:Bounds x="1087" y="417" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1055" y="479" width="120" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_L2_3_2_1_di" bpmnElement="Flow_L2_3_2_1"><di:waypoint x="198" y="105"/><di:waypoint x="266" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_2_2_di" bpmnElement="Flow_L2_3_2_2"><di:waypoint x="436" y="105"/><di:waypoint x="472" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_2_3_di" bpmnElement="Flow_L2_3_2_3"><di:waypoint x="642" y="105"/><di:waypoint x="713" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_2_4_di" bpmnElement="Flow_L2_3_2_4"><di:waypoint x="783" y="105"/><di:waypoint x="889" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_2_5_di" bpmnElement="Flow_L2_3_2_5"><di:waypoint x="748" y="140"/><di:waypoint x="748" y="445"/><di:waypoint x="889" y="445"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_2_6_di" bpmnElement="Flow_L2_3_2_6"><di:waypoint x="959" y="105"/><di:waypoint x="1030" y="105"/><bpmndi:BPMNLabel><dc:Bounds x="963" y="85" width="34" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_2_7_di" bpmnElement="Flow_L2_3_2_7"><di:waypoint x="1200" y="105"/><di:waypoint x="1268" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_2_8_di" bpmnElement="Flow_L2_3_2_8"><di:waypoint x="924" y="70"/><di:waypoint x="924" y="40"/><di:waypoint x="1296" y="40"/><di:waypoint x="1296" y="77"/><bpmndi:BPMNLabel><dc:Bounds x="930" y="52" width="60" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_2_9_di" bpmnElement="Flow_L2_3_2_9"><di:waypoint x="924" y="140"/><di:waypoint x="924" y="275"/><di:waypoint x="1087" y="275"/><bpmndi:BPMNLabel><dc:Bounds x="930" y="144" width="40" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_2_10_di" bpmnElement="Flow_L2_3_2_10"><di:waypoint x="924" y="480"/><di:waypoint x="924" y="546"/><di:waypoint x="351" y="546"/><di:waypoint x="351" y="153"/><bpmndi:BPMNLabel><dc:Bounds x="930" y="484" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L2_3_2_11_di" bpmnElement="Flow_L2_3_2_11"><di:waypoint x="959" y="445"/><di:waypoint x="1087" y="445"/><bpmndi:BPMNLabel><dc:Bounds x="963" y="425" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

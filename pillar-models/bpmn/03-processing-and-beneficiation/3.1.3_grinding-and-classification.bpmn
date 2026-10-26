@@ -47,7 +47,7 @@ DDVC layer: Raw (time-series: sag_mill_telemetry)</bpmn:documentation>
       <bpmn:outgoing>Flow_L3_3_1_3_5</bpmn:outgoing>
     </bpmn:task>
     <bpmn:serviceTask id="Service_L3_3_1_3_3_1_3_2" name="3.1.3.2 Operate Ball Mill">
-      <bpmn:documentation>Ball mill(s) receive SAG mill undersize discharge (or primary crushed ore at Red Dog three-stage circuit) and grind to the target cyclone feed size using a steel ball charge. DCS controls ball mill speed, water addition, and feed rate. Ball mill power draw is monitored continuously. Sump level (cyclone feed sump) is controlled by variable-speed pump. [P754: mass flow (indirect — via cyclone feed density and flow meter) | nuclear density gauge + magnetic flow meter | continuous (1-min) | Principles 1, 2 | NO — internal process node]
+      <bpmn:documentation>Ball mill(s) receive SAG mill undersize discharge (or crushed ore from a three-stage crushing circuit) and grind to the target cyclone feed size using a steel ball charge. DCS controls ball mill speed, water addition, and feed rate. Ball mill power draw is monitored continuously. Sump level (cyclone feed sump) is controlled by variable-speed pump. [P754: mass flow (indirect — via cyclone feed density and flow meter) | nuclear density gauge + magnetic flow meter | continuous (1-min) | Principles 1, 2 | NO — internal process node]
 ISA-95 level: 0 / 2
 Actors: DCS Auto-control; Control Room Operator
 Standard alignment: ISA-95 Levels 0, 2; AMIRA P754 Principles 1, 2

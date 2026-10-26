@@ -92,6 +92,12 @@
         <mxCell id="box_p3_area_3" value="3.4 Metallurgical Accounting &amp; Quality" style="text;html=1;whiteSpace=nowrap;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacing=0;spacingTop=0;spacingLeft=0;spacingRight=0;spacingBottom=0;fontFamily=Helvetica;fontSize=11;fontColor=#0F172A;fontStyle=0;" vertex="1" parent="1">
           <mxGeometry x="1114" y="469" width="262" height="14" as="geometry" />
         </mxCell>
+        <mxCell id="box_p3_area_4" value="3.5 Tailings Management" style="text;html=1;whiteSpace=nowrap;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacing=0;spacingTop=0;spacingLeft=0;spacingRight=0;spacingBottom=0;fontFamily=Helvetica;fontSize=11;fontColor=#0F172A;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="1114" y="484" width="262" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="box_p3_area_5" value="3.6 Water Management" style="text;html=1;whiteSpace=nowrap;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacing=0;spacingTop=0;spacingLeft=0;spacingRight=0;spacingBottom=0;fontFamily=Helvetica;fontSize=11;fontColor=#0F172A;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="1114" y="499" width="262" height="14" as="geometry" />
+        </mxCell>
         <mxCell id="box_p4" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#22C55E;strokeWidth=1.5;absoluteArcSize=1;arcSize=12;" vertex="1" parent="1">
           <mxGeometry x="1500" y="360" width="290" height="180" as="geometry" />
         </mxCell>
@@ -104,7 +110,7 @@
         <mxCell id="box_p4_area_0" value="4.1 Concentrate Handling" style="text;html=1;whiteSpace=nowrap;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacing=0;spacingTop=0;spacingLeft=0;spacingRight=0;spacingBottom=0;fontFamily=Helvetica;fontSize=11;fontColor=#0F172A;fontStyle=0;" vertex="1" parent="1">
           <mxGeometry x="1514" y="424" width="262" height="14" as="geometry" />
         </mxCell>
-        <mxCell id="box_p4_area_1" value="4.2 Inland Transport" style="text;html=1;whiteSpace=nowrap;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacing=0;spacingTop=0;spacingLeft=0;spacingRight=0;spacingBottom=0;fontFamily=Helvetica;fontSize=11;fontColor=#0F172A;fontStyle=0;" vertex="1" parent="1">
+        <mxCell id="box_p4_area_1" value="4.2 Concentrate Transport" style="text;html=1;whiteSpace=nowrap;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacing=0;spacingTop=0;spacingLeft=0;spacingRight=0;spacingBottom=0;fontFamily=Helvetica;fontSize=11;fontColor=#0F172A;fontStyle=0;" vertex="1" parent="1">
           <mxGeometry x="1514" y="439" width="262" height="14" as="geometry" />
         </mxCell>
         <mxCell id="box_p4_area_2" value="4.3 Port Operations" style="text;html=1;whiteSpace=nowrap;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacing=0;spacingTop=0;spacingLeft=0;spacingRight=0;spacingBottom=0;fontFamily=Helvetica;fontSize=11;fontColor=#0F172A;fontStyle=0;" vertex="1" parent="1">
