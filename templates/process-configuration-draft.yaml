@@ -1,0 +1,104 @@
+# process-configuration-draft.yaml
+# Teck Process Models — Process Configuration Draft (template)
+#
+# Produced by `prepare configuration for [product-name]` (.claude/commands/prepare-configuration.md)
+# as workshops/[product-name]/process-configuration.draft.yaml.
+#
+# A working file in Stage 1. It is NOT handed to Stage 2. It is committed together with
+# workshops/[product-name]/inputs/ as the evidence trail behind the overlay.
+# At the BEAM workshop (Section D.1a) every entry is confirmed, corrected or parked, and the
+# result is written to beam-overlay.yaml Section 1A (process_configuration); Sections 3 and 4
+# below seed the overlay's open_items and vocabulary_additions.
+#
+# EVIDENCE CLASSES (cite on every entry as "<ref> (<class>)", e.g. "E2 (H)"):
+#   T — documented: a named site or Teck document supports it; may describe design, not current operation
+#   I — industry convention: accepted practice; not evidence the site does it
+#   H — working hypothesis: an interpretation of the evidence, pending site confirmation
+#   V — site-validated: a named site SME confirmed it, with evidence and date (set at the workshop only)
+#
+# RULES:
+#   - Pillar process groups are generic. Never add, rename, renumber or remove a group here;
+#     record how the site runs it. A process the pillar lacks goes to Section 5, not Section 2.
+#   - Cover only the pillar areas in process-model-ref.md.
+#   - No KPI definitions or formulas — name a metric only to say which step produces its data.
+
+---
+
+product_name: ""                        # Must match workshops/[product-name]/
+generated: ""                           # YYYY-MM-DD of the latest run
+process_model_ref: "process-model-ref.md"
+pillar_areas_in_scope: []               # From process-model-ref.md, e.g. ["3.5", "3.6"]
+sites_in_scope: []                      # From process-model-ref.md
+primary_site: ""
+draft_status: ""                        # draft | reviewed | consumed-by-workshop
+
+---
+
+## SECTION 1: EVIDENCE REGISTER
+# One entry per file in inputs/. Every citation below uses these refs.
+
+evidence:
+  - ref: ""                             # Short reference, e.g. "E1"
+    file: ""                            # Path under inputs/
+    title: ""
+    contributes: ""                     # What it tells us about the process configuration
+    limitations: ""                     # e.g. "design drawing, not as-operated"; "candidate tags, not verified"
+    received: ""                        # YYYY-MM-DD
+
+---
+
+## SECTION 2: PROCESS CONFIGURATION
+# Draft of beam-overlay.yaml Section 1A — same fields. One entry per site per pillar
+# group or pattern instance in scope.
+
+process_configuration:
+  - site: ""
+    pillar_id: ""                       # Unchanged pillar ID
+    instance: ""                        # Pattern instance label; "" for a single-instance group
+    enabled: true
+    sequence: 0
+    feed_from: ""
+    outputs_to: []
+    parameters: {}
+    steps_not_applicable: []
+    site_terms: []                      # [{site_term, meaning}]
+    measurement_points: []              # [{role, site_ref, status: candidate}]
+    evidence: ""                        # e.g. "E2 (T as drawn; routing H)"
+    status: ""                          # provisional (T or I evidence) | needs-workshop (H or none)
+    rationale: ""                       # Required if enabled is false
+
+---
+
+## SECTION 3: DRAFT OPEN ITEMS
+# Questions only site SMEs can answer. Become overlay open_items at the workshop.
+
+open_items_draft:
+  - id: ""                              # VQ-01, VQ-02 ...
+    pillar_id: ""
+    question: ""
+    why_it_matters: ""                  # Which configuration entry or entity it changes
+    likely_expertise: ""
+    evidence: ""
+
+---
+
+## SECTION 4: VOCABULARY CANDIDATES
+# Site terms found in the evidence. Become overlay vocabulary_additions at the workshop.
+
+vocabulary_candidates:
+  - site_term: ""
+    meaning: ""                         # Best reading of the evidence
+    canonical_mapping: ""               # Pillar term, or "new term candidate"
+    evidence: ""
+
+---
+
+## SECTION 5: PILLAR GAPS
+# Processes the evidence shows that no pillar group covers. Never modelled in the product:
+# each is tested for genericity and logged as a learning proposing a generic pillar addition.
+
+pillar_gaps:
+  - description: ""
+    genericity_test: ""                 # Would another site running this business process use the same steps?
+    proposed_generic_addition: ""
+    learning_id: ""                     # LL-nnn once logged

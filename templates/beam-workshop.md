@@ -27,8 +27,11 @@
 
 Before beginning the workshop, read and internalize:
 1. `workshops/[product-name]/process-model-ref.md` — the scoped entity list
-2. `standards/teck-vocabulary-master.md` — Teck-specific terminology
-3. `templates/beam-overlay-schema.yaml` — the output schema you are producing
+2. `workshops/[product-name]/process-configuration.draft.yaml` — the reviewed site
+   configuration drafted from `inputs/` (if present); it pre-populates Section D.1a, and
+   its open items and vocabulary candidates seed Sections 5 and 6 of the overlay
+3. `standards/teck-vocabulary-master.md` — Teck-specific terminology
+4. `templates/beam-overlay-schema.yaml` — the output schema you are producing
 
 Then open with this statement to the room:
 
@@ -461,9 +464,11 @@ circuits, 3.3 thickening duties, 3.5 tailings, 3.6 water; Pillar 4: 4.2 transpor
 Process groups are generic (CLAUDE.md, "PROCESS GROUPS ARE GENERIC"); this step records how
 each site runs them. It never renames, removes or adds a process group.
 
-**Pre-populate** from any site evidence available (drawings, discovery briefs, prior
-overlays) — one draft `process_configuration` entry per site per group or instance, each
-with its evidence class (T documented, I industry convention, H working hypothesis).
+**Pre-populate** from `workshops/[product-name]/process-configuration.draft.yaml`, produced
+by `prepare configuration for [product-name]` from the evidence in `inputs/`. Each entry
+already carries its evidence ref and class (T documented, I industry convention, H working
+hypothesis). Start with the draft's lowest-confidence entries (`needs-workshop`, class H).
+If there is no draft (no evidence was available), build the entries in the room.
 Present it, pattern by pattern:
 
 > "The model has one [pattern name] pattern — for example, one Flotation Circuit that a
@@ -494,7 +499,9 @@ running the same business process on different minerals or equipment use the sam
 If yes, it is configuration.
 
 Unconfirmed routes or instances stay in the overlay with `status: needs-workshop` and an
-open item naming who can confirm them.
+open item naming who can confirm them. An entry a named site SME confirms takes evidence
+class V (who, date). Carry the draft's `open_items_draft` into overlay `open_items` (with
+owner and gate impact) and its `vocabulary_candidates` into `vocabulary_additions`.
 
 ---
 

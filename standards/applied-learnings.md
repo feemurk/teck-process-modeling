@@ -164,3 +164,21 @@
     - "templates/beam-workshop.md"
   summary: "Follow-up: Section D gains D.1a Process configuration (elicit and confirm overlay Section 1A, with coaching against treating configuration as a new process); D.3 summary and E.1 self-check cover it."
 ```
+
+```yaml
+- id: LL-020
+  applied_date: 2026-10-26
+  applied_by: "Claude Code"
+  files_modified:
+    - "CLAUDE.md"
+    - ".claude/commands/prepare-configuration.md (new)"
+    - "templates/process-configuration-draft.yaml (new)"
+    - ".claude/commands/extract-entities.md"
+    - ".claude/commands/run-beam-workshop.md"
+    - "templates/entity-extraction.md"
+    - "templates/beam-workshop.md"
+    - "workshops/[product-name]/README.md"
+    - ".github/copilot-instructions.md"
+    - ".github/prompts/prepare-configuration.prompt.md (new), extract-entities.prompt.md, run-beam-workshop.prompt.md"
+  summary: "Evidence-to-configuration step: inputs/ committed as evidence; prepare configuration drafts process-configuration.draft.yaml after entity extraction; the workshop confirms it at D.1a."
+```

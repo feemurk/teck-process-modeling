@@ -647,3 +647,52 @@
     Found while applying LL-018 on 2026-10-26; not applied — outside the transport scope
     the modeler asked for.
 ```
+
+```yaml
+- id: LL-020
+  date: 2026-10-26
+  session: "ad-hoc"
+  product: "programme-wide"
+  captured_by: "Fahim Kanji (with Claude Code)"
+  status: "applied"
+
+  what_happened: >
+    For the QB Water-and-Tailings product, site evidence (drawings, a discovery brief) was
+    read and a configuration preview written ad hoc. No command, template, README or
+    CLAUDE.md rule described where evidence goes, how it becomes configuration, or whether
+    it is committed, so the next product would improvise again. The Copilot instructions
+    also listed only the three handoff files as allowed outputs.
+
+  correct_approach: >
+    Workshop evidence goes in workshops/[product-name]/inputs/ and is always committed. A
+    separate step, `prepare configuration for [product-name]`, runs after entity
+    extraction: it reads inputs/ for the in-scope pillar areas and writes
+    process-configuration.draft.yaml (evidence register, Section 1A entries with evidence
+    class, draft open items, vocabulary candidates, pillar gaps) for analyst review. The
+    workshop confirms the draft at Section D.1a into the overlay. Inputs and draft stay in
+    Stage 1 as the evidence trail; Stage 2 still receives only the three handoff files.
+
+  affects:
+    - file: "CLAUDE.md"
+      section: "Relationship to downstream repos; WORKFLOW; prepare configuration; run beam workshop; log session; NEVER DO; commit work"
+      change_type: "new_rule"
+    - file: ".claude/commands/prepare-configuration.md"
+      section: "new command"
+      change_type: "addition"
+    - file: "templates/process-configuration-draft.yaml"
+      section: "new template"
+      change_type: "addition"
+    - file: ".claude/commands/extract-entities.md; .claude/commands/run-beam-workshop.md; templates/entity-extraction.md; templates/beam-workshop.md"
+      section: "inputs and draft handling"
+      change_type: "behaviour"
+    - file: "workshops/[product-name]/README.md; .github/copilot-instructions.md; .github/prompts/"
+      section: "sequence, allowed outputs, prompts"
+      change_type: "clarification"
+
+  integration_notes: >
+    The modeler chose a separate step (option A) over folding configuration into
+    extract-entities, so the draft covers only confirmed scope and can be refreshed when
+    evidence arrives later. Pre-existing inconsistency noted, not changed: CLAUDE.md lists
+    session-log.md as crossing to Stage 2; workshops/[product-name]/README.md says it stays
+    in Stage 1.
+```
