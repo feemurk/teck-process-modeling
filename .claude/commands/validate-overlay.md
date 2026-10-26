@@ -52,6 +52,19 @@
        (flag any overlay entities not in the process model ref as unexpected)
    [ ] The product_name in the overlay matches the folder name
    [ ] The ddvc_layer in the overlay matches the declaration in process-model-ref.md
+
+   PROCESS CONFIGURATION CHECKS (Section 1A, LL-015):
+
+   [ ] If a pillar_reference includes a process area with patterns or optional groups
+       (e.g., Pillar 3: 3.2, 3.3, 3.5, 3.6), process_configuration has an entry for every
+       group or instance each site in scope runs (BLOCK if missing for the primary site;
+       WARN for other sites)
+   [ ] Every process_configuration.pillar_id exists unchanged in the referenced pillar model
+       (BLOCK if not — the overlay must not invent, rename or renumber process groups)
+   [ ] Every entry with enabled = false or status = not-applicable has a rationale (WARN)
+   [ ] Every measurement_points[].role is a role defined in the pillar (MP-, TP-, WP-) (WARN)
+   [ ] Every entry has an evidence class (WARN); status needs-workshop on the primary site's
+       entries is a WARN, not a BLOCK — configuration refines, it does not gate, Stage 2
    
    OPEN ITEMS ASSESSMENT:
    

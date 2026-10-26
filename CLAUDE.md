@@ -74,6 +74,37 @@ flag this; it will be captured via `log learning` and reviewed before being appl
 
 ---
 
+## PROCESS GROUPS ARE GENERIC (LL-005, LL-006)
+
+Process groups and L4 steps describe the business process, independent of site and mineral.
+
+- **One pattern, many instances.** Where the same steps recur for different minerals or
+  sites, the pillar has one reusable process group. Example: Pillar 3 flotation is two
+  patterns — 3.2.2 Flotation Circuit (one instance per target mineral or bulk concentrate,
+  chained through tailings) and 3.2.3 Concentrate Separation. There is no "copper circuit"
+  or "zinc circuit" process group; those are instances, written `3.2.2 [Cu]`.
+- **Differences are configuration.** Which optional groups a site runs, how many instances,
+  in what order, with what reagents, equipment, routes, names and measurement points is
+  configuration. It lives in data (e.g., `flotation_circuit`, `tailings_facility`,
+  `water_system`) and in the overlay's `process_configuration` section (schema Section 1A),
+  keyed to unchanged pillar IDs — never in a process group's name, scope or steps. Entity
+  field differences between sites stay in `site_overrides`.
+- **Reusable patterns in Pillar 3:** 3.2.1 conditioning, 3.2.2 Flotation Circuit, 3.2.3
+  Concentrate Separation, 3.3.1 Thickening (concentrate, bulk and tailings duties), plus
+  the generic 3.5 Tailings Management and 3.6 Water Management areas. In Pillar 4, 4.2.2
+  Transport Leg (one instance per leg; mode road, rail, slurry pipeline or sea).
+- **Product and site adaptations keep the pillar structure.** Do not delete, rename,
+  renumber or re-scope pillar process groups for a product or site. A step that does not
+  run at a site is configured off, not removed. If a product needs a process the pillar
+  lacks, propose a generic pillar addition via `log learning`; do not create a
+  site-specific process group in the product.
+- **Mineral and site names** may appear in process rows only as illustrations ("e.g."),
+  and in the pillar's configuration variants table.
+- Before proposing a process group, test it: would a site running the same business
+  process on different minerals use the same group and L4 steps? If not, it is not generic.
+
+---
+
 ## PILLAR MODEL INVENTORY
 
 | File | Pillar | Status |
@@ -263,6 +294,10 @@ When `CORRECTION:` is received:
 - Accept a stakeholder answer that would embed business logic in the Curated layer
   (flag it, document it as a Contextualized concern, park it as an open item)
 - Conflate Teck-specific process variants with errors in the industry-standard model
+- Name, scope or split a process group by mineral, commodity or site when the steps are the
+  same business process — model a pattern and record the differences as configuration
+- Delete, rename or renumber pillar process groups when adapting the model for a product or
+  site — configure them on or off and record site specifics in the overlay
 
 ---
 

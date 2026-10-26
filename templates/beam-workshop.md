@@ -453,6 +453,51 @@ Ask: "Does this capture everything? Any measures or codes I've missed? Shall I p
 
 ---
 
+### D.1a — Process configuration (overlay Section 1A, LL-015)
+
+Run this before the entity-by-entity variants whenever `process-model-ref.md` includes a
+process area with reusable patterns or optional groups (e.g., Pillar 3: 3.2 flotation
+circuits, 3.3 thickening duties, 3.5 tailings, 3.6 water; Pillar 4: 4.2 transport legs).
+Process groups are generic (CLAUDE.md, "PROCESS GROUPS ARE GENERIC"); this step records how
+each site runs them. It never renames, removes or adds a process group.
+
+**Pre-populate** from any site evidence available (drawings, discovery briefs, prior
+overlays) — one draft `process_configuration` entry per site per group or instance, each
+with its evidence class (T documented, I industry convention, H working hypothesis).
+Present it, pattern by pattern:
+
+> "The model has one [pattern name] pattern — for example, one Flotation Circuit that a
+> site runs once per target mineral, or one Transport Leg that a site runs once per leg of
+> its route. Here is how I understand [site] runs it: [instances, order, feed and outputs,
+> site names, measurement points]. What is right, what is wrong, and what is missing?"
+
+Ask, for each pattern or optional group:
+- **Instances and order:** "How many [circuits / thickener duties / transport legs / water
+  sources] does [site] run, and in what order?"
+- **Optional groups:** "Does [site] run [optional group, e.g., tailings classification,
+  water treatment, concentrate drying]? If not, why not?" → `enabled: false` with a rationale.
+- **Steps not run:** "Is any step in this group not done at [site]?" → `steps_not_applicable`.
+- **Site names:** "What do your people and your systems call this? Any equipment tags or
+  area numbers?" → `site_terms`, and `vocabulary_additions` for new terms.
+- **Measurement points:** "Which instrument or survey measures [role, e.g., WP-05 thickener
+  overflow]? Is it in service?" → `measurement_points` with the pillar role.
+
+**Coaching — when a stakeholder describes a different process:**
+> "That sounds like [site]'s configuration of [pattern] rather than a different process —
+> the steps are the same; the [mode / mineral / equipment / route] differs. Let me record it
+> as configuration. If the steps themselves really differ, tell me which step and how —
+> that becomes a `process_model_overrides` entry, and if it applies beyond [site], a
+> learning for the pillar."
+
+Do not accept "we do it differently" as a new process group. Test it: would another site
+running the same business process on different minerals or equipment use the same steps?
+If yes, it is configuration.
+
+Unconfirmed routes or instances stay in the overlay with `status: needs-workshop` and an
+open item naming who can confirm them.
+
+---
+
 ### D.2 — Site-by-site variant elicitation
 
 For each site in `sites_in_scope`, and for each entity in the entity register, ask:
@@ -498,6 +543,10 @@ SECTION D SUMMARY — Site Variants
 Sites in scope: [list]
 Primary (canonical) site: [site]
 
+Process configuration (Section 1A): [N entries]
+  [site] — [pillar ID] [instance]: enabled [yes/no]; [order, feeds, outputs]; [N] measurement points mapped
+  Unconfirmed: [N entries with status needs-workshop]
+
 Variants documented: [N]
   [Entity name] at [site]:
     Field: [which field differs]
@@ -535,6 +584,8 @@ Before writing the overlay, verify:
 [ ] OD vs SBO decision table is populated for any entity that carries delay events
 [ ] Domain owner is named (not 'TBD') for every entity
 [ ] At least one source system is listed for every entity with in_raw_layer confirmed
+[ ] process_configuration (Section 1A) covers every pattern instance and optional group
+    the primary site runs, keyed to unchanged pillar IDs, each with an evidence class
 ```
 
 ---
@@ -595,7 +646,7 @@ Produce a handoff summary:
 WORKSHOP COMPLETE — [product-name]
 
 Output files:
-  workshops/[product-name]/process-model-ref.md  ✓
+  workshops/[product-name]/process-model-ref.md   ✓
   workshops/[product-name]/beam-overlay.yaml      ✓
   workshops/[product-name]/session-log.md         ✓
 

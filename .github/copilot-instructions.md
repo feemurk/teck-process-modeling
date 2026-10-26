@@ -57,6 +57,7 @@ Always run command steps in sequence. Do not skip confirmations.
 - Use explicit section-by-section confirmations during workshop flow.
 - Preserve pillar model authority: treat `pillar-models/` as stable unless explicitly told to correct an industry-standard error.
 - Capture Teck-specific deviations in overlay overrides, not by editing pillar models.
+- Keep process groups generic (CLAUDE.md, "PROCESS GROUPS ARE GENERIC"): never name, split or re-scope a process group by mineral or site, and never delete or renumber pillar process groups for a product; record site specifics as configuration in the overlay.
 - Use terminology from `standards/teck-vocabulary-master.md`.
 - Flag uncertainties as open items; do not present assumptions as confirmed facts.
 

@@ -124,6 +124,36 @@ in the process models. These differences drive `process_model_overrides` in over
 | Payload unit for concentrate | Wet metric tonnes (WMT) / Dry metric tonnes (DMT) | TBC — moisture correction at which layer? | |
 | P80 | Standard particle size distribution metric | TBC — does Teck use different fragmentation targets by site? | |
 
+### 3.5 Process Patterns and Configuration (LL-005)
+
+Process groups are site- and mineral-agnostic. Use these terms for the reusable patterns
+and for what varies between sites. Do not name a process group after a mineral or a site.
+
+| Term | Definition | Do not confuse with | Status |
+|------|-----------|---------------------|--------|
+| Process pattern | A process group whose L4 steps are reused unchanged wherever the business process recurs (e.g., Flotation Circuit, Concentrate Separation) | A site's circuit, which is an instance of a pattern | confirmed |
+| Configuration | Which optional process groups a site runs, how many pattern instances, in what order, and their reagent scheme, equipment and product specification. Held as data and in the overlay | A process deviation (`process_model_overrides`), which is a change to the steps themselves | confirmed |
+| Flotation Circuit (3.2.2) | Pattern: rougher, scavenger, regrind (optional), cleaner flotation recovering one target mineral or a bulk concentrate from a feed | "Copper / zinc / lead circuit" — these are instances, written 3.2.2 [Cu] | confirmed |
+| Concentrate Separation (3.2.3) | Pattern: splitting a bulk concentrate into a float product and a sink product by depressing one mineral | Cleaning stages within a Flotation Circuit | confirmed |
+| Target mineral | The mineral (or minerals, for a bulk concentrate) a Flotation Circuit instance floats | The primary metal of the site — circuit order follows floatability, not value | confirmed |
+| Bulk concentrate | A concentrate holding two or more payable minerals, floated together to be separated later (e.g., Cu-Mo) | A saleable concentrate | confirmed |
+| Sequential flotation | Circuits chained so each is fed by the previous circuit's tailings (e.g., Cu → Zn; Pb → Zn) | Bulk-then-separate configuration | confirmed |
+| Float product / sink product | The two outputs of a Concentrate Separation: the mineral floated and the mineral depressed | Concentrate / tailings of a Flotation Circuit | confirmed |
+| Measurement point role (MP-01 to MP-10) | A P754 measurement position defined by role in a pattern, instantiated per circuit as `MP-05[Cu]` | A fixed numbered instrument at one site | confirmed |
+| Tailings and water roles (TP-01 to TP-05, WP-01 to WP-11) | Tailings mass and water measurement positions defined by role, instantiated per stream, user or destination, e.g. `WP-05[tailings thickener]` | Site candidate IDs (e.g., E3-03), which map to a role in the overlay | confirmed |
+| Thickening (3.3.1) | Pattern: feed, flocculate, pump underflow, recover overflow — one instance per thickener duty | "Concentrate thickening" / "tailings thickening" — these are duties (instances) | confirmed |
+| Thickener duty | The stream a thickening instance handles: a saleable concentrate, a bulk concentrate, or the tailings | A specific thickener asset (a `process_node`) | confirmed |
+| Tailings Storage Facility (TSF) | Canonical pillar term for the facility that stores tailings and supernatant water | TMF (site synonym, below) | confirmed |
+| Tailings classification (3.5.2) | Splitting tailings by hydrocyclone into sand for construction and fines for deposition; optional | Hydrocyclone classification in grinding (3.1.3.3) | confirmed |
+| Deposition method / construction method | Facility configuration: conventional, thickened or paste deposition; upstream, centreline or downstream construction | Process groups — both are configuration on `tailings_facility` | confirmed |
+| Makeup water | New water brought into the site water system from a configured source; "fresh" and "desalinated" describe the source or treatment, not the role | Reclaim or recovered water | confirmed |
+| Internal recycle | Water moving between systems inside the site (WP-05 to WP-09); counted once in the water balance, never as an input | Makeup water (an input) | confirmed |
+| Water system | An accounting boundary for water: supply, process water, reclaim, seepage collection, facility water, or a remote location | A single pump or pipeline (a `process_node`) | confirmed |
+| Transport leg (4.2.2) | Pattern: one segment of a site's route from mine to export port, with a configured mode, carrier and measurement method at each end | A whole route, which is a sequence of legs | confirmed |
+| Transport mode | Road (trucks), rail (wagons), slurry pipeline, or sea (barge or coastal vessel) — configuration on `transport_leg` | A process group; there is no "road transport" or "pipeline transport" group | confirmed |
+| Lightering | Loading a vessel at anchor from barges loaded at the port, where depth or ice prevents berthing; a vessel loading method | Direct loading at berth | confirmed |
+| TMF | Tailings Management Facility — QB term for the pillar's Tailings Storage Facility (TSF) | — | provisional (QB discovery brief, 2026-10-20) |
+
 ---
 
 ## 4. ABBREVIATIONS AND ACRONYMS
@@ -159,3 +189,6 @@ Append-only. One row per confirmed addition or modification.
 | Date | Entry | Changed By | Session | Notes |
 |------|-------|------------|---------|-------|
 | 2026-04-12 | Initial vocabulary master created | Programme setup | — | Seed entries from cross-reference summary and programme memory |
+| 2026-10-23 | Added 3.5 Process Patterns and Configuration (pattern, configuration, Flotation Circuit, Concentrate Separation, target mineral, bulk concentrate, sequential flotation, float / sink product, MP roles; TMF provisional) | Fahim Kanji | ad-hoc (LL-005) | Terms follow the Pillar 3 restructure into generic process patterns |
+| 2026-10-26 | Added to 3.5: TP / WP roles, Thickening and thickener duty, TSF (canonical), tailings classification, deposition / construction method, makeup water, internal recycle, water system | Fahim Kanji | ad-hoc (LL-012, LL-014) | Pillar 3 tailings and water management areas |
+| 2026-10-26 | Added to 3.5: transport leg, transport mode, lightering | Fahim Kanji | ad-hoc (LL-018) | Pillar 4 generic transport |
