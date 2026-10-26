@@ -12,7 +12,7 @@ All six pillars are in scope:
 |---|--------|--------|-----------------------|
 | 1 | Mine Planning & Scheduling | Strategic and operational planning | 3-4 |
 | 2 | Mining Operations (Extraction) | Physical extraction — drill, blast, load, haul | 0-3 |
-| 3 | Processing & Beneficiation | Comminution, flotation, dewatering, metallurgical accounting | 0-3 |
+| 3 | Processing & Beneficiation | Comminution, flotation, dewatering, metallurgical accounting, tailings management, water management | 0-3 |
 | 4 | Logistics & Outbound Supply Chain | Concentrate handling, transport, port, commercial documentation | 0-4 |
 | 5 | Maintenance & Reliability | Asset availability, PM/CM execution, reliability engineering | 0-4 |
 | 6 | Health & Safety | Hazard control, permit to work, incident management, occupational health | 0-4 |
@@ -68,13 +68,16 @@ All six pillars are in scope:
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
 │  PILLAR 3: PROCESSING & BENEFICIATION                                                   │
 │                                                                                         │
-│  3.1 Comminution → 3.2 Flotation (Cu/Zn/Pb circuits) → 3.3 Dewatering → 3.4 Met Acctg│
+│  3.1 Comminution → 3.2 Flotation (circuit patterns)  → 3.3 Dewatering → 3.4 Met Acctg   │
 │      process_node ★         concentrate_production_rec.     filter cake        shift_   │
 │      mill_telemetry         osa_grade_telemetry              concentrate_type ★  mass_  │
 │      amira_meas.point ★     commercial_sample_record ★       tsf_inventory       balance│
 │                             assay_result                     port receipt ►             │
 │                                           │                                             │
-│           ◄── P754: MP-01 through MP-06 (Cu) / MP-07 through MP-11 (Zn) / MP-12–15 Pb│
+│           ◄── P754: MP-01 to MP-10 roles, one instance per configured circuit           │
+│                                                                                         │
+│  3.5 Tailings Management (TSF: TP-01..TP-05)   3.6 Water Management (WP-01..WP-11)      │
+│      tailings_facility ★  tailings_deposition_record  water_system water_balance_record │
 └──────────────────────────────────────────┬──────────────────────────────────────────────┘
                                            │ Filter cake + LIMS batch record
                                            │ CTP-2: Concentrator to Logistics
@@ -82,7 +85,7 @@ All six pillars are in scope:
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
 │  PILLAR 4: LOGISTICS & OUTBOUND SUPPLY CHAIN                                            │
 │                                                                                         │
-│  4.1 Conc. Handling → 4.2 Inland Transport → 4.3 Port Operations → 4.4 Commercial Docs │
+│  4.1 Conc. Handling → 4.2 Conc. Transport  → 4.3 Port Operations → 4.4 Commercial Docs │
 │      conc_shed_zone          weighbridge_tx ★     vessel_loading_rec.   certificate_of_ │
 │      conc_inventory_rec.     bill_of_lading ★     draft_survey_rec. ★   analysis ★      │
 │      dispatch_lot_rec. ★     transport_dispatch   commercial_sample     commercial_     │
@@ -151,8 +154,10 @@ All points in the value chain where material custody changes hands — either co
 | Boundary | From | To | Measurement Basis | Pillar Reference |
 |---------|------|-----|-------------------|-----------------|
 | Crusher feed to cyclone overflow | Primary crusher intake | SAG/ball mill circuit product | MP-01 (belt weigher — continuous) | Pillar 3, 3.1 |
-| Cyclone overflow to final concentrate | Mill circuit product | Flotation concentrate per commodity | MP-05/11/15 (on-stream XRF + shift composite assay) | Pillar 3, 3.2 |
+| Cyclone overflow to final concentrate | Mill circuit product | Final concentrate per configured circuit or separation product | MP-05, MP-09, MP-10 instances (on-stream XRF + shift composite assay) | Pillar 3, 3.2 |
 | Flotation concentrate to tailings | Feed mass | Concentrate mass + tailings mass | Full plant mass balance (P754 shift closure) | Pillar 3, 3.4 |
+| Thickened tailings to deposition | Tailings thickener underflow | Tailings deposited at the TSF | TP-01 (transfer) and TP-05 (deposited), reconciled by survey | Pillar 3, 3.5 |
+| Site water balance | Makeup water inputs (WP-01, WP-04) | Outputs, losses and storage change | MCA WAF period balance (internal recycles counted once) | Pillar 3, 3.6 |
 | Port receipt to vessel loading | Port inventory opening | Draft survey commercial tonnes | Port weighbridge (opening) + draft survey (closing) | Pillar 4, 4.3 |
 
 ---
@@ -277,7 +282,7 @@ Consolidated from all six pillars. Ranked by cross-pillar impact — gaps affect
 | **P2** | XP-05 | **Metallurgical accounting software system not specified** — the curated `shift_mass_balance` and `metallurgical_accounting_report` entities are designed as canonical curated products independent of the vendor system. But in practice, the metallurgical accounting system (vendor TBD — Interlaken, Metsim, or custom Excel-based) already performs these calculations. The relationship between the curated data product and the metallurgical accounting system must be resolved: does the data product replace it, consume its output, or co-exist? | Pillar 3 | Stakeholder decision required before BEAM workshop Pillar 3 — Chief Metallurgist and programme sponsor must agree on whether the curated `shift_mass_balance` entity is an input to the existing metallurgical accounting system or a replacement for it. |
 | **P2** | XP-06 | **Antamina slurry pipeline transport mode** — the `transport_dispatch_record` and `weighbridge_transaction` entity designs assume road or rail transport. Antamina uses a slurry pipeline from the mine to Huarmey port. The pipeline replaces the weighbridge tare/gross cycle with pipeline mass flow measurement (magnetic flowmeter + density gauge). A pipeline transport variant of these entities is required. | Pillars 3, 4 | Define `pipeline_transport_record` as a site-specific entity variant for Antamina. Flag as an Antamina-specific extension in Collibra — not part of the canonical entity design, but a valid specialisation. |
 | **P2** | XP-07 | **Red Dog Arctic accounting cadence** — Red Dog's concentrate is stockpiled for up to 9 months before shipping. Monthly reconciliation of inventory and shipped metal is not applicable; the accounting period is the shipping season (annual). The `commercial_invoice`, `metallurgical_accounting_report`, and `concentrate_inventory_record` entities need a `settlement_period_type` attribute to accommodate this. | Pillars 3, 4 | Flag in commercial/metallurgical accounting system configuration as a site-specific parameter. The `concentrate_inventory_record` for Red Dog must support multi-month open inventory positions without triggering false balance errors in the monthly reconciliation process. |
-| **P2** | XP-08 | **AMIRA P754 instrument calibration cross-reference** — all P754 measurement points (MP-01 through MP-15 in Pillar 3 plus CTPs 3-5 in Pillar 4) require current calibration certificates for the instruments that generate their measurements. These calibration records are Pillar 5 maintenance work orders (statutory inspection category). The linkage between the `amira_measurement_point` entity (Pillar 3) and the calibration work order in SAP PM (Pillar 5) must be implemented. | Pillars 3, 4, 5 | The `amira_measurement_point` entity must carry a `calibration_work_order_ref` attribute populated from SAP PM. This requires a system integration: SAP PM statutory inspection work order completion must update the calibration currency status in the Collibra `amira_measurement_point` record. |
+| **P2** | XP-08 | **AMIRA P754 instrument calibration cross-reference** — all P754 measurement points (every instance of roles MP-01 to MP-10 in Pillar 3 plus CTPs 3-5 in Pillar 4) require current calibration certificates for the instruments that generate their measurements. These calibration records are Pillar 5 maintenance work orders (statutory inspection category). The linkage between the `amira_measurement_point` entity (Pillar 3) and the calibration work order in SAP PM (Pillar 5) must be implemented. | Pillars 3, 4, 5 | The `amira_measurement_point` entity must carry a `calibration_work_order_ref` attribute populated from SAP PM. This requires a system integration: SAP PM statutory inspection work order completion must update the calibration currency status in the Collibra `amira_measurement_point` record. |
 | **P3** | XP-09 | **Processing plant equipment in SAP PM** — Pillar 3 fixed plant equipment (mills, cells, conveyors, thickeners, filters) must be registered in SAP PM as functional locations to generate PM work orders (Pillar 5). Many mining operations have a gap here — mobile equipment is well-tracked in EAM, fixed plant is managed informally or in a standalone CMMS. If fixed plant is not in SAP PM, Pillar 5 Reliability Engineering cannot perform MTBF/MTTR analysis on processing plant equipment. | Pillars 3, 5 | Confirm with Teck maintenance team at each site whether fixed plant equipment is registered in SAP PM. If not, establish a migration plan. The `process_node` (Pillar 3) to SAP PM functional location mapping is a prerequisite. |
 | **P3** | XP-10 | **PTW system type (digital vs. paper) at each site** — the `permit_to_work` entity assumes digital PTW. Paper-based PTW at any site means no real-time data and retrospective data entry only. The safety data completeness and timeliness depends on resolving this. | Pillar 6 | Audit PTW system type at each site as the first step of BEAM workshop Pillar 6 data audit. Paper PTW at any site should trigger an evaluation of whether digital PTW deployment is feasible and cost-effective within the programme timeline. |
 | **P3** | XP-11 | **Contractor safety data inclusion** — LTIFR/TRIFR denominators must include contractor hours worked to be comparable with ICMM industry benchmarking. If contractor incident records are not in Teck's safety management system, or if contractor hours worked are not tracked, the programme-level safety KPIs will be systematically understated. | Pillar 6 | Confirm with corporate HSE whether contractor incidents are included in the site safety management system and whether contractor hours worked are tracked in the workforce management system or time-sheeting system. |
@@ -304,16 +309,17 @@ The following entity design decisions have cross-pillar implications and must be
 | Metric | Count |
 |--------|-------|
 | Total pillars | 6 |
-| Total L2 Process Areas | 24 |
-| Total L4 activities (approximate) | ~185 |
-| Total entities defined (master, reference, transactional, time-series) | ~95 |
+| Total L2 Process Areas | 26 |
+| Total L4 activities (approximate) | ~210 |
+| Total entities defined (master, reference, transactional, time-series) | ~112 |
 | Cross-pillar shared entities | 14 |
-| AMIRA P754 Measurement Points (Cu/Zn/Pb circuits) | 15 (MP-01 through MP-15) |
+| AMIRA P754 Measurement Point roles (Pillar 3) | 10 roles (MP-01 to MP-10), instantiated per configured flotation circuit and separation |
+| Tailings and water measurement roles (Pillar 3) | 5 tailings (TP-01 to TP-05) and 11 water (WP-01 to WP-11), instantiated per stream, user or destination |
 | Custody transfer points (commercial) | 3 (CTPs 3, 4, 5) |
 | Custody transfer points (internal) | 2 (CTPs 1, 2) |
 | Programme-wide gaps registered | 12 |
-| Governing standards (primary or secondary across any pillar) | 14 |
-| Commodity variants documented | Cu porphyry, Cu-Zn polymetallic, Zn-Pb Arctic |
+| Governing standards (primary or secondary across any pillar) | 16 (GISTM and the MCA Water Accounting Framework added with Pillar 3.5–3.6) |
+| Ore-type configurations documented (Pillar 3) | Cu porphyry, Cu-Mo, Cu-Zn, Cu-Zn-Pb, Pb-Zn, Cu-Pb-Zn (sequential and bulk), Cu-Zn-Mo — all from two flotation patterns |
 | Teck sites in scope | QB, HVC, Antamina (22.5%), CdA, Red Dog |
 
 ---

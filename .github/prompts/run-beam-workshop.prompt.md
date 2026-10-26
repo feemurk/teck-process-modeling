@@ -6,9 +6,10 @@ Use this prompt when you want Copilot to facilitate the BEAM workshop while pres
 
 1. Read `CLAUDE.md`.
 2. Read `.claude/commands/run-beam-workshop.md`.
-3. Confirm `workshops/[product-name]/process-model-ref.md` exists.
+3. Confirm `workshops/[product-name]/process-model-ref.md` exists. If `inputs/` has files but no reviewed `process-configuration.draft.yaml`, redirect to `prepare configuration for [product-name]`.
 4. Read:
    - `workshops/[product-name]/process-model-ref.md`
+   - `workshops/[product-name]/process-configuration.draft.yaml` if present
    - `standards/teck-vocabulary-master.md`
    - `templates/beam-workshop.md`
    - `templates/beam-overlay-schema.yaml`

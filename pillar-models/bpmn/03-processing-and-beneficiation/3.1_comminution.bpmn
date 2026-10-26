@@ -33,7 +33,7 @@ DDVC layer: Raw (time-series); Curated (process_measurement_point)</bpmn:documen
       <bpmn:outgoing>Flow_L2_3_1_4</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:subProcess id="Sub_L2_3_1_3_1_2" name="3.1.2 Secondary/Tertiary Crushing &amp; Screening">
-      <bpmn:documentation>L0/L2 Process. Not all circuits include secondary/tertiary crushing. Where present (typically in three-stage crushing circuits preceding ball mills, or as pebble crushers in SABC circuits), screens classify crushed product and recirculate oversize. This sub-process is conditional — it applies where a dedicated crushing circuit precedes ball milling. [COPPER NOTE: QB and HVC use SABC circuits — pebble crusher applies. ZINC NOTE: Red Dog uses a three-stage crushing circuit preceding the grinding circuit.]
+      <bpmn:documentation>L0/L2 Process. Not all circuits include secondary/tertiary crushing. Where present (typically in three-stage crushing circuits preceding ball mills, or as pebble crushers in SABC circuits), screens classify crushed product and recirculate oversize. This sub-process is conditional — it applies where a dedicated crushing circuit precedes ball milling. [Configuration: SABC circuits use pebble crushing (3.1.2.3); three-stage crushing circuits use 3.1.2.1 and 3.1.2.2 before ball milling.]
 ISA-95 level: 0–2
 Actors: DCS Auto-control; Control Room Operator
 Standard alignment: ISA-95 Levels 0, 2; AMIRA P754 Principle 1

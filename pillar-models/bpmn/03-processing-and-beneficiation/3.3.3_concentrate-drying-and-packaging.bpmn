@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_L3_3_3_3" targetNamespace="https://teck.example/process-models/pillar-03">
+  <bpmn:collaboration id="Collab_L3_3_3_3">
+    <bpmn:participant id="Pool_L3_3_3_3" name="3.3.3 Concentrate Drying &amp; Packaging" processRef="Process_L3_3_3_3"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_L3_3_3_3" isExecutable="false">
+    <bpmn:documentation>L0/L1/L3 Process. Conditional — applies where the product specification or the dispatch method requires the filtered concentrate to be dried or packed: for example, molybdenum concentrate dried and bagged, or concentrate packed in bags or containers for shipment. Follows 3.3.2 in that concentrate's dewatering train. Bulk-shipped filter cake bypasses it.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_L3_3_3_3">
+      <bpmn:lane id="Lane_L3_3_3_3_dcs" name="DCS Auto-control">
+        <bpmn:flowNodeRef>Start_L3_3_3_3_s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L3_3_3_3_g1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_L3_3_3_3_3_3_3_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L3_3_3_3_m</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_L3_3_3_3_g2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_3_3_3_e2</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_L3_3_3_3_opr" name="Plant Operator">
+        <bpmn:flowNodeRef>Task_L3_3_3_3_3_3_3_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_L3_3_3_3_e1</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_L3_3_3_3_s" name="Filter cake requires drying or packing">
+      <bpmn:outgoing>Flow_L3_3_3_3_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="Gw_L3_3_3_3_g1" name="Drying specified?" default="Flow_L3_3_3_3_3">
+      <bpmn:incoming>Flow_L3_3_3_3_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_3_3_2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_3_3_3_3</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_L3_3_3_3_3_3_3_1" name="3.3.3.1 Dry Concentrate">
+      <bpmn:documentation>A dryer (direct or indirect fired, or steam) reduces filter cake moisture to the product specification where filtration alone cannot reach it. Dryer temperature, feed rate and off-gas conditions are controlled by DCS; dried product moisture is verified by sample as in 3.3.2.3. Conditional — only where drying is part of the product specification. [P754: moisture % | oven drying or online analyser | per batch / per shift | Principles 1, 5, 7, 8 | YES — dried moisture sets the dry tonnes of the product]
+ISA-95 level: 0 / 2
+Actors: DCS Auto-control; Plant Operator
+Standard alignment: ISA-95 Levels 0, 2; AMIRA P754 Principles 1, 5, 7, 8
+DDVC layer: Raw (time-series: dryer_telemetry); Curated (concentrate_production_record — moisture %)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_3_3_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_3_3_4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_L3_3_3_3_m">
+      <bpmn:incoming>Flow_L3_3_3_3_3</bpmn:incoming>
+      <bpmn:incoming>Flow_L3_3_3_3_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_3_3_5</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gw_L3_3_3_3_g2" name="Packed dispatch specified?" default="Flow_L3_3_3_3_7">
+      <bpmn:incoming>Flow_L3_3_3_3_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_3_3_6</bpmn:outgoing>
+      <bpmn:outgoing>Flow_L3_3_3_3_7</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_L3_3_3_3_e2" name="Dried concentrate to storage">
+      <bpmn:incoming>Flow_L3_3_3_3_7</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="Task_L3_3_3_3_3_3_3_2" name="3.3.3.2 Package and Weigh Concentrate">
+      <bpmn:documentation>Concentrate is packed into bags or containers, each unit weighed on a certified scale and labelled with product, batch and weight. The packed unit record is the product's dry tonnes record (with the verified moisture) and the hand-off to Logistics (Pillar 4). Conditional — only where the product is dispatched packed. [P754: mass (unit weight — key commercial measurement) | certified packaging scale | per unit | Principles 1, 5, 7, 8 | YES — custody transfer of packed product]
+ISA-95 level: 1 / 3
+Actors: Plant Operator
+Standard alignment: ISA-95 Levels 1, 3; AMIRA P754 Principles 1, 5, 7, 8
+DDVC layer: Curated (concentrate_production_record — packaged mass)</bpmn:documentation>
+      <bpmn:incoming>Flow_L3_3_3_3_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_L3_3_3_3_8</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_L3_3_3_3_e1" name="Packed units to Logistics (Pillar 4)">
+      <bpmn:incoming>Flow_L3_3_3_3_8</bpmn:incoming>
+      <bpmn:messageEventDefinition id="Msg_L3_3_3_3_e1"/>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_3_1" sourceRef="Start_L3_3_3_3_s" targetRef="Gw_L3_3_3_3_g1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_3_2" name="Yes" sourceRef="Gw_L3_3_3_3_g1" targetRef="Task_L3_3_3_3_3_3_3_1"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_3_3" name="No" sourceRef="Gw_L3_3_3_3_g1" targetRef="Gw_L3_3_3_3_m"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_3_4" sourceRef="Task_L3_3_3_3_3_3_3_1" targetRef="Gw_L3_3_3_3_m"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_3_5" sourceRef="Gw_L3_3_3_3_m" targetRef="Gw_L3_3_3_3_g2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_3_6" name="Yes" sourceRef="Gw_L3_3_3_3_g2" targetRef="Task_L3_3_3_3_3_3_3_2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_3_7" name="No" sourceRef="Gw_L3_3_3_3_g2" targetRef="End_L3_3_3_3_e2"/>
+    <bpmn:sequenceFlow id="Flow_L3_3_3_3_8" sourceRef="Task_L3_3_3_3_3_3_3_2" targetRef="End_L3_3_3_3_e1"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_L3_3_3_3">
+    <bpmndi:BPMNPlane id="Plane_L3_3_3_3" bpmnElement="Collab_L3_3_3_3">
+      <bpmndi:BPMNShape id="Pool_L3_3_3_3_di" bpmnElement="Pool_L3_3_3_3" isHorizontal="true"><dc:Bounds x="20" y="20" width="1346" height="340"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_3_3_dcs_di" bpmnElement="Lane_L3_3_3_3_dcs" isHorizontal="true"><dc:Bounds x="60" y="20" width="1306" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_L3_3_3_3_opr_di" bpmnElement="Lane_L3_3_3_3_opr" isHorizontal="true"><dc:Bounds x="60" y="190" width="1306" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_L3_3_3_3_s_di" bpmnElement="Start_L3_3_3_3_s"><dc:Bounds x="142" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="110" y="139" width="120" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L3_3_3_3_g1_di" bpmnElement="Gw_L3_3_3_3_g1" isMarkerVisible="true"><dc:Bounds x="301" y="70" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="230" y="34" width="100" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_3_3_3_3_3_1_di" bpmnElement="Task_L3_3_3_3_3_3_3_1"><dc:Bounds x="442" y="65" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L3_3_3_3_m_di" bpmnElement="Gw_L3_3_3_3_m" isMarkerVisible="true"><dc:Bounds x="683" y="70" width="70" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_L3_3_3_3_g2_di" bpmnElement="Gw_L3_3_3_3_g2" isMarkerVisible="true"><dc:Bounds x="859" y="70" width="70" height="70"/><bpmndi:BPMNLabel><dc:Bounds x="788" y="20" width="100" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_3_3_3_e2_di" bpmnElement="End_L3_3_3_3_e2"><dc:Bounds x="1057" y="77" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1025" y="139" width="120" height="28"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_L3_3_3_3_3_3_3_2_di" bpmnElement="Task_L3_3_3_3_3_3_3_2"><dc:Bounds x="1000" y="235" width="170" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_L3_3_3_3_e1_di" bpmnElement="End_L3_3_3_3_e1"><dc:Bounds x="1238" y="247" width="56" height="56"/><bpmndi:BPMNLabel><dc:Bounds x="1206" y="309" width="120" height="42"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_3_1_di" bpmnElement="Flow_L3_3_3_3_1"><di:waypoint x="198" y="105"/><di:waypoint x="301" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_3_2_di" bpmnElement="Flow_L3_3_3_3_2"><di:waypoint x="371" y="105"/><di:waypoint x="442" y="105"/><bpmndi:BPMNLabel><dc:Bounds x="375" y="85" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_3_3_di" bpmnElement="Flow_L3_3_3_3_3"><di:waypoint x="336" y="70"/><di:waypoint x="336" y="40"/><di:waypoint x="718" y="40"/><di:waypoint x="718" y="70"/><bpmndi:BPMNLabel><dc:Bounds x="342" y="52" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_3_4_di" bpmnElement="Flow_L3_3_3_3_4"><di:waypoint x="612" y="105"/><di:waypoint x="683" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_3_5_di" bpmnElement="Flow_L3_3_3_3_5"><di:waypoint x="753" y="105"/><di:waypoint x="859" y="105"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_3_6_di" bpmnElement="Flow_L3_3_3_3_6"><di:waypoint x="894" y="140"/><di:waypoint x="894" y="275"/><di:waypoint x="1000" y="275"/><bpmndi:BPMNLabel><dc:Bounds x="900" y="144" width="27" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_3_7_di" bpmnElement="Flow_L3_3_3_3_7"><di:waypoint x="929" y="105"/><di:waypoint x="1057" y="105"/><bpmndi:BPMNLabel><dc:Bounds x="933" y="85" width="21" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_L3_3_3_3_8_di" bpmnElement="Flow_L3_3_3_3_8"><di:waypoint x="1170" y="275"/><di:waypoint x="1238" y="275"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -29,7 +29,7 @@
       <bpmn:messageEventDefinition id="Msg_L3_3_4_3_c"/>
     </bpmn:intermediateCatchEvent>
     <bpmn:task id="Task_L3_3_4_3_3_4_3_1" name="3.4.3.1 Close Shift Mass Balance">
-      <bpmn:documentation>At each shift end, the metallurgist runs the shift mass balance calculation: sum of ore feed mass (belt weigher) × feed grade (assay) = sum of concentrate mass (filter cake belt weigher × moisture correction to dry tonnes) × concentrate grade (shift composite assay) + sum of tailings mass × tailings grade. Balance error (%) = (feed metal − products metal) / feed metal × 100. Acceptable shift balance error is site-specific (typically ±5% for shift; tighter at daily). [P754: ALL measurement types — integrates mass, grade, density, moisture | integrates all instrument types | per shift | ALL 10 Principles | YES — shift mass balance is the formal P754 accounting period closure at the shift level]
+      <bpmn:documentation>At each shift end, the metallurgist runs the shift mass balance calculation: sum of ore feed mass (belt weigher) × feed grade (assay) = sum over all saleable concentrates of concentrate mass (filter cake belt weigher × moisture correction to dry tonnes) × concentrate grade (shift composite assay) + sum of tailings mass × tailings grade. Balance error (%) = (feed metal − products metal) / feed metal × 100. Acceptable shift balance error is site-specific (typically ±5% for shift; tighter at daily). [P754: ALL measurement types — integrates mass, grade, density, moisture | integrates all instrument types | per shift | ALL 10 Principles | YES — shift mass balance is the formal P754 accounting period closure at the shift level]
 ISA-95 level: 3
 Actors: Metallurgist
 Standard alignment: ISA-95 Level 3; AMIRA P754 Principles 1–10 (synthesis)

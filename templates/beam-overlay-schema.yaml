@@ -43,6 +43,40 @@ overlay_status: ""                      # [REQUIRED] in-progress | complete | va
 
 ---
 
+## SECTION 1A: PROCESS CONFIGURATION (LL-015)
+# How each site in scope runs the pillar's generic process groups (CLAUDE.md, "PROCESS
+# GROUPS ARE GENERIC"). Pillar process groups are never renamed, renumbered or removed for a
+# site. This section records which optional groups a site runs, how many instances of a
+# pattern it runs and in what order, and the site's own names, equipment and measurement
+# points for each instance — keyed to unchanged pillar IDs.
+# Required when a pillar_reference includes a process area with patterns or optional
+# groups (e.g., Pillar 3: 3.2, 3.3, 3.5, 3.6). Use one entry per site per group or instance.
+
+process_configuration:                  # [CONDITIONAL] See rule above
+  - site: ""                            # [REQUIRED] Site code
+    pillar_id: ""                       # [REQUIRED] Unchanged pillar process group ID, e.g. "3.2.2"
+    instance: ""                        # [REQUIRED for patterns] Instance label, e.g. "Cu", "bulk Cu-Mo", "tailings"; "" for a single-instance group
+    enabled: true                       # [REQUIRED] false = optional group configured off at this site
+    sequence: 0                         # [OPTIONAL] Order among instances of the same pattern, where order matters
+    feed_from: ""                       # [OPTIONAL] Upstream instance, stream or water system
+    outputs_to: []                      # [OPTIONAL] Downstream instances, products, streams or water systems
+    parameters: {}                      # [OPTIONAL] Pattern parameters: reagent scheme, product, method, location, source type
+    steps_not_applicable: []            # [OPTIONAL] L4 IDs configured off for this instance, each with a reason
+    site_terms: []                      # [RECOMMENDED] Site names for the instance's equipment, areas and locations
+    # site_term schema:
+    # - site_term: ""                   # e.g. "BHC-1"
+    #   meaning: ""                     # e.g. "hydrocyclone battery 1"
+    measurement_points: []              # [RECOMMENDED] Site measurement points mapped to pillar roles
+    # measurement_point schema:
+    # - role: ""                        # Pillar role, e.g. "MP-05", "TP-01", "WP-05"
+    #   site_ref: ""                    # Site tag or candidate ID
+    #   status: ""                      # candidate | confirmed
+    evidence: ""                        # [REQUIRED] Source and evidence class: T documented | I industry convention | H working hypothesis | V site-validated
+    status: ""                          # [REQUIRED] confirmed | provisional | needs-workshop | not-applicable
+    rationale: ""                       # [REQUIRED if enabled is false or status is not-applicable]
+
+---
+
 ## SECTION 2: ENTITY REGISTER
 # One entry per entity in process-model-ref.md.
 # Captures the Teck-specific decisions the process model cannot answer.

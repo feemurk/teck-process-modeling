@@ -9,8 +9,16 @@
    "Run 'extract entities for [product-name]' first to define the entity scope.
    The workshop cannot proceed without a confirmed process-model-ref.md."
 
+   If `workshops/[product-name]/inputs/` contains files but there is no
+   `process-configuration.draft.yaml`, or the draft has `draft_status: draft` (not yet
+   reviewed), respond:
+   "There is evidence in inputs/ that has not been drafted and reviewed. Run 'prepare
+   configuration for [product-name]' first so Section D.1a starts from the evidence."
+   Proceed without a draft only if inputs/ is empty, or the analyst explicitly says to.
+
 2. Read the following files before saying anything to the user:
    - `workshops/[product-name]/process-model-ref.md`
+   - `workshops/[product-name]/process-configuration.draft.yaml` (if present)
    - `standards/teck-vocabulary-master.md`
    - `templates/beam-workshop.md`
    - `templates/beam-overlay-schema.yaml`
@@ -42,8 +50,10 @@
    b. Run the validate-overlay protocol automatically.
    c. Present the validation report.
    d. Write vocabulary additions to `standards/teck-vocabulary-master.md`.
-   e. Write the session log via `log session`.
-   f. Present the handoff summary.
+   e. If a configuration draft was used, set its `draft_status: consumed-by-workshop`.
+      Leave its entries as they were — the overlay is now the record.
+   f. Write the session log via `log session`.
+   g. Present the handoff summary.
 
 7. At session end, remind the analyst:
    "Before you close this session, check whether any CORRECTION: messages were
