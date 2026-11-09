@@ -696,3 +696,63 @@
     session-log.md as crossing to Stage 2; workshops/[product-name]/README.md says it stays
     in Stage 1.
 ```
+
+```yaml
+- id: LL-025
+  date: 2026-11-05
+  session: "2026-11-05-Water-and-Tailings-BEAM-WORKSHOP"
+  product: "programme-wide"
+  captured_by: "Fahim Kanji (with Claude Code)"
+  status: "open"
+
+  what_happened: >
+    After Workshop 1 for Water-and-Tailings, the working record (BEAM_Water_and_Tailings_v15)
+    held 58 business concepts, 24 events and measures and 42 metrics, and the QB Reporting List
+    held 38 measures, metrics and KPIs. No concept carried a pillar-model entity mapping (0 of
+    58). No step in CLAUDE.md or the commands maps workshop concepts to the entities in
+    process-model-ref.md, or traces each measure, metric or KPI to a pillar process group and
+    process boundary. Both mappings were done ad hoc (metric-process-crosswalk.md, committed in
+    e259967), so the overlay entity register (workshop Section B.1) and event canvas (Section
+    C.1) have no defined bridge from the evidence gathered.
+
+  correct_approach: >
+    Add two defined crosswalks to the workflow, produced from the evidence and reviewed by the
+    analyst before the workshop that confirms entities and events.
+    (1) Concept-to-entity crosswalk: each concept, event and measure in the working record is
+    mapped to an entity in process-model-ref.md, or marked "no pillar home" (a candidate
+    pillar gap or vocabulary item), with a confidence and an evidence class (T, I or H; never
+    V).
+    (2) Measure / metric / KPI-to-process crosswalk: each measure, metric and KPI is mapped to
+    the pillar process group (3.x.y), the process boundary, the underlying measure, the event
+    and the entity. This is traceability only: metric definitions and calculations stay out of
+    the overlay (Stage 2).
+    Both are Stage 1 working notes, committed as part of the evidence trail and not handed to
+    Stage 2. They pre-populate workshop Sections B.1 and C.1.
+
+  affects:
+    - file: "CLAUDE.md"
+      section: "WORKFLOW; Relationship to downstream repos; new command sections; NEVER DO"
+      change_type: "new_rule"
+    - file: ".claude/commands/ (new prepare-crosswalks.md, or one command per crosswalk)"
+      section: "new command(s)"
+      change_type: "addition"
+    - file: "templates/ (new concept-entity and measure-process crosswalk templates)"
+      section: "new templates"
+      change_type: "addition"
+    - file: "templates/beam-workshop.md; .claude/commands/run-beam-workshop.md"
+      section: "Pre-workshop setup; B.1; C.1"
+      change_type: "behaviour"
+    - file: "workshops/[product-name]/README.md"
+      section: "sequence and allowed files"
+      change_type: "clarification"
+
+  integration_notes: >
+    The modeler wants this integrated into CLAUDE.md as an enhancement to the process and the
+    commands. Open design questions: one command or two; whether the crosswalks gate the
+    workshop, as the configuration draft does; and whether the working record (the BEAM
+    workbook) is formalised as a Stage 1 input with its own place in the workflow. Related and
+    not yet logged: the overlay schema requires technical fields (scd_policy, uom_suffix) while
+    the workbook treats design as data-modeling work, which needs a Stage 2 decision.
+    Register note: LL-021 to LL-024 exist on branch project-enhancement/lessons-learned and
+    are not on this branch yet; this entry takes LL-025 to avoid an ID clash.
+```
